@@ -1,5 +1,6 @@
 package ch.hslu.sw01;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -70,5 +71,48 @@ public class AhaBeispielTest {
         assertEquals(4, ahaBeispiel.Task1RunCount);
         assertEquals(1500, ahaBeispiel.Task2RunCount);
         assertEquals(500000, ahaBeispiel.Task3RunCount);
+    }
+    @Disabled
+    @Test
+    void SW01_E1_2_StopTimeWithThreadSleepingTaskRunsWith2() throws InterruptedException{
+        AhaBeispiel ahaBeispiel = new AhaBeispiel();
+        int n = 2;
+        long startMS = System.currentTimeMillis();
+        ahaBeispiel.sleepingTask(n);
+        long stopMS = System.currentTimeMillis();
+        System.out.println("n: " + n + ", time: " + (stopMS - startMS) + " ms");
+    }
+
+    @Disabled
+    @Test
+    void SW01_E1_2_StopTimeWithThreadSleepingTaskRunsWith4() throws InterruptedException{
+        AhaBeispiel ahaBeispiel = new AhaBeispiel();
+        int n = 4;
+        long startMS = System.currentTimeMillis();
+        ahaBeispiel.sleepingTask(n);
+        long stopMS = System.currentTimeMillis();
+        System.out.println("n: " + n + ", time: " + (stopMS - startMS) + " ms");
+    }
+
+    @Disabled
+    @Test
+    void SW01_E1_2_StopTimeWithThreadSleepingTaskRunsWith20() throws InterruptedException{
+        AhaBeispiel ahaBeispiel = new AhaBeispiel();
+        int n = 20;
+        long startMS = System.currentTimeMillis();
+        ahaBeispiel.sleepingTask(n);
+        long stopMS = System.currentTimeMillis();
+        System.out.println("n: " + n + ", time: " + (stopMS - startMS) + " ms");
+    }
+
+    @Disabled
+    @Test
+    void SW01_E1_2_StopTimeWithThreadSleepingTaskRunsWith40() throws InterruptedException{
+        AhaBeispiel ahaBeispiel = new AhaBeispiel();
+        int n = 40;
+        long startMS = System.currentTimeMillis();
+        ahaBeispiel.sleepingTask(n);
+        long stopMS = System.currentTimeMillis();
+        System.out.println("n: " + n + ", time: " + (stopMS - startMS) + " ms");
     }
 }

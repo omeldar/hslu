@@ -15,7 +15,7 @@ public class AhaBeispiel {
         }
     }
 
-    public void sleepingTask(final int n) {
+    public void sleepingTask(final int n) throws InterruptedException{
         sleepingTask1(); sleepingTask1(); sleepingTask1(); sleepingTask1(); // T ~ 4
         for (int i = 0; i < n; i++) { // äussere Schleife: n-mal
             sleepingTask2(); sleepingTask2(); sleepingTask2(); // T ~ n · 3
@@ -34,13 +34,13 @@ public class AhaBeispiel {
         Task3RunCount += 1;
     }
 
-    private void sleepingTask1(){
-        //Thread.sleep(10);
+    private void sleepingTask1() throws InterruptedException{
+        Thread.sleep(10);
     }
-    private void sleepingTask2(){
-        //Thread.sleep(10);
+    private void sleepingTask2() throws InterruptedException{
+        Thread.sleep(10);
     }
-    private void sleepingTask3(){
-        //Thread.sleep(10);
+    private void sleepingTask3() throws InterruptedException{
+        Thread.sleep(10);
     }
 }
