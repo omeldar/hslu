@@ -34,13 +34,13 @@ public class AhaBeispiel {
         Task3RunCount += 1;
     }
 
-    private void sleepingTask1() throws InterruptedException{
-        Thread.sleep(10);
+    private void sleepingTask1(){
+        //Thread.sleep(10);
     }
-    private void sleepingTask2() throws InterruptedException{
-        Thread.sleep(10);
+    private void sleepingTask2(){
+        //Thread.sleep(10);
     }
-    private void sleepingTask3() throws InterruptedException{
-        Thread.sleep(10);
+    private void sleepingTask3(){
+        //Thread.sleep(10);
     }
 }
