@@ -23,7 +23,7 @@ public class BinaryTreeNode<TKey extends Comparable<TKey>, TValue>
     @Override
     public TKey getKey() {
         return key;
-    }
+    }   // return hashCode() ????
 
     @Override
     public TValue getValue() {
@@ -36,10 +36,15 @@ public class BinaryTreeNode<TKey extends Comparable<TKey>, TValue>
             return true;
         if (!(o instanceof BinaryTreeNode))
             return false;
-        if (this.value == ((BinaryTreeNode<?, ?>) o).getValue()){
+        if (this.key == ((BinaryTreeNode<?, ?>) o).getKey()){   // check if values or keys
             return true;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return 0;       // implement
     }
 
     @Override
