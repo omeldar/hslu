@@ -23,16 +23,13 @@ public class CustomList<E> implements List<E> {
     @Override
     public boolean contains(Object o) {
         ListObject<E> it = first;
-        while (true){
-            try{
-                if (it.getValue().equals(o)){
-                    return true;
-                }
-                it = it.getNext();
-            } catch(NullPointerException nex){
-                return false;
+        while (it != null){
+            if (it.getValue().equals(o)){
+                return true;
             }
+            it = it.getNext();
         }
+        return false;
     }
 
     @Override
@@ -57,15 +54,12 @@ public class CustomList<E> implements List<E> {
         ListObject<E> it = first;
         Object[] val = new Object[size];
         int last = 0;
-        while(true){
-            try{
-                val[last] = it.getValue();
-                it = it.getNext();
-                last++;
-            } catch (NullPointerException nex){
-                return val;
-            }
+        while(it != null){
+            val[last] = it.getValue();
+            it = it.getNext();
+            last++;
         }
+        return val;
     }
 
     @NotNull
