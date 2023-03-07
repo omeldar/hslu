@@ -1,4 +1,4 @@
-use binary_tree::binary_tree;
+use elib::binary_tree;
 
 fn main() {
     let mut root = binary_tree::Node { val: &5, left: None, right: None };
