@@ -1,5 +1,3 @@
-use std::fmt;
-
 pub mod binary_tree{
     #[derive(Debug)]
     pub struct Node<'a, T: PartialEq> {   
