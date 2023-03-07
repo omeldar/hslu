@@ -1,7 +1,7 @@
-use elib::binary_tree;
+use elib::binary_tree::*;
 
 fn main() {
-    let mut root = binary_tree::Node { val: &5, left: None, right: None };
+    let mut root = TreeNode { val: &5, left: None, right: None };
     root.insert(&3);
     root.insert(&7);
     root.insert(&2);
