@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 // Automatically implements the Debug trait for TreeNode, to allow readable printing
 #[derive(Debug)]
 pub struct TreeNode<'a, T: PartialEq + PartialOrd> {  
@@ -14,7 +16,7 @@ impl<'a, T: PartialOrd + PartialEq> TreeNode<'a, T> {
             return
         }
         let target_tree_node: &mut Option<Box<TreeNode<T>>> = if new_val < self.val { &mut self.left } else {&mut self.right };
-        
+
         // traverse trough the tree to determine where to insert the value
         match target_tree_node{
             &mut Some(ref mut sub_tree_node) => sub_tree_node.insert(new_val),
@@ -23,6 +25,28 @@ impl<'a, T: PartialOrd + PartialEq> TreeNode<'a, T> {
                 let boxed_tree_node: Option<Box<TreeNode<T>>> = Some(Box::new(new_tree_node));
                 *target_tree_node = boxed_tree_node; // assign the value of boxed node to the memory location pointed to by the mut ref
             }
+        }
+    }
+
+    pub fn contains(self, value_to_find: &'a T) -> bool{
+        //partial_cmp returns Ordering:Less, if value_to_find is greater than self.val
+        match self.val.partial_cmp(value_to_find) {
+            Some(Ordering::Equal) => true,
+            Some(Ordering::Less) => {
+                match &self.right {
+                    // Borrowing issue, still needs to be fixed
+                    Some(ref right_node) => right_node.contains(value_to_find),
+                    None => false,
+                }
+            }
+            Some(Ordering::Greater) => {
+                match &self.left {
+                    // Borrowing issue, still needs to be fixed
+                    Some(ref left_node) => left_node.contains(value_to_find),
+                    None => false,
+                }
+            }
+            None => false,
         }
     }
 }
