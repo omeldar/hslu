@@ -28,10 +28,11 @@ The `<'a>` [specific lifetime specifier](https://doc.rust-lang.org/rust-by-examp
 The `#[derive(Debug)]` attribute is a macro that automatically implements the Debug trait for
 the `TreeNode` struct, allowing it to be printed in a readable format for debugging purposes.
 
-For the sub-nodes in the TreeNode struct we use `Option<Box<TreeNode<T>>>` which
-allows for the child nodes to be optional. Meaning, that we can set the subnodes to `None`, if there is no sub-node.
-The `Box<T>` allows for the nodes to be allocated on the heap, rather the stack, which is necessary for recursive data structures. 
-If we would allocate it on the stack, we would at some point run into a stack overflow.
+For the sub-nodes in the TreeNode struct we use `Option<Box<TreeNode<T>>>` which allows for the child nodes to be optional. 
+Meaning, that we can set the subnodes to `None`, if there is no sub-node. The `Box<T>` allows for the nodes to be allocated
+on the heap, rather the stack, which is necessary for recursive data structures. 
+In Rust, we can only allocate fix sized values onto the stack. This is not possible here, because its generic and rust therefore
+does not know how much memory to allocate on the stack.
 
 ```rust
 pub left: Option<Box<TreeNode<'a, T>>>,
