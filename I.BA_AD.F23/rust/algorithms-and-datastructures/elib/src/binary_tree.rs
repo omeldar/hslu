@@ -1,10 +1,8 @@
-// We need to derive the implementation of Debug here to be able to print the binary tree into console
+// Automatically implements the Debug trait for TreeNode, to allow readable printing
 #[derive(Debug)]
-pub struct TreeNode<'a, T: PartialEq> {     
+pub struct TreeNode<'a, T: PartialEq + PartialOrd> {  
     pub val: &'a T,
-    // Option<Box<TreeNode<T>>> allows for the child nodes to be optioonal and
-    // the Box<T> allows for the nodes to be allocated on the heap, rather the stack, which
-    // is necessary for recursive data structures
+    // 
     pub left: Option<Box<TreeNode<'a, T>>>,
     pub right: Option<Box<TreeNode<'a, T>>>
 }
