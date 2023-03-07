@@ -38,3 +38,23 @@ does not know how much memory to allocate on the stack.
 pub left: Option<Box<TreeNode<'a, T>>>,
 pub right: Option<Box<TreeNode<'a, T>>>
 ```
+
+With the implementation of the insert function, we do not allow duplicate values in our tree.
+```rust
+pub fn insert(&mut self, new_val: &'a T) {
+    if *self.val == *new_val {
+        return
+    }
+    let target_tree_node: &mut Option<Box<TreeNode<T>>> = if new_val < self.val { &mut self.left } else {&mut self.right };
+
+    // traverse trough the tree to determine where to insert the value
+    match target_tree_node{
+        &mut Some(ref mut sub_tree_node) => sub_tree_node.insert(new_val),
+        &mut None => {
+            let new_tree_node = TreeNode { val: new_val, left: None, right: None};
+            let boxed_tree_node: Option<Box<TreeNode<T>>> = Some(Box::new(new_tree_node));
+            *target_tree_node = boxed_tree_node; // assign the value of boxed node to the memory location pointed to by the mut ref
+        }
+    }
+}
+```
