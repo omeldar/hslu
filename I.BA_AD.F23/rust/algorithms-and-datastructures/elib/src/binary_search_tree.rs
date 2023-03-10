@@ -27,25 +27,30 @@ impl<'a, T: PartialOrd + PartialEq> TreeNode<'a, T> {
         }
     }
 
-    pub fn contains(&self, value_to_find: &'a T) -> bool{
+    pub fn search(&self, value_to_find: &'a T) -> Option<&'a T>{
         //partial_cmp returns Ordering:Less, if value_to_find is greater than self.val
         match self.val.partial_cmp(value_to_find) {
-            Some(Ordering::Equal) => true,
+            Some(Ordering::Equal) => return Some(self.val),
             Some(Ordering::Less) => {
                 match &self.right {
-                    // Borrowing issue, still needs to be fixed
-                    Some(ref right_node) => right_node.contains(value_to_find),
-                    None => false,
+                    Some(ref right_node) => right_node.search(value_to_find),
+                    None => return None,
                 }
             }
             Some(Ordering::Greater) => {
                 match &self.left {
-                    // Borrowing issue, still needs to be fixed
-                    Some(ref left_node) => left_node.contains(value_to_find),
-                    None => false,
+                    Some(ref left_node) => left_node.search(value_to_find),
+                    None => return None,
                 }
             }
-            None => false,
+            None => return None,
+        }
+    }
+
+    pub fn contains(&self, value_to_find: &'a T) -> bool{
+        match self.search(value_to_find){
+            Some(_) => return true,
+            None => return false,
         }
     }
 }
@@ -128,5 +133,37 @@ mod tests {
 
         let expected: bool = false;
         assert_eq!(root.contains(&"z"), expected);
+    }
+
+    #[test]
+    fn test_binary_search_tree_get_by_key_i32_complex_value_exists() {
+        // arrange
+        #[derive(Debug)]
+        #[derive(PartialEq)]
+        #[derive(PartialOrd)]
+        struct Person{
+            id: u32,
+            name: String,
+            age: u16,
+        }
+
+        let person1: Person = Person { id: 6, name: String::from("Max Muster"), age: 17 };
+        let mut root = TreeNode { val: &person1, left: None, right: None };
+
+        let person2: Person = Person { id: 7, name: String::from("John Doe"), age: 18 };
+        root.insert( &person2);
+
+        let person3: Person = Person { id: 3, name: String::from("Jane Doe"), age: 18 };
+        root.insert( &person3);
+
+        let person4: Person = Person { id: 4, name: String::from("Maxine Muster"), age: 18 };
+        root.insert( &person4);
+
+        //act
+        let person_to_find = root.search(&person4);
+
+        //assert
+        assert_eq!(person_to_find, Some(&person4));
+
     }
 }
