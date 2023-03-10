@@ -1,10 +1,11 @@
-use elib::binary_tree::*;
+use elib::binary_search_tree::*;
 
 fn main() {
-    let mut root = TreeNode { val: &5, left: None, right: None };
-    root.insert(&3);
-    root.insert(&7);
-    root.insert(&2);
-    root.insert(&8);
+    let mut root = TreeNode {val: &"3", left: None, right: None};
+    root.insert(&"1");
+    root.insert(&"6");
+    root.insert(&"4");
+    root.insert(&"8");
+    root.insert(&"0");
     println!("{:?}", root);
 }
