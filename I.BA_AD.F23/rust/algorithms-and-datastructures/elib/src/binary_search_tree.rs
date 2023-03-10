@@ -4,7 +4,6 @@ use std::cmp::Ordering;
 #[derive(Debug)]
 pub struct TreeNode<'a, T: PartialEq + PartialOrd> {  
     pub val: &'a T,
-    // 
     pub left: Option<Box<TreeNode<'a, T>>>,
     pub right: Option<Box<TreeNode<'a, T>>>
 }
@@ -28,7 +27,7 @@ impl<'a, T: PartialOrd + PartialEq> TreeNode<'a, T> {
         }
     }
 
-    pub fn contains(self, value_to_find: &'a T) -> bool{
+    pub fn contains(&self, value_to_find: &'a T) -> bool{
         //partial_cmp returns Ordering:Less, if value_to_find is greater than self.val
         match self.val.partial_cmp(value_to_find) {
             Some(Ordering::Equal) => true,
@@ -63,10 +62,9 @@ mod tests {
         root.insert(&2);
         root.insert(&8);
 
-        assert_eq!(
-            format!("{:?}", root),
-            "TreeNode { val: 5, left: Some(TreeNode { val: 3, left: Some(TreeNode { val: 2, left: None, right: None }), right: None }), right: Some(TreeNode { val: 7, left: None, right: Some(TreeNode { val: 8, left: None, right: None }) }) }"
-        );
+        let expected = "TreeNode { val: 5, left: Some(TreeNode { val: 3, left: Some(TreeNode { val: 2, left: None, right: None }), right: None }), right: Some(TreeNode { val: 7, left: None, right: Some(TreeNode { val: 8, left: None, right: None }) }) }";
+
+        assert_eq!(format!("{:?}", root), expected);
     }
     
     #[test]
@@ -80,5 +78,55 @@ mod tests {
 
         let expected = "TreeNode { val: \"e\", left: Some(TreeNode { val: \"a\", left: None, right: Some(TreeNode { val: \"b\", left: None, right: Some(TreeNode { val: \"c\", left: None, right: Some(TreeNode { val: \"d\", left: None, right: None }) }) }) }), right: Some(TreeNode { val: \"f\", left: None, right: None }) }";
         assert_eq!(format!("{:?}", root), expected);
+    }
+
+    #[test]
+    fn test_binary_search_tree_with_i32_exists(){
+        let mut root: TreeNode<i32> = TreeNode { val: &5, left: None, right: None };
+        root.insert(&3);
+        root.insert(&7);
+        root.insert(&2);
+        root.insert(&8);
+
+        let expected: bool = true;
+        assert_eq!(root.contains(&5), expected);
+    }
+
+    #[test]
+    fn test_binary_search_tree_with_i32_not_exists(){
+        let mut root: TreeNode<i32> = TreeNode { val: &5, left: None, right: None };
+        root.insert(&3);
+        root.insert(&7);
+        root.insert(&2);
+        root.insert(&8);
+
+        let expected: bool = false;
+        assert_eq!(root.contains(&10), expected);
+    }
+
+    #[test]
+    fn test_binary_search_tree_with_string_exists(){
+        let mut root = TreeNode {val: &"e", left: None, right: None};
+        root.insert(&"f");
+        root.insert(&"a");
+        root.insert(&"b");
+        root.insert(&"c");
+        root.insert(&"d");
+
+        let expected: bool = true;
+        assert_eq!(root.contains(&"e"), expected);
+    }
+
+    #[test]
+    fn test_binary_search_tree_with_string_not_exists(){
+        let mut root = TreeNode {val: &"e", left: None, right: None};
+        root.insert(&"f");
+        root.insert(&"a");
+        root.insert(&"b");
+        root.insert(&"c");
+        root.insert(&"d");
+
+        let expected: bool = false;
+        assert_eq!(root.contains(&"z"), expected);
     }
 }
