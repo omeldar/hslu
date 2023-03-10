@@ -8,7 +8,7 @@ To analyze and describe the algorithms made for the custom data structures, I us
 A binary tree allows us to do an easy binary search of items in a large dataset.
 Using a binary tree, we can reduce the time complexity from O(N) to O(log N)
 
-### Implementation
+### Implementation - SPECIAL
 
 This struct defines a binary tree data structure. The tree is generic over a type T that must
 implement the [PartialEq](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html) and 
@@ -58,3 +58,8 @@ pub fn insert(&mut self, new_val: &'a T) {
     }
 }
 ```
+
+#### Why is it special?
+
+This implementation of TreeNode has a property `key` and `val`. The usser of the binary search tree defines when adding
+the item to the binary search tree whwat property of your object the `key` is and what the `val`. The tree will sort by `key`.
