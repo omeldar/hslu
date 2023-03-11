@@ -1,10 +1,10 @@
-name: Build, Test & Lint AD rust source
+name: LTB AD Rust Source
 
 on: [pull_request, push]
 
 jobs:
 
-  update_local_toolchain:
+  setup_local_toolchain:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,116 +24,68 @@ jobs:
           rustc --version
           cargo clippy --version 
 
-  lint_root:
+  lint_rust_source:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
     steps:
       - uses: actions/checkout@v2
                    
-      - name: Lint
+      - name: Lint Root
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
         run: |
           cargo fmt -- --check
-          cargo clippy -- -D warnings          
+          cargo clippy -- -D warnings
 
-  test_root:
+      - name: Lint edslib
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
+        run: |
+          cargo fmt -- --check
+          cargo clippy -- -D warnings
+
+      - name: Lint common
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+        run: |
+          cargo fmt -- --check
+          cargo clippy -- -D warnings
+
+  test_rust_source:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
     steps:
       - uses: actions/checkout@v2
-                    
-      - name: Test
+
+      - name: Test Root
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
         run: |
           cargo check
           cargo test --all
 
-  build_root:
+      - name: Test edslib
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
+        run: |
+          cargo check
+          cargo test --all
+
+      - name: Test common
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+        run: |
+          cargo check
+          cargo test --all
+
+  build_rust_source:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
     steps:
       - uses: actions/checkout@v2
-                    
-      - name: Build
+
+      - name: Build common
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
         run: |
           cargo build --release
 
-  lint_edslib:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
+      - name: Build edslib
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
-    steps:
-      - uses: actions/checkout@v2
-                   
-      - name: Lint
-        run: |
-          cargo fmt -- --check
-          cargo clippy -- -D warnings          
-
-  test_edslib:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
-    steps:
-      - uses: actions/checkout@v2
-                    
-      - name: Test
-        run: |
-          cargo check
-          cargo test --all
-
-  build_edslib:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
-    steps:
-      - uses: actions/checkout@v2
-                    
-      - name: Build
         run: |
           cargo build --release
-
-  lint_common:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
-    steps:
-      - uses: actions/checkout@v2
-                   
-      - name: Lint
-        run: |
-          cargo fmt -- --check
-          cargo clippy -- -D warnings          
-
-  test_common:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
-    steps:
-      - uses: actions/checkout@v2
                     
-      - name: Test
-        run: |
-          cargo check
-          cargo test --all
-
-  build_common:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
-    steps:
-      - uses: actions/checkout@v2
-                    
-      - name: Build
+      - name: Build Root
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
         run: |
           cargo build --release
