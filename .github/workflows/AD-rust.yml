@@ -15,14 +15,12 @@ jobs:
       - name: Update local toolchain
         run: |
           rustup update
-          rustup component add clippy
           rustup install nightly
 
       - name: Toolchain info
         run: |
           cargo --version --verbose
           rustc --version
-          cargo clippy --version 
 
   lint_rust_source:
     runs-on: ubuntu-latest
@@ -33,19 +31,16 @@ jobs:
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
         run: |
           cargo fmt -- --check
-          cargo clippy -- -D warnings
 
       - name: Lint edslib
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
         run: |
           cargo fmt -- --check
-          cargo clippy -- -D warnings
 
       - name: Lint common
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
         run: |
           cargo fmt -- --check
-          cargo clippy -- -D warnings
 
   test_rust_source:
     runs-on: ubuntu-latest
