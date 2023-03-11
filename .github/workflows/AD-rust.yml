@@ -10,7 +10,7 @@ jobs:
       run:
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Update local toolchain
         run: |
@@ -25,7 +25,7 @@ jobs:
   lint_rust_source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
                    
       - name: Lint Root
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
@@ -45,7 +45,7 @@ jobs:
   test_rust_source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Test Root
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
@@ -68,7 +68,7 @@ jobs:
   build_rust_source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Build common
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
