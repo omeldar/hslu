@@ -1,8 +1,7 @@
 use core::cmp::Ordering;
 
-#[derive(Debug)]
-#[derive(PartialEq)]
-pub struct Person{
+#[derive(Debug, PartialEq)]
+pub struct Person {
     pub id: u32,
     pub name: String,
     pub age: u16,
@@ -14,7 +13,7 @@ impl PartialOrd for Person {
             Some(Ordering::Equal) => return Some(Ordering::Equal),
             Some(Ordering::Less) => return Some(Ordering::Less),
             Some(Ordering::Greater) => return Some(Ordering::Greater),
-            None => None
+            None => None,
         }
     }
 }
