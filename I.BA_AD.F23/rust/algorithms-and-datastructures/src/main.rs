@@ -1,4 +1,4 @@
-use elib::binary_search_tree::*;
+use edslib::binary_search_tree::*;
 
 fn main() {
     let mut root = TreeNode {val: &"3", left: None, right: None};
