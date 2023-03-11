@@ -1,8 +1,9 @@
-use elib::binary_search_tree::*;
+use edslib::binary_search_tree::*;
 
 #[cfg(test)]
 mod tests {
     use super::TreeNode;
+    use common::person::*;
 
     #[test]
     fn test_binary_tree_with_i32() {
@@ -83,25 +84,16 @@ mod tests {
     #[test]
     fn test_binary_search_tree_get_by_key_i32_complex_value_exists() {
         // arrange
-        #[derive(Debug)]
-        #[derive(PartialEq)]
-        #[derive(PartialOrd)]
-        struct Person{
-            id: u32,
-            name: String,
-            age: u16,
-        }
-
-        let person1: Person = Person { id: 6, name: String::from("Max Muster"), age: 17 };
+        let person1 = Person { id: 6, name: String::from("Max Muster"), age: 17 };
         let mut root = TreeNode { val: &person1, left: None, right: None };
 
-        let person2: Person = Person { id: 7, name: String::from("John Doe"), age: 18 };
+        let person2 = Person { id: 7, name: String::from("John Doe"), age: 18 };
         root.insert( &person2);
 
-        let person3: Person = Person { id: 3, name: String::from("Jane Doe"), age: 18 };
+        let person3 = Person { id: 3, name: String::from("Jane Doe"), age: 18 };
         root.insert( &person3);
 
-        let person4: Person = Person { id: 4, name: String::from("Maxine Muster"), age: 18 };
+        let person4 = Person { id: 4, name: String::from("Maxine Muster"), age: 18 };
         root.insert( &person4);
 
         //act
@@ -115,15 +107,6 @@ mod tests {
     #[test]
     fn test_binary_search_tree_get_by_key_i32_complex_value_not_exists() {
         // arrange
-        #[derive(Debug)]
-        #[derive(PartialEq)]
-        #[derive(PartialOrd)]
-        struct Person{
-            id: u32,
-            name: String,
-            age: u16,
-        }
-
         let person1: Person = Person { id: 6, name: String::from("Max Muster"), age: 17 };
         let mut root = TreeNode { val: &person1, left: None, right: None };
 

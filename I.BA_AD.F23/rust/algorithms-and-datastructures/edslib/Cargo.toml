@@ -1,5 +1,5 @@
 [package]
-name = "elib"
+name = "edslib"
 version = "0.1.0"
 edition = "2021"
 author = "Eldar Omerovic"
@@ -7,3 +7,4 @@ author = "Eldar Omerovic"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+common = { path = "../common/", version = "0.1.0"}
