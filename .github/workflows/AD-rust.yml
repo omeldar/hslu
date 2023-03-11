@@ -1,45 +1,86 @@
-name: CI
+name: LTB AD Rust Source
 
-# This workflow run tests and build for each push
-
-on:
-  push:
-    branches:
-      - main
-      - 'feature-**'
+on: [pull_request, push]
 
 jobs:
 
-  test_phaser:
+  setup_local_toolchain:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
     steps:
       - uses: actions/checkout@v2
 
       - name: Update local toolchain
         run: |
           rustup update
-          rustup component add clippy
-          rustup install nightly          
+          rustup install nightly
 
       - name: Toolchain info
         run: |
           cargo --version --verbose
           rustc --version
-          cargo clippy --version          
 
-      - name: Lint
+  lint_rust_source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+                   
+      - name: Lint Root
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
         run: |
-          cd phaser
           cargo fmt -- --check
-          cargo clippy -- -D warnings          
 
-      - name: Test
+      - name: Lint edslib
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
         run: |
-          cd phaser
+          cargo fmt -- --check
+
+      - name: Lint common
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+        run: |
+          cargo fmt -- --check
+
+  test_rust_source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test Root
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
+        run: |
           cargo check
-          cargo test --all          
+          cargo test --all
 
-      - name: Build
+      - name: Test edslib
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
         run: |
-          cd phaser
-          cargo build --release  
+          cargo check
+          cargo test --all
+
+      - name: Test common
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+        run: |
+          cargo check
+          cargo test --all
+
+  build_rust_source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build common
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+        run: |
+          cargo build --release
+
+      - name: Build edslib
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
+        run: |
+          cargo build --release
+                    
+      - name: Build Root
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
+        run: |
+          cargo build --release
