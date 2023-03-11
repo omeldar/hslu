@@ -1,28 +1,40 @@
-name: AD Rust - Cargo Build & Test
+name: Build, Test & Lint AD rust source
 
-on:
-  push:
-  pull_request:
+# This workflow run tests and build for each push
 
-env: 
-  CARGO_TERM_COLOR: always
+on: [pull_request, push]
 
 jobs:
-  build_and_test_root:
-    name: Rust project - latest
+
+  test_phaser:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
-    strategy:
-      matrix:
-        toolchain:
-          - stable
-          - beta
-          - nightly
     steps:
-      - uses: actions/checkout@v3
-      - run: cd ""
-      - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
-      - run: cargo build --verbose
-      - run: cargo test --verbose
+      - uses: actions/checkout@v2
+
+      - name: Update local toolchain
+        run: |
+          rustup update
+          rustup component add clippy
+          rustup install nightly          
+      - name: Toolchain info
+        run: |
+          cargo --version --verbose
+          rustc --version
+          cargo clippy --version          
+      - name: Lint
+        run: |
+          cd phaser
+          cargo fmt -- --check
+          cargo clippy -- -D warnings          
+      - name: Test
+        run: |
+          cd phaser
+          cargo check
+          cargo test --all          
+      - name: Build
+        run: |
+          cd phaser
+          cargo build --release  
