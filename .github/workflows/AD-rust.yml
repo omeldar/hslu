@@ -4,7 +4,7 @@ on: [pull_request, push]
 
 jobs:
 
-  lint_test_build_root:
+  update_local_toolchain:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -16,20 +16,124 @@ jobs:
         run: |
           rustup update
           rustup component add clippy
-          rustup install nightly          
+          rustup install nightly
+
       - name: Toolchain info
         run: |
           cargo --version --verbose
           rustc --version
-          cargo clippy --version          
+          cargo clippy --version 
+
+  lint_root:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
+    steps:
+      - uses: actions/checkout@v2
+                   
       - name: Lint
         run: |
           cargo fmt -- --check
           cargo clippy -- -D warnings          
+
+  test_root:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
+    steps:
+      - uses: actions/checkout@v2
+                    
       - name: Test
         run: |
           cargo check
-          cargo test --all          
+          cargo test --all
+
+  build_root:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/
+    steps:
+      - uses: actions/checkout@v2
+                    
       - name: Build
         run: |
-          cargo build --release  
+          cargo build --release
+
+  lint_edslib:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
+    steps:
+      - uses: actions/checkout@v2
+                   
+      - name: Lint
+        run: |
+          cargo fmt -- --check
+          cargo clippy -- -D warnings          
+
+  test_edslib:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
+    steps:
+      - uses: actions/checkout@v2
+                    
+      - name: Test
+        run: |
+          cargo check
+          cargo test --all
+
+  build_edslib:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/edslib/
+    steps:
+      - uses: actions/checkout@v2
+                    
+      - name: Build
+        run: |
+          cargo build --release
+
+  lint_common:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+    steps:
+      - uses: actions/checkout@v2
+                   
+      - name: Lint
+        run: |
+          cargo fmt -- --check
+          cargo clippy -- -D warnings          
+
+  test_common:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+    steps:
+      - uses: actions/checkout@v2
+                    
+      - name: Test
+        run: |
+          cargo check
+          cargo test --all
+
+  build_common:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/rust/algorithms-and-datastructures/common/
+    steps:
+      - uses: actions/checkout@v2
+                    
+      - name: Build
+        run: |
+          cargo build --release
