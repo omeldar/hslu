@@ -1,12 +1,10 @@
 name: Build, Test & Lint AD rust source
 
-# This workflow run tests and build for each push
-
 on: [pull_request, push]
 
 jobs:
 
-  test_phaser:
+  lint_test_build_root:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,15 +24,12 @@ jobs:
           cargo clippy --version          
       - name: Lint
         run: |
-          cd phaser
           cargo fmt -- --check
           cargo clippy -- -D warnings          
       - name: Test
         run: |
-          cd phaser
           cargo check
           cargo test --all          
       - name: Build
         run: |
-          cd phaser
           cargo build --release  
