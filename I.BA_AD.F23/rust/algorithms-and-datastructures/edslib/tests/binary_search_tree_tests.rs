@@ -187,4 +187,30 @@ mod tests {
         //assert
         assert_eq!(person_to_find, None);
     }
+
+    #[test]
+    fn test_insert_complex_object_with_custom_partialord_implementation() {
+        // arrange
+        let person1 = Person { id: 5, name: String::from("Max Muster"), age: 32 };
+        let person2 = Person { id: 3, name: String::from("John Smith"), age: 54 };
+        let person3 = Person { id: 7, name: String::from("Emily Johnson"), age: 31 };
+        let person4 = Person { id: 9, name: String::from("David Lee"), age: 24 };
+        let person5 = Person { id: 8, name: String::from("Jane Smith"), age: 21 };
+
+        // act
+        let mut root = TreeNode {
+            val: &person1,
+            left: None,
+            right: None,
+        };
+
+        root.insert(&person2);
+        root.insert(&person3);
+        root.insert(&person4);
+        root.insert(&person5);
+
+        // assert
+        let expected = "TreeNode { val: Person { id: 5, name: \"Max Muster\", age: 32 }, left: Some(TreeNode { val: Person { id: 3, name: \"John Smith\", age: 54 }, left: None, right: None }), right: Some(TreeNode { val: Person { id: 7, name: \"Emily Johnson\", age: 31 }, left: None, right: Some(TreeNode { val: Person { id: 9, name: \"David Lee\", age: 24 }, left: Some(TreeNode { val: Person { id: 8, name: \"Jane Smith\", age: 21 }, left: None, right: None }), right: None }) }) }";
+        assert_eq!(format!("{:?}", root), expected);
+    }
 }
