@@ -5,6 +5,9 @@ on: [pull_request, push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./I.BA_AD.F23/source/oop_maven_template/
 
     steps:
       - uses: actions/checkout@v3
