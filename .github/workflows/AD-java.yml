@@ -1,4 +1,4 @@
-name: LTB AD Java Source
+name: TB AD Java Source
 
 on: [pull_request, push]
 
