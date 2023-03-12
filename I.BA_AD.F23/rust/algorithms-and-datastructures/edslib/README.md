@@ -134,7 +134,7 @@ pub fn contains(&self, value_to_find: &'a T) -> bool {
 }
 ```
 
-### Using hashchodes as keys
+### Using hashcodes as keys
 
 In order to use hashcodes as a `key` to search for an item (node), we do not have to alter the implementation. We can implement `Hash` in our type which is saved in our tree and then adjust the `partial_cmp` of `PartialOrd` to compare the hashes.
 
