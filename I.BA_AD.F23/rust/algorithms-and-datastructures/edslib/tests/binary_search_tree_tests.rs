@@ -191,11 +191,31 @@ mod tests {
     #[test]
     fn test_insert_complex_object_with_custom_partialord_implementation() {
         // arrange
-        let person1 = Person { id: 5, name: String::from("Max Muster"), age: 32 };
-        let person2 = Person { id: 3, name: String::from("John Smith"), age: 54 };
-        let person3 = Person { id: 7, name: String::from("Emily Johnson"), age: 31 };
-        let person4 = Person { id: 9, name: String::from("David Lee"), age: 24 };
-        let person5 = Person { id: 8, name: String::from("Jane Smith"), age: 21 };
+        let person1 = Person {
+            id: 5,
+            name: String::from("Max Muster"),
+            age: 32,
+        };
+        let person2 = Person {
+            id: 3,
+            name: String::from("John Smith"),
+            age: 54,
+        };
+        let person3 = Person {
+            id: 7,
+            name: String::from("Emily Johnson"),
+            age: 31,
+        };
+        let person4 = Person {
+            id: 9,
+            name: String::from("David Lee"),
+            age: 24,
+        };
+        let person5 = Person {
+            id: 8,
+            name: String::from("Jane Smith"),
+            age: 21,
+        };
 
         // act
         let mut root = TreeNode {
