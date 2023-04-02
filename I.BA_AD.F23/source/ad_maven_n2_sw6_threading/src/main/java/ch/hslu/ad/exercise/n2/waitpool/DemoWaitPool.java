@@ -37,6 +37,8 @@ public final class DemoWaitPool {
         final MyTask waiter = new MyTask(LOCK);
         new Thread(waiter).start();
         Thread.sleep(1000);
-        LOCK.notify();
+        synchronized (LOCK) {
+            LOCK.notify();
+        }
     }
 }
