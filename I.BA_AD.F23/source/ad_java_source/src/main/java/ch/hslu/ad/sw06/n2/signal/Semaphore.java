@@ -95,7 +95,7 @@ public final class Semaphore {
         }
 
         if (!canAcquire(permits)) {
-            throw new IllegalArgumentException("Permits to acquire exceed the limit");
+            throw new IllegalStateException("Permits to acquire exceed the limit");
         }
 
         synchronized (lock) {
@@ -131,7 +131,7 @@ public final class Semaphore {
 
         synchronized (lock) {
             if (!canRelease(permits)) {
-                throw new IllegalStateException("Semaphore limit exceeded.");
+                throw new IllegalStateException("Permits to release exceeded the limit");
             }
 
             availablePermits += permits;
