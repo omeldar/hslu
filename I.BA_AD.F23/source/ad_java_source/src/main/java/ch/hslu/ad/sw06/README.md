@@ -14,6 +14,6 @@ There are lots of folders and files that are untouched by me which were already 
 
 [View exercise](n2/signal/)
 
-## Exercise 3 - Bounded Buffer
+## Exercise 4 - Bounded Buffer
 
 [View exercise](n2/buffer/)
