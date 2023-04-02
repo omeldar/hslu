@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  web:
+    image: webt:latest
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    volumes:
+      - "../webt-container-volume:/var/log/apache2"
+    ports:
+      - "80:80"

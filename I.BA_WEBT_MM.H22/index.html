@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weatheldar</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <!-- Link to a stylesheet for both devices -->
+    <link rel="stylesheet" href="../css/main.css">
+    <!-- Link to a stylesheet for desktop devices -->
+    <link rel="stylesheet" href="../css/desktop.css" media="screen and (min-width: 600px)">
+    <!-- Link to a stylesheet for mobile devices -->
+    <link rel="stylesheet" href="../css/mobile.css" media="screen and (max-width: 600px)">
+  </head>
+  <body id="body">
+    <nav id="nav" class="w3-bar w3-deep-purple">
+      <a href="/index.html" class="w3-bar-item w3-button">Home</a>
+      <a href="#information-section" class="w3-bar-item w3-button">Information</a>
+      <a href="#form-section" class="w3-bar-item w3-button">Form</a>
+    </nav>
+    <a href="#information-section" id="jump-to-top" class="w3-button w3-circle">Info</a>
+    <a href="#how-to" id="jump-to-info" class="w3-button w3-circle">How</a>
+    <a href="#form-section" id="jump-to-form" class="w3-button w3-circle">Form</a>
+    <section id="information-section" >
+      <h1>Information</h1>
+      <div class="w3-row">
+        <img src="../img/web.jpg" class="w3-third w3-mobile"/>
+        <p id="site-information" class="w3-rest w3-mobile">On this website you can check the weather at any location on the world. 
+          It will give you information about temperature and the weather conditions of this location. It has been created by 
+          Eldar Omerovic as semester project for the WEBT (Web-Tech) class at the University of Applied Sciences and Arts. It
+          features cookies to prevent loss of the last searched result. By choosing to use this application you accept the 
+          necessary cookies. Dont worry, if you didnt search any for any weahter information so far, this site didn't store 
+          anything yet. It creates cookies as soon as you search for weather information.</p>
+      </div>
+      <h2 id="how-to">How to use it</h2>
+      <p>1. Choose the location by entering the name of the city and the country the city is located in.</p>
+      <p>2. Choose the date you want the weather information from.</p>
+      <p>3. Choose wether you want your temperature results in Fahrenheit or Celsius.</p>
+    </section>
+    <section id="form-section">
+      <h1>Research Weather</h1>
+      <form class="w3-container w3-border" action="weatherData.php" method="POST" accept-charset="utf-8" onsubmit="submitForm(event);">
+
+        <div class="form-break">
+          <label for="#inp_location">City</label>
+          <input id="inp_location" name="city" class="w3-input" type="text" required />
+          <small id="city_message" class="w3-text-red" hidden>Invalid input. Make sure you only use characters from the english, german or swissgerman alphabet and space.</small><br>
+        </div>
+
+        <div class="form-break">
+          <select id="inp_country" name="country" class="w3-select">
+            <option value="Switzerland" selected>Switzerland</option>
+            <option value="Germany">Germany</option>
+            <option value="Austria">Austria</option>
+            <option value="United States">United States</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Russia">Russia</option>
+            <option value="Japan">Japan</option>
+          </select>
+        </div>
+
+
+        <div class="form-break">
+          <label for="units">Select units:</label><br>
+          <span>
+            <input type="radio" id="units-m" name="units" value="M" checked>
+            <label for="units-m">Metric (C&deg;, m/s, mm)</label><br>
+            <input type="radio" id="units-i" name="units" value="I">
+            <label for="units-i">Fahrenheit (F&deg;, mph, in)</label><br>
+            <input type="radio" id="units-s" name="units" value="S">
+            <label for="units-s">Scientific (Kelvin, m/s, mm)</label><br>
+          </span>
+        </div>
+
+        <button id="form_submit" class="w3-btn w3-blue-grey form-break" type="submit">Get Weather</button>
+      </form>   
+    </section>
+    <footer class="w3-container w3-teal">
+      <h5>Weatheldar</h5>
+      <p>This is a project created for the WEBT class at the University of Applied Sciences and Arts by Eldar Omerovic. By using this site you accept all cookies.</p>
+    </footer>
+    <script src="../js/index.js"></script>
+  </body>
+</html>
