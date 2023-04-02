@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.hslu.ad.exercise.n2.latch;
+package ch.hslu.ad.sw06.n2.latch;
 
-import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Random;
 
 /**
  * Ein Rennpferd, das durch ein Startsignal losläuft. Nach einer zufälligen Zeit
@@ -25,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class RaceHorse implements Runnable {
 
-    private static final Logger LOG = LogManager.getLogger(ch.hslu.ad.exercise.n2.latch.RaceHorse.class);
+    private static final Logger LOG = LogManager.getLogger(ch.hslu.ad.sw06.n2.latch.RaceHorse.class);
     private final Synch startSignal;
     private volatile Thread runThread;
     private final Random random;

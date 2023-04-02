@@ -15,6 +15,6 @@
  */
 
 /**
- * Inhalt von N21 - Eine Demo mit dem Waitpool.
+ * Inhalt von N21 - Bounded Buffer mit Semaphore.
  */
-package ch.hslu.ad.sw06.n2.waitpool;
+package ch.hslu.ad.sw06.n2.buffer;

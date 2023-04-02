@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.hslu.ad.sw06.n2.waitpool;
+package ch.hslu.ad.sw06.n21.buffer.forum;
 
 /**
- * Demonstration eines Wait-Pools.
+ * Demonstration der SimpleQueue mit einem Producer und n Consumer.
  */
-public final class DemoWaitPool {
-
-    private static final Object LOCK = new Object();
+public final class DemoSimpleQueue {
 
     /**
      * Privater Konstruktor.
      */
-    private DemoWaitPool() {
+    private DemoSimpleQueue() {
     }
 
     /**
      * Main-Demo.
+     *
      * @param args not used.
-     * @throws InterruptedException wenn das warten unterbrochen wird.
      */
-    public static void main(final String args[]) throws InterruptedException {
-        final MyTask waiter = new MyTask(LOCK);
-        new Thread(waiter).start();
-        Thread.sleep(1000);
-        synchronized (LOCK) {
-            LOCK.notify();
+    public static void main(final String args[]) {
+        final int n = 1000;
+        final int nCons = 1;
+        final boolean[] check = new boolean[n];
+        final SimpleQueue queue = new SimpleQueue();
+        new Thread(new Producer(queue, n), "Prod  ").start();
+        for (int i = 0; i < nCons; i++) {
+            new Thread(new Consumer(queue, check), "Cons " + (char) (i + 65)).start();
         }
     }
 }

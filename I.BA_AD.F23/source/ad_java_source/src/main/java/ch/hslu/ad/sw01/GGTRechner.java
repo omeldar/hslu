@@ -1,4 +1,4 @@
-package ch.hslu.sw01;
+package ch.hslu.ad.sw01;
 
 public class GGTRechner {
     public static int ggtIterativ1(int a, int b) {

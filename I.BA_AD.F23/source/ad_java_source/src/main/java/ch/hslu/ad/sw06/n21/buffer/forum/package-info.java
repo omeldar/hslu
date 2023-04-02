@@ -15,6 +15,6 @@
  */
 
 /**
- * Inhalt von N21 - Eine Demo mit dem Waitpool.
+ * Inhalt von N21 - Blocking Queue aus dem Forum http://java-samples.com .
  */
-package ch.hslu.ad.sw06.n2.waitpool;
+package ch.hslu.ad.sw06.n21.buffer.forum;

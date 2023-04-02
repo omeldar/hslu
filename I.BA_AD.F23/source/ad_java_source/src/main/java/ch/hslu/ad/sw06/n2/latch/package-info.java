@@ -17,4 +17,4 @@
 /**
  * Inhalt von N21 - Pferderennen mit Latch.
  */
-package ch.hslu.ad.exercise.n2.latch;
+package ch.hslu.ad.sw06.n2.latch;

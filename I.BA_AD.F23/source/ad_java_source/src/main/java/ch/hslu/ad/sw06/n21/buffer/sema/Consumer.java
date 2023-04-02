@@ -13,38 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.hslu.ad.sw06.n2.waitpool;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+package ch.hslu.ad.sw06.n21.buffer.sema;
 
 /**
- * Einfacher Task für die Demonstration eines Wait-Pools.
+ * Konsument, der soviele Werte aus einer Queue liest, wie er nur kann.
  */
-public final class MyTask implements Runnable {
+public final class Consumer implements Runnable {
 
-    private static final Logger LOG = LogManager.getLogger(MyTask.class);
-    private final Object lock;
+    private final BoundedBuffer<Integer> queue;
+    private long sum;
 
     /**
-     * Erzeugen einen Task.
-     * @param lock für die Synchronisation
+     * Erzeugt einen Konsumenten, der soviel Integer-Werte ausliest, wie er nur
+     * kann.
+     *
+     * @param queue Queue zum Lesen der Integer-Werte.
      */
-    public MyTask(final Object lock) {
-        this.lock = lock;
+    public Consumer(final BoundedBuffer<Integer> queue) {
+        this.queue = queue;
+        this.sum = 0;
     }
 
     @Override
     public void run() {
-        LOG.info("warten...");
-        synchronized (lock) {
+        while (true) {
             try {
-                lock.wait();
+                sum += queue.remove();
             } catch (InterruptedException ex) {
-                /* Exception handling... */
                 return;
             }
         }
-        LOG.info("...aufgewacht");
+    }
+
+    /**
+     * Liefert die Summe aller ausgelesener Werte.
+     *
+     * @return Summe.
+     */
+    public long getSum() {
+        return sum;
     }
 }

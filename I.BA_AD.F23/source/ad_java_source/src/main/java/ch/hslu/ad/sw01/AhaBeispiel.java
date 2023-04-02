@@ -1,4 +1,4 @@
-package ch.hslu.sw01;
+package ch.hslu.ad.sw01;
 
 public class AhaBeispiel {
     public int Task1RunCount = 0;

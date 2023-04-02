@@ -1,4 +1,4 @@
-package ch.hslu.sw02;
+package ch.hslu.ad.sw02;
 
 import org.jetbrains.annotations.NotNull;
 

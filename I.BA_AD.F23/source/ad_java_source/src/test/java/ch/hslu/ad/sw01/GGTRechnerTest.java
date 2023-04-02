@@ -1,6 +1,7 @@
-package ch.hslu.sw01;
+package ch.hslu.ad.sw01;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GGTRechnerTest {

@@ -15,6 +15,6 @@
  */
 
 /**
- * Inhalt von N21 - Eine Demo mit dem Waitpool.
+ * Inhalt von N21 - Semaphor Code Skizze.
  */
-package ch.hslu.ad.sw06.n2.waitpool;
+package ch.hslu.ad.sw06.n21.sema;
