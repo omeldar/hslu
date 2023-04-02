@@ -35,7 +35,7 @@ public final class DemoSema {
      * Main-Demo.
      *
      * @param args not used.
-     * @throws InterruptedException wenn das warten unterbrochen wird.
+     * @throws InterruptedException wenn das Warten unterbrochen wird.
      */
     public static void main(final String[] args) throws InterruptedException {
         try {

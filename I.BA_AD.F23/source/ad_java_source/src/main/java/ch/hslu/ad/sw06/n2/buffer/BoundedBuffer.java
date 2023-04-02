@@ -17,6 +17,7 @@ package ch.hslu.ad.sw06.n2.buffer;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Puffer nach dem First In First Out Prinzip mit einer begrenzten Kapazität.
@@ -26,6 +27,7 @@ import java.util.concurrent.Semaphore;
  */
 public final class BoundedBuffer<T> implements Buffer<T> {
 
+    private int capacity;
     private final ArrayDeque<T> queue;
     private final Semaphore putSema;
     private final Semaphore takeSema;
@@ -36,6 +38,7 @@ public final class BoundedBuffer<T> implements Buffer<T> {
      * @param n Kapazität des Puffers
      */
     public BoundedBuffer(final int n) {
+        capacity = n;
         queue = new ArrayDeque<>(n);
         putSema = new Semaphore(n);
         takeSema = new Semaphore(0);
@@ -62,27 +65,62 @@ public final class BoundedBuffer<T> implements Buffer<T> {
     }
 
     @Override
-    public boolean add(T elem, long millis) throws InterruptedException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean add(T elem, long timeout) throws InterruptedException {
+        if (elem == null) {
+            throw new IllegalArgumentException("Element may not be null");
+        }
+
+        if (timeout <= 0) {
+            throw new IllegalArgumentException("Timeout must be at least 1ms");
+        }
+
+        boolean canPutInTime = putSema.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+
+        if(!canPutInTime) {
+            return false;
+        }
+
+        synchronized (queue) {
+            queue.addFirst(elem);
+        }
+
+        takeSema.release();
+        return true;
     }
 
     @Override
-    public T remove(long millis) throws InterruptedException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public T remove(long timeout) throws InterruptedException {
+        if (timeout <= 0) {
+            throw new IllegalArgumentException("Timeout must be at least 1ms");
+        }
+
+        boolean canTakeInTime = takeSema.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+
+        if(!canTakeInTime) {
+            return null;
+        }
+
+        T element;
+        synchronized (queue) {
+            element = queue.removeLast();
+        }
+
+        putSema.release();
+        return element;
     }
 
     @Override
     public boolean empty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return queue.isEmpty();
     }
 
     @Override
     public boolean full() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return queue.size() == capacity;
     }
 
     @Override
-    public boolean size() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int size() {
+        return queue.size();
     }
 }

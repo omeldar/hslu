@@ -9,3 +9,7 @@ There are lots of folders and files that are untouched by me which were already 
 ## Exercise 2 - Using the latch-mechanism
 
 [View exercise](n2/latch/)
+
+## Exercise 3 - Semaphore
+
+[View exercise](n2/signal/)
