@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2023 Roland Gisler, HSLU Informatik, Switzerland
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+    <properties>
+        <title>OOP Maven Template</title>
+        <author email="roland.gisler@hslu.ch">Roland Gisler</author>
+    </properties>
+
+    <body>
+        <section name="OOP Maven Template">
+            <subsection name="Inhalt">
+                <p>
+                    <macro name="toc">
+                        <param name="section" value="0" />
+                        <param name="fromDepth" value="2" />
+                        <param name="toDepth" value="2" />
+                    </macro>
+                </p>
+            </subsection>
+
+            <subsection name="Template für einfache Java-Projekte">
+                <p>
+                    Dieses Projekt definiert ein einfaches, leeres Java-Projekt mit einem Maven-Build.
+                    Es kann für beliebige Projekte genutzt werden und dient als ein Template.
+                </p>
+                <p>
+                    Details siehe in der Readme-Datei:
+                </p>
+                <p>
+                    <macro name="snippet">
+                        <param name="file" value="readme.md" />
+                    </macro>
+                </p>
+            </subsection>
+        </section>
+    </body>
+</document>
