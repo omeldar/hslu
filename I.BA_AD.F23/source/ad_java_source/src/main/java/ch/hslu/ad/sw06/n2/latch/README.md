@@ -33,6 +33,23 @@ public synchronized void abort() {
 }
 ```
 
+## 1.c
+
+Es wird fälschlicherweile gelogged, dass das Pferd im Ziel ist, da das ausserhalb des `try-catch`-Blocks ist. Aber es werden auch die Exception logs ausgeführt. Somit funktioniert es.
+
+```Java
+public static void main(final String[] args) {
+    final Synch starterBox = new Latch();
+    Thread thread;
+    for (int i = 1; i < 6; i++) {
+        thread = new Thread(new RaceHorse(starterBox), "Horse " + i);
+        thread.start();
+    }
+    LOG.info("Start...");
+    starterBox.abort(); // Hier abort anstelle release
+}
+```
+
 ## 1.4 Reflektion
 
 ### Ist das Rennen wirklich gerecht? Begründen Sie Ihre Antwort.
@@ -51,35 +68,6 @@ Es ist also nicht wirklich 100% fair. Jedoch ist der Latch-Mechanismus trotzdem 
 
 Man könnte `CycleBarrier` nutzen anstelle eines `Latch`. Eine `CycleBarrier` wartet darauf, bis alle Threads eine Startlinie (barrier) erreicht haben und released dann alle gleichzeitig. Dies stellt sicher, dass alle Thread auch gleichzeitig gestartet werden.
 
-Beispiel Implementation:
+### Was folgern Sie aus dem obigen Überlegungen?
 
-```Java
-public class RaceBarrier {
-    private final int numThreads;
-    private final CyclicBarrier barrier;
-    
-    public RaceBarrier(int numThreads) {
-        this.numThreads = numThreads;
-        this.barrier = new CyclicBarrier(numThreads);
-    }
-    
-    public void await() throws InterruptedException, BrokenBarrierException {
-        barrier.await();
-    }
-}
-```
-
-Jeder Thread, muss die `await()`-Methode aufrufen, bevor das Rennen gestartet wird. Erst wenn alle Thread im `await()` sind, werden alle gleichzeitig released.
-
-Template:
-
-```Java
-RaceBarrier barrier = new RaceBarrier(numThreads);
-
-// create and start all threads
-
-// each thread should call this before starting the race
-barrier.await();
-
-// start the race
-```
+Für ein Rennen, würde ich eher eine CycleBarrier verwenden anstelle des Latch-Mechanismus.
