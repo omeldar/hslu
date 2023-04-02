@@ -110,3 +110,31 @@ Dabei blockiert das `latch.await();` den Hauptthread bis in `MyTask` das `latch.
 
 ## 1.b
 
+Ausser typo's durch das Deutsch, wird in der Klasse `DemoWaitPool.java` nur ein Warning ausgegeben:
+
+```bat
+C-style array declaration of parameter 'args'
+```
+
+## 1.c
+
+Wenn wir alles in einen `synchronized`-Block stellen, sieht der Code wie folgt aus:
+
+```Java
+public static void main(final String args[]) throws InterruptedException {
+    synchronized (LOCK) {
+        final MyTask waiter = new MyTask(LOCK);
+        new Thread(waiter).start();
+        Thread.sleep(1000);
+        LOCK.notify();
+    }
+}
+```
+Wir kommen in ein ewiges Warten hinein:
+
+```bat
+[INFO ] - warten...
+```
+
+Wir blockieren so das `LOCK`-Objekt für die Dauert der gesamten `main`-Methode. Auch zu der Zeit, in der der `waiter` Thread im `run` auf das `lock` wartet.
+
