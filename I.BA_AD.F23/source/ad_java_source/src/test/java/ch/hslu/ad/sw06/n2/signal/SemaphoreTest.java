@@ -37,7 +37,7 @@ public class SemaphoreTest {
     public void acquireTooManyPermitsTest() {
         var semaphore = new Semaphore(3, 3);
 
-        assertThrows(IllegalArgumentException.class, () -> semaphore.acquire(4));
+        assertThrows(IllegalStateException.class, () -> semaphore.acquire(4));
     }
 
     @Test
