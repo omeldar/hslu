@@ -13,3 +13,7 @@ There are lots of folders and files that are untouched by me which were already 
 ## Exercise 3 - Semaphore
 
 [View exercise](n2/signal/)
+
+## Exercise 3 - Bounded Buffer
+
+[View exercise](n2/buffer/)
