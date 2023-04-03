@@ -154,15 +154,15 @@ Wir blockieren so das `LOCK`-Objekt für die Dauer der gesamten `main`-Methode. 
 
 ### Warum wird für die Benachrichtigung `notifyAll` empfohlen, statt `notify`?
 
-Es wird empfohlen, notifyAll anstelle von notify zu verwenden, um sicherzustellen, dass alle wartenden Threads benachrichtigt werden, wenn eine Bedingung erfüllt ist. Bei `notify` wird ein zufälliger Thread benachrichtigt, anstelle aller Threads. Dadurch kann es zu Deadlocks oder anderen Fehlern kommen. Die anderen Threads bleiben dann in der Warteschlange und warten weiter auf die Benachrichtigung.
+Es wird empfohlen, `notifyAll()` anstelle von notify zu verwenden, um sicherzustellen, dass alle wartenden Threads benachrichtigt werden, wenn eine Bedingung erfüllt ist. Bei `notify()` wird ein zufälliger Thread benachrichtigt, anstelle aller Threads. Dadurch kann es zu Deadlocks oder anderen Fehlern kommen. Die anderen Threads bleiben dann in der Warteschlange und warten weiter auf die Benachrichtigung.
 
-### Was ist zu berücksichten, wenn man für die Benachrichtigung `notifyAll` verwendet?
+### Was ist zu berücksichten, wenn man für die Benachrichtigung `notifyAll()` verwendet?
 
-1. Man soll es nur verwenden, wenn wirklich alle wartende Threads benachrichtigt werden sollen. Wenn nur ein Thread eine bestimmte Aufgabe ausführen kann, reicht es aus, nur diesen Thread zu benachrichtigen.
+1. Man soll es nur verwenden, wenn wirklich alle wartende Threads benachrichtigt werden sollen. Generell jedoch, ist ein `notify()` gefährlicher, da es eher zu Deadlocks kommt.
 
 2. Man muss sicherstellen, dass alle wartenden Threads bereit sind, die nächste Aufgabe wahrzunehmen. Wenn ein wartender Thread durch `notifyAll` aufgeweckt wird, muss er bereit sein für die Aufgabe. Ansonsten könnte er wieder in den Wartezustand zurückkehren, ohne dass ein weiteres `notifyAll` kommt.
 
-3. In Schleifen soll man `wait` verwenden. Wenn ein `notifyAll` gemacht wird, kann es vorkommem, dass ein Threads fälschlicherweise aus dem Wartezustand geweckt wird. Mit dem `wait` in der Schleife wird dies erneut überprüft. 
+3. In Schleifen soll man `wait` verwenden. Wenn ein `notifyAll()` gemacht wird, kann es vorkommem, dass ein Thread fälschlicherweise aus dem Wartezustand geweckt wird. Mit dem `wait()` in der Schleife wird dies erneut überprüft. 
 
 ## `synchronized` und Monitore in Java
 
