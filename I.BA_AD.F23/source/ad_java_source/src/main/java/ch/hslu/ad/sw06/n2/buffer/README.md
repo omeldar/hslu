@@ -12,7 +12,7 @@ Ein Bounded Buffer ist daher besonders nützlich bei der Implementierung von par
 
 ## 4.4 Reflektion
 
-### Warum ist es gerad eim Fall der Klasse `BoundedBuffer` nicht gut, wenn man als Lock- und Wait-Pool das aktuelle Objekt `this` nimmt?
+### Warum ist es gerade im Fall der Klasse `BoundedBuffer` nicht gut, wenn man als Lock- und Wait-Pool das aktuelle Objekt `this` nimmt?
 
 Ein privates Lock-Objekt in der Klasse BoundedBuffer ist in der Tat eine bessere Option, da es verhindert, dass externe Threads unerwartet auf den Lock-Objekt zugreifen können. Da das Lock-Objekt privat ist, kann es nur von internen Methoden der Klasse BoundedBuffer verwendet werden, was das Risiko von Konflikten mit anderen Threads reduziert. Dadurch wird die Wahrscheinlichkeit von Deadlocks und anderen Problemen, die bei gemeinsamer Nutzung von Ressourcen auftreten können, reduziert.
 
