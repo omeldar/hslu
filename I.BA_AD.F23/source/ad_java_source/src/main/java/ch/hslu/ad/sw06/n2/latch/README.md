@@ -4,7 +4,7 @@ Ein Latch ist ein Mechanismus, welcher uns erlaubt eine Art "Ampel" zu nutzen. D
 
 Während diese auf das Grüne Licht warten, kann jedoch auch die Aktion im anderen Thread abgebrochen werden. Folgende Implementation hat ein Latch zum Beispiel:
 
-## 1.a und 1.b
+## 2.a und 2.b
 
 ```Java
 private boolean open = false;
@@ -33,7 +33,7 @@ public synchronized void abort() {
 }
 ```
 
-## 1.c
+## 2.c
 
 Es wird fälschlicherweile gelogged, dass das Pferd im Ziel ist, da das ausserhalb des `try-catch`-Blocks ist. Aber es werden auch die Exception logs ausgeführt. Somit funktioniert es.
 
@@ -50,7 +50,7 @@ public static void main(final String[] args) {
 }
 ```
 
-## 1.4 Reflektion
+## 2.4 Reflektion
 
 ### Ist das Rennen wirklich gerecht? Begründen Sie Ihre Antwort.
 
