@@ -18,7 +18,7 @@ Ein privates Lock-Objekt in der Klasse BoundedBuffer ist in der Tat eine bessere
 
 Ein Bounded Buffer ist ein synchronisierter Datenpuffer, der von mehreren Threads gleichzeitig verwendet werden kann. Die Threads führen verschiedene Operationen am Buffer durch, wie das Einfügen von Elementen in den Buffer oder das Entfernen von Elementen aus dem Buffer. Um sicherzustellen, dass die Operationen korrekt und synchronisiert ausgeführt werden, müssen Locks verwendet werden, um die Threads daran zu hindern, gleichzeitig auf den Buffer zuzugreifen.
 
-Wenn das aktuelle Objekt (this) als Lock-Objekt verwendet wird, wird der Lock auf dem gesamten Objekt und somit auf allen Operationen am Buffer angewendet. Das bedeutet, dass ein Thread, der auf ein Element im Buffer wartet, den Lock blockiert hält, während ein anderer Thread den Lock benötigt, um eine andere Operation am Buffer durchzuführen. Dadurch kann ein Deadlock entstehen.
+Wenn das aktuelle Objekt (this) als Lock-Objekt verwendet wird, wird der Lock auf dem gesamten Objekt und somit auf allen Operationen am Buffer angewendet. Das bedeutet, dass ein Thread, der auf ein Element im Buffer wartet, den Lock blockiert hält, während ein anderer Thread den Lock benötigt, um eine andere Operation am Buffer durchzuführen. => Dadurch kann ein Deadlock entstehen? Fragen!
 
 Da ein Bounded Buffer ein häufig verwendetes Datenstruktur ist, bei der viele Threads gleichzeitig auf den Lock zugreifen müssen, ist es besonders wichtig, hier geeignete Lock-Objekte zu verwenden, um Deadlocks und Verzögerungen zu vermeiden.
 
