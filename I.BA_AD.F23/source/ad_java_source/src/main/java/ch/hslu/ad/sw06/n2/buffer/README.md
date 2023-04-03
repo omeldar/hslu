@@ -14,11 +14,11 @@ Ein Bounded Buffer ist daher besonders nützlich bei der Implementierung von par
 
 ### Warum ist es gerade im Fall der Klasse `BoundedBuffer` nicht gut, wenn man als Lock- und Wait-Pool das aktuelle Objekt `this` nimmt?
 
-Ein privates Lock-Objekt in der Klasse BoundedBuffer ist in der Tat eine bessere Option, da es verhindert, dass externe Threads unerwartet auf den Lock-Objekt zugreifen können. Da das Lock-Objekt privat ist, kann es nur von internen Methoden der Klasse BoundedBuffer verwendet werden, was das Risiko von Konflikten mit anderen Threads reduziert. Dadurch wird die Wahrscheinlichkeit von Deadlocks und anderen Problemen, die bei gemeinsamer Nutzung von Ressourcen auftreten können, reduziert.
+Ein privates Lock-Objekt in der Klasse `BoundedBuffer` ist in der Tat eine bessere Option, da es verhindert, dass externe Threads unerwartet auf den Lock-Objekt zugreifen können. Da das Lock-Objekt privat ist, kann es nur von internen Methoden der Klasse BoundedBuffer verwendet werden, was das Risiko von Konflikten mit anderen Threads reduziert. Dadurch wird die Wahrscheinlichkeit von Deadlocks und anderen Problemen, die bei gemeinsamer Nutzung von Ressourcen auftreten können, reduziert.
 
 Ein Bounded Buffer ist ein synchronisierter Datenpuffer, der von mehreren Threads gleichzeitig verwendet werden kann. Die Threads führen verschiedene Operationen am Buffer durch, wie das Einfügen von Elementen in den Buffer oder das Entfernen von Elementen aus dem Buffer. Um sicherzustellen, dass die Operationen korrekt und synchronisiert ausgeführt werden, müssen Locks verwendet werden, um die Threads daran zu hindern, gleichzeitig auf den Buffer zuzugreifen.
 
-Wenn das aktuelle Objekt (this) als Lock-Objekt verwendet wird, wird der Lock auf dem gesamten Objekt und somit auf allen Operationen am Buffer angewendet. Das bedeutet, dass ein Thread, der auf ein Element im Buffer wartet, den Lock blockiert hält, während ein anderer Thread den Lock benötigt, um eine andere Operation am Buffer durchzuführen. => Dadurch kann ein Deadlock entstehen? Fragen!
+Wenn das aktuelle Objekt (`this`) als Lock-Objekt verwendet wird, wird der Lock auf dem gesamten Objekt und somit auf allen Operationen am Buffer angewendet. Das bedeutet, dass ein Thread, der auf ein Element im Buffer wartet, den Lock blockiert hält, während ein anderer Thread den Lock benötigt, um eine andere Operation am Buffer durchzuführen. => Dadurch kann ein Deadlock entstehen? Fragen!
 
 Da ein Bounded Buffer ein häufig verwendetes Datenstruktur ist, bei der viele Threads gleichzeitig auf den Lock zugreifen müssen, ist es besonders wichtig, hier geeignete Lock-Objekte zu verwenden, um Deadlocks und Verzögerungen zu vermeiden.
 
@@ -45,11 +45,11 @@ sequenceDiagram
     deactivate Thread 2
 ```
 
-In diesem Beispiel wird notify() aufgerufen, um Thread 1 zu benachrichtigen, dass eine Operation abgeschlossen ist. Allerdings kann es passieren, dass Thread 2 den Lock auf dem Buffer-Objekt blockiert hat und nicht sofort benachrichtigt wird, wenn die notify()-Methode aufgerufen wird.
+In diesem Beispiel wird `notify()` aufgerufen, um Thread 1 zu benachrichtigen, dass eine Operation abgeschlossen ist. Allerdings kann es passieren, dass Thread 2 den Lock auf dem Buffer-Objekt blockiert hat und nicht sofort benachrichtigt wird, wenn die `notify()`-Methode aufgerufen wird.
 
 Dies bedeutet, dass Thread 2 weiterhin blockiert bleibt, obwohl eine Operation abgeschlossen wurde, was zu einer Verzögerung im System führen kann. Thread 2 wird erst benachrichtigt, wenn er den Lock auf dem Buffer-Objekt erwerben kann, was erst möglich ist, wenn Thread 1 den Lock freigibt.
 
-Um dieses Problem zu vermeiden, sollte die notifyAll()-Methode anstelle von notify() verwendet werden. Dadurch wird sichergestellt, dass alle wartenden Threads benachrichtigt werden, sobald eine Operation abgeschlossen ist, und nicht nur einer von ihnen.
+Um dieses Problem zu vermeiden, sollte die `notifyAll()`-Methode anstelle von `notify()` verwendet werden. Dadurch wird sichergestellt, dass alle wartenden Threads benachrichtigt werden, sobald eine Operation abgeschlossen ist, und nicht nur einer von ihnen.
 
 ### Wieso macht es Sinn notifyAll nur aufgrund einer Bedingung aufzurufen (wie in der Klasse BoundedFIFOQueue)?
 
@@ -61,7 +61,7 @@ Insgesamt ist es also sinnvoll, `notifyAll()` nur aufgrund einer bestimmten Bedi
 
 ### Sie haben bei denjenigen Methoden wo eine InterruptedException auftreten kann, diese an den Aufrufer weitergegeben. Warum haben Sie das getan?
 
-In diesem Fall ist es eine gute Praxis, die InterruptedException an den Aufrufer weiterzugeben, damit er weiss, dass der Thread unterbrochen wurde und entsprechend darauf reagieren kann. Der Aufrufer kann die Ausnahme dann entweder selbst behandeln oder sie an eine höhere Schicht in der Anwendung weiterleiten, die in der Lage ist, die Ausnahme angemessen zu behandeln. Einige gängige Verfahren zur Behandlung von InterruptedException sind das Zurücksetzen des Interrupt-Flags des Thread und das Beenden des Threads.
+In diesem Fall ist es eine gute Praxis, die `InterruptedException` an den Aufrufer weiterzugeben, damit er weiss, dass der Thread unterbrochen wurde und entsprechend darauf reagieren kann. Der Aufrufer kann die Ausnahme dann entweder selbst behandeln oder sie an eine höhere Schicht in der Anwendung weiterleiten, die in der Lage ist, die Ausnahme angemessen zu behandeln. Einige gängige Verfahren zur Behandlung von InterruptedException sind das Zurücksetzen des Interrupt-Flags des Thread und das Beenden des Threads.
 
 Es gibt also dem Aufrufer die Kontrolle über den Thread und ermöglicht ihm, die Unterbrechung des Threads sicher und effektiv zu behandeln.
 
