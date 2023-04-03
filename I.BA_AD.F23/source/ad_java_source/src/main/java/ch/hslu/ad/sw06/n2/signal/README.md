@@ -39,18 +39,7 @@ Wir müssten das `acquire()` so anpassen, dass sie einen fairen synchronisatzion
 
 ### Wo hat die Methode `release` Verbesserungspotenzial?
 
-Wir können die `release` Methode so anpassen, dass sie nur einen gewissen Thread benachrichtigt, dass die Semaphore frei ist. So sieht dieser dies als erstes und kann die Ressource nutzen.
-
-```Java
-public synchronized void release() {
-    sema++;
-    if (sema == 1) {
-        this.notify();
-    }
-}
-```
-
-Zu beachten ist jedoch, dass diese Implementation nicht vollständig fair ist, da sie immer noch einige Threads gegenüber anderen priorisieren kann, je nachdem, in welcher Reihenfolge sie eintreffen und das `acquire()` anfragen. 
+Man müsste ein private `lock` erstellen in der Klasse und nutzen anstelle auf `this` zu locken.
 
 ### Was benötigen wir um das Verbesserungspotential umzusetzen?
 
