@@ -50,7 +50,7 @@ public synchronized void release() {
 }
 ```
 
-Zu beachten ist ejdoch, dass diese Implementation nicht vollständig fair ist, da sie immer noch einige Threads gegenüber anderen priorisieren kann, je nachdem, in welcher Reihenfolge sie eintreffen und das `acquire()` anfragen. 
+Zu beachten ist jedoch, dass diese Implementation nicht vollständig fair ist, da sie immer noch einige Threads gegenüber anderen priorisieren kann, je nachdem, in welcher Reihenfolge sie eintreffen und das `acquire()` anfragen. 
 
 ### Was benötigen wir um das Verbesserungspotential umzusetzen?
 
