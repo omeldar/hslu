@@ -136,7 +136,7 @@ Wir kommen in ein ewiges Warten hinein:
 [INFO ] - warten...
 ```
 
-Wir blockieren so das `LOCK`-Objekt für die Dauert der gesamten `main`-Methode. Auch zu der Zeit, in der der `waiter` Thread im `run` auf das `lock` wartet.
+Wir blockieren so das `LOCK`-Objekt für die Dauer der gesamten `main`-Methode. Auch zu der Zeit, in der der `waiter` Thread im `run` auf das `lock` wartet.
 
 ## 1.4 Reflektion
 
