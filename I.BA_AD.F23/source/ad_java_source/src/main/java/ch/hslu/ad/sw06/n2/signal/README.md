@@ -81,7 +81,7 @@ Hier muss einiges Stimmen. Folgende Regeln gelten:
 
 1. Die initial `permits` müssen grösser oder gleich 0 sein.
 2. Das `limit` muss grösser als 1 sein.
-3. Initial `limit` muss kleiner sein als initial `permits`
+3. Initial `limit` muss grösser sein als initial `permits`
 
 ### Wie initialisiert ein Default-Konstruktor die Attribute des nach oben begrenzten Semaphors?
 
