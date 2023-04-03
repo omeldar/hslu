@@ -146,7 +146,7 @@ Wir blockieren so das `LOCK`-Objekt für die Dauer der gesamten `main`-Methode. 
 
 2. `notifyAll()` weckt alle wartenden Threads auf: Im Gegensatz dazu weckt die `notifyAll()` Methode alle wartenden Threads auf, die auf demselben Monitor warten. Dadurch wird sichergestellt, dass alle Threads, die auf das Signal warten, aufgeweckt werden.
 
-3. Das notify-Signal geht nicht verloren: Wenn `notify()` aufgerufen wird, bevor ein Thread auf das Signal wartet, geht das Signal verloren.
+3. Messages von `notify()` & `notifyAll()` werden nicht persistiert wenn der Wait-Pool leer ist ⇒ Deadlock Gefahr wenn zuerst notify und danach wait aufgerufen wird.
 
 4. Der notify-Aufruf sollte innerhalb eines synchronisierten Blocks erfolgen: Damit der `notify()` Aufruf ordnungsgemäß funktioniert, muss er innerhalb eines synchronisierten Blocks auf demselben Monitor wie die wartenden Threads aufgerufen werden.
 
