@@ -17,6 +17,6 @@ public class SortingHelperTest {
         dataArray = SortingHelper.quickSort(dataArray, 0, dataArray.length -1);
 
         //assert
-        Assertions.assertEquals(expected, dataArray);
+        Assertions.assertArrayEquals(expected, dataArray);
     }
 }
