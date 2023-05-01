@@ -3,7 +3,7 @@ name: TB AD Java Source
 on: [pull_request, push]
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -16,8 +16,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots package
+      - name: Validate with Maven
+        run: mvn validate
 
   test:
     runs-on: ubuntu-latest
