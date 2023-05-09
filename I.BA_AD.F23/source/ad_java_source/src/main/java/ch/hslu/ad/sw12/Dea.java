@@ -18,21 +18,35 @@ public class Dea {
     public static boolean isWordLanguage(final String input) {
         State state = State.Z0;
         for (char inputChar : input.toCharArray()) {
+            if (inputChar != '0' && inputChar != '1')
+                return false;
+
             if (inputChar == '0') {
                 switch(state) {
                     case Z0:
+                        state = State.Z1;
+                        break;
+                    case Z2:
+                        state = State.Z4;
                         break;
                     default:
                         return false;
                 }
-            } else if (inputChar == '1') {
-
-            } else {
-                // is not allowed char, so return false
-                return false;
+                continue;
             }
-            return false;
+            switch(state) {
+                case Z1:
+                case Z3:
+                case Z4:
+                    state = State.Z2;
+                    break;
+                case Z2:
+                    state = State.Z3;
+                    break;
+                default:
+                    return false;
+            }
         }
-        return false;
+        return state == State.Z1 || state == State.Z4;
     }
 }
