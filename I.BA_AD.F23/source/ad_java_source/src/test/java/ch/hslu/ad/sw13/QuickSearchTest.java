@@ -6,20 +6,20 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-class KMPSearchTest {
+class QuickSearchTest {
 
     @Test
-    void searchSingleMatchTest() {
+    void quickSearchSingleMatch() {
         // arrange
         String text = "AOWIDANANASWD";
         String pattern = "ANANAS";
         List<Integer> expected = Arrays.asList(new Integer[] {5});
 
         // act
-        List<Integer> patternMatchIndex = KMPSearch.search(text, pattern);
+        List<Integer> result = QuickSearch.quickSearch(text, pattern);
 
         // assert
-        Assertions.assertEquals(expected, patternMatchIndex);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
@@ -30,23 +30,23 @@ class KMPSearchTest {
         List<Integer> expected = Arrays.asList(new Integer[] {6, 14});
 
         // act
-        List<Integer> patternMatchIndex = KMPSearch.search(text, pattern);
+        List<Integer> result = QuickSearch.quickSearch(text, pattern);
 
         // assert
-        Assertions.assertEquals(expected, patternMatchIndex);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
     void searchNoMatchesTest() {
         // arrange
         String text = "abbbcaabcccbccabc";
-        String pattern = "abcdef";
+        String pattern = "def";
         List<Integer> expected = Arrays.asList(new Integer[] {});
 
         // act
-        List<Integer> patternMatchIndex = KMPSearch.search(text, pattern);
+        List<Integer> result = QuickSearch.quickSearch(text, pattern);
 
         // assert
-        Assertions.assertEquals(expected, patternMatchIndex);
+        Assertions.assertEquals(expected, result);
     }
 }
