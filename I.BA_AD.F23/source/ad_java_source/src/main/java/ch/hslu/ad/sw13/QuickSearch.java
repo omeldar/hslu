@@ -42,6 +42,10 @@ public class QuickSearch {
                 }
             } else {
                 if ((textIndex + patternLength) < textLength) {
+                    if (text.charAt(textIndex + patternLength) >= 256){
+                        textIndex++;
+                        continue;
+                    }
                     textIndex += shift[text.charAt(textIndex + patternLength)]; // shift pattern
                     patternIndex = 0;
                 } else {

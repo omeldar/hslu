@@ -1,6 +1,7 @@
 package ch.hslu.ad.sw13;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class OptimalMismatchSearch {
     /**
@@ -10,29 +11,30 @@ public class OptimalMismatchSearch {
      * @param pattern to search in the text
      * @return list of index's where appearance of the pattern found in text
      */
-    public static List<Integer> quickSearch(final String text, final String pattern){
+    public static List<Integer> optimalMismatchSearch(final String text, final String pattern){
         final int textLength = text.length();
         final int patternLength = pattern.length();
+        final int range = 256; // ASCII-Range
 
-        Map<Character, Integer> shiftTable = new HashMap<>();
+        final int[] shift = new int[range];
 
-        for (int i = 0; i < patternLength - 1; i++) {
-            char currentChar = pattern.charAt(i);
-            int lastOccurrence = i; // Default value if character doesn't occur again
+        // init shift-array
+        Arrays.fill(shift, patternLength + 1);
 
-            for (int j = i + 1; j < patternLength; j++) {
-                if (pattern.charAt(j) == currentChar) {
-                    lastOccurrence = j;
-                }
-            }
-            shiftTable.put(currentChar, patternLength - lastOccurrence - 1);
+        PatternCharacter[] patternArray = new PatternCharacter[patternLength];
+
+        // overwrite fields according to pattern
+        for (int i = 0; i < patternLength; i++){
+            shift[pattern.charAt(i)] = patternLength - i;
+            patternArray[i] = new PatternCharacter(pattern.charAt(i), i);    // Initialize patternDictionary to match pattern
         }
 
         int textIndex = 0;
         int patternIndex = 0;
         List<Integer> matches = new ArrayList<>();
         do {
-            if (text.charAt(textIndex + patternIndex) == pattern.charAt(patternIndex)) {
+            if (text.charAt(textIndex + patternArray[patternIndex].PatternIndex) ==
+                    pattern.charAt(patternArray[patternIndex].PatternIndex)) {
                 patternIndex++;
                 // if pattern completely found, patternIndex is here 'OutOfBounds' (1 too high),
                 // that's why when comparing we do not need to subtract 1 from patternLength
@@ -43,19 +45,34 @@ public class OptimalMismatchSearch {
                 }
             } else {
                 if ((textIndex + patternLength) < textLength) {
-                    char mismatchedChar = text.charAt(textIndex + patternLength);
-                    int shift = shiftTable.getOrDefault(mismatchedChar, patternLength + 1);
-                    textIndex += shift;
+                    if (text.charAt(textIndex + patternLength) >= 256){
+                        textIndex++;
+                        continue;
+                    }
+                    textIndex += shift[text.charAt(textIndex + patternLength)]; // shift pattern
+                    moveArrayItemUp(patternArray, patternIndex);
                     patternIndex = 0;
-
-                    // Update the shifting table
-                    shiftTable.remove(mismatchedChar);
-                    shiftTable.put(mismatchedChar, 0); // Move mismatchedChar to the top of the shifting table
                 } else {
                     break;
                 }
             }
         } while ((textIndex + patternLength) <= textLength); // when not enough in text left to find a match -> leave loop
         return matches;
+    }
+
+    /**
+     * Moves an item in an array up by one position
+     * Does not move any items when item to move up already at index 0
+     *
+     * @param array to switch item positions in
+     * @param position1 position (index) of first item
+     */
+    private static void moveArrayItemUp(PatternCharacter[] array, int position1){
+        if (position1 > 0) {
+            PatternCharacter tmp;
+            tmp = array[position1];
+            array[position1] = array[position1 -1];
+            array[position1 - 1] = tmp;
+        }
     }
 }
