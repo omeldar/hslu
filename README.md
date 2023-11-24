@@ -18,7 +18,7 @@ ANLIS is one of the more intriguing subjects when you begin your studies. It's a
 
 ### I.BA_CNA.F2301 - Computer & Network Architecture
 
-Just from the name, you'd imagine this class to be a fascinating dive into an interesting topic. And sure, in the grand scheme of things, the subject matter is quite appealing. But the reality? It's more about becoming a professional rote memorizer. Meaning, you'll learn information through repetition without necessarily understanding the meaning or context. Imagine sitting in your first exam, staring at a question like, 'How many transistors reside in a DDR5 RAM memory cell?' with only a text input for an answer option, pondering the 8 sets of 60 slides each, desperately trying to recall information you've never stumbled upon before. The final exam? Its a game I like to call 'educated guessing' - a multiple-choice affair where you use what you know but end up second-guessing yourself more often than not.
+Just from the name, you'd imagine this class to be a fascinating dive into an interesting topic. And sure, in the grand scheme of things, the subject matter is quite appealing. But the reality? It's more about becoming a professional rote memorizer. Meaning, you'll learn information through repetition without necessarily understanding the meaning or context. Imagine sitting in your first exam, staring at a question like, 'How many transistors reside in a DDR5 RAM memory cell?' with only a text input for an answer option, pondering the 8 sets of 60 slides each, desperately trying to recall information you've never stumbled upon before. The final exam? Its a game I like to call 'educated guessing' — a multiple-choice affair where you use what you know but end up second-guessing yourself more often than not.
 
 [View](I.BA_CNA.F2301/)
 
@@ -30,13 +30,13 @@ DMATH is considered one of the tougher classes at HSLU for many students. The co
 
 ### I.BA_FKOM.F23 - Professional Communication
 
-This class is about communication - I dont really know how to describe it precisely since I'm not quite sure what exactly we learned. It felt like a throwback to mandatory school days, with plenty of classes on topics that I wasn't really interested in.
+This class is about communication — I dont really know how to describe it precisely since I'm not quite sure what exactly we learned. It felt like a throwback to mandatory school days, with plenty of classes on topics that I wasn't really interested in.
 
 [View](I.BA_FKOM.F23/)
 
-### I.BA_ISF.H23
+### I.BA_ISF.H23 - Information Security Fundamentals
 
-ISF, or as I suggest renaming it to PRE (Professor Reverse Engineering), supposedly delves into the basics of information security. Within this class, you'll realize that finding an excuse to skip class may not be necessary because, well, hardly anyone attends. Okay, that's an exaggeration - except for the ICS (Cyber Security) students who faithfully show up. If caught chatting while the teacher talks about hiding backups at your friend's house as a security measure against ransomware attacks, the ICS enthusiasts will hush you, believing there's some gold nugget of wisdom buried in there. Why Professor Reverse Engineering? Well, get ready to invest more time decoding the professor's exercise intentions and identifying the possibly wrong answers they've deemed correct for those weekly tests, rather than actually grasping those sought-after security fundamentals.
+ISF, or as I suggest renaming it to PRE (Professor Reverse Engineering), supposedly delves into the basics of information security. Within this class, you'll realize that finding an excuse to skip class may not be necessary because, well, hardly anyone attends. Okay, that's an exaggeration — except for the ICS (Cyber Security) students who faithfully show up. If caught chatting while the teacher talks about hiding backups at your friend's house as a security measure against ransomware attacks, the ICS enthusiasts will hush you, believing there's some gold nugget of wisdom buried in there. Oh, and brace yourself for the Q&A sessions! They're less about questions and more of an opportunity for everyone to gather and have a field day, playing "What's Wrong with ISF?" It's almost like a community bonding exercise. Why Professor Reverse Engineering? Well, get ready to invest more time decoding the professor's exercise intentions and identifying the possibly wrong answers they've deemed correct for those weekly tests, rather than actually grasping those sought-after security fundamentals.
 
 [View](I.BA_ISF.H23/)
 
@@ -60,9 +60,15 @@ This is like OOP (object-oriented programming), but trickier because the student
 
 ### I.BA_PMB.F23 - Project Management Basics
 
-In PMB (Project Management Basics), you'll master the art of everything NOT to do while organizing folders and files. It comes with a bonus lesson on discovering that mastering Microsoft Project is like taming a wild beast - feared by many and loved by, well, not many. It's the course where "How little effort can I put in and still pass?"" becomes the mantra. Who knew that avoiding proper folder structuring would become the unexpected highlight of your project management education?
+In PMB (Project Management Basics), you'll master the art of everything NOT to do while organizing folders and files. It comes with a bonus lesson on discovering that mastering Microsoft Project is like taming a wild beast — feared by many and loved by, well, not many. It's the course where "How little effort can I put in and still pass?"" becomes the mantra. Who knew that avoiding proper folder structuring would become the unexpected highlight of your project management education?
 
 [View](I.BA_PMB.F23/)
+
+### I.BA_PTA.H22 - Project Team Assignment
+
+As your studies kick off, you'll encounter PTA (Pottering Team Adventure). Some workshops teach you the art of subtly poking fun at the workshop itself without the professor catching on, while others aim to impart tinkering skills. This class seems determined to teach you an early lesson: never fully trust your group mates with their solutions for assignments. The crux of PTA? Well, no one seems to fathom its worth. It's not about teamwork or project work; it's about enduring pointless workshops and lessons. You'll receive glowing praise for your test presentation — your ideas heralded as exceptional and intriguing — only to face scorching critiques on the final exam presentation day. It's a perplexing maze of contradictions.
+
+[View](I.BA_PTA.H22/)
 
 ### I.BA_WEBT_MM.H22 - Web Technologies
 
