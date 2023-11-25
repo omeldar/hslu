@@ -1,12 +1,12 @@
 # Hslu
 
-I use this repository to dump my solutions of exercises and some summaries I create for classes. Here you'll find a list of all the classes I took with a brief description of what this class is and sometime some addition information to it.
+I use this repository to dump my solutions of exercises and some summaries I create for classes. Here you'll find a list of all the classes I took with a brief description of what the class is about and sometimes some additional information to it.
 
 ## Contents
 
 ### I.BA_AD.F23 - Algorithms & Datastructures
 
-This is exactly what you think it is. Its about creaeting data structures yourself (which you're being told to not do in general) and implementing algorithms in the worst possible language for implementing algorithms: Java. You'll have a great time with the weekly exercises that can take up to 6 hours to complete if you're doing it properly. But otherwise this class is actually interesting and gives you some depper insights in programming.
+This is exactly what you think it is. Its about creating data structures yourself (which you're being told to not do in general) and implementing algorithms in the worst possible language for implementing algorithms: Java. You'll have a great time with the weekly exercises that can take up to 6 hours to complete if you're doing it properly. But otherwise this class is actually interesting and gives you some deeper insights in programming.
 
 [View](I.BA_AD.F23/)
 
