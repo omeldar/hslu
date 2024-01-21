@@ -17,6 +17,8 @@ I use this repository to dump my solutions of exercises and some summaries I cre
 - I.BA_PTA.H22 - Project Team Assignment [View](I.BA_PTA.H22/)
 - I.BA_WEBT_MM.H22 - Web Technologies [View](I.BA_WEBT_MM.H22/)
 
+Description of classes can be found [here](classes.md)
+
 ## 🌟 Show Your Support
 
 If you've found anything in this repository enjoyable or helpful – be it the useful summaries, source-code or any other content – consider showing your support by starring this repository. Not only is it a great way to let me know you appreciate the work, but it also helps other students and members at HSLU discover these resources.
