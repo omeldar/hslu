@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  rstudio-server:
+    build: .
+    ports:
+      - "8787:8787" # Maps port 8787 on the host to port 8787 on the container
+    volumes:
+      - ./source:/home/rstudio/source # Maps a local directory to the R scripts in the container
+    environment:
+      - USER=rstudio # RStudio user
+      - PASSWORD=Init1234 # RStudio password; change this to a secure password
+    restart: unless-stopped
