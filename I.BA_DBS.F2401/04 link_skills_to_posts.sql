@@ -1,9 +1,13 @@
+-- This script might take a few hours (up to 12-14h) to execute
+-- It loads 1.3 million entries with each about 10-20 skills which need to be parsed and loaded into a skill table
+-- Then the references n:m need to be made from the job posting to the skills
+
 DO $$
 DECLARE
     rec RECORD;
     _skill_id UUID;
 BEGIN
-
+    -- Enhancing performance by indexing queried columns
     CREATE INDEX ON import_job_skills (job_link);
     CREATE INDEX ON linkedin_posts (job_link);
 
@@ -22,10 +26,10 @@ BEGIN
         FOREIGN KEY (skill_id) REFERENCES unique_job_skills (skill_id) ON DELETE CASCADE
     );
 
-    -- Step 3: Populate the unique_skills table with unique skills
+    -- Step 3: Populate the skills table with unique skills
     -- Insert unique skills and create associations in a loop
     FOR rec IN SELECT DISTINCT unnest(string_to_array(job_skills, ',')) AS skill, job_link
-        FROM import_job_skills -- Replace with the actual table name
+        FROM import_job_skills
     LOOP
         -- Trim whitespace from the skill name
         rec.skill := TRIM(rec.skill);
