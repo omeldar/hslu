@@ -21,16 +21,16 @@ plot(z)
 # Plotting with lines between nodes
 plot(z, type= "l", col= "blue", lty= 2, main= "Haupttitel", xlab= "EinpaarZahlen", ylab= "AndereZahlen" )
 
-# Add static lines to chart, v = x, h = y
-abline(v=3, col = "green")
-abline(h=4, col = "red")
 
+# Add static lines to chart, v = x, h = y
+abline(v = 3, col = "green", lty = 1)
+abline(h = 4, col = "red", lty = 3)
+
+# Add a brown, dashed line representing y = 2x + 1
+abline(a = 1, b = 2, col = "brown", lty = 5) 
 
 # values without NA since they are not defined
 u <- x[!is.na(x)]
 
 # Calculate the corresponding y values
 y <- 2 * u + 1
-
-# Add a brown, dashed line representing y = 2x + 1
-abline(a = 1, b = 2, col = "brown", lty = "dashed")
