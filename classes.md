@@ -24,7 +24,7 @@ Just from the name, you'd imagine this class to be a fascinating dive into an in
 
 ### I.BA_DMATH.H23 - Discrete Mathematics
 
-DMATH is considered one of the tougher classes at HSLU for many students. The course delves into the concepts outlined in Rosen's book: Discrete Mathematics and its Applications. Initially, it might not be enjoyable, but as you progress through topics like Number Theory and Graph Theory, you'll understand why it is important to know the basics of it for a software engineer.
+DMATH is considered one of the tougher classes at HSLU for many students. The course delves into the concepts outlined in Rosen's book: Discrete Mathematics and its Applications. Initially, it might not be enjoyable, but as you progress through topics like Number Theory and Graph Theory, you'll understand why it is important to know the basics of it as a software engineer.
 
 [View](I.BA_DMATH.H23)
 
