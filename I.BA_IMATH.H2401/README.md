@@ -1,5 +1,8 @@
 # IMATH
 
+IMATH Implementierungen / Unterlagen hier: [Mathematics and Algorithms](https://github.com/omeldar/mathematics-and-algorithms)
+# IMATH
+
 ## Non-linear optimization and differential equations
 
 ### Optimization
