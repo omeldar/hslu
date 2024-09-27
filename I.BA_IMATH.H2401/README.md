@@ -6,8 +6,8 @@ IMATH Implementations / More Content here: [Mathematics and Algorithms](https://
 
 ### Optimization
 
-- [SW01 - Newton Method](./SW01%20-%20Optimization)
+- [SW01 - Newton Method & Gradient Descent](./SW01%20-%20Optimization)
 
 ### Differential Equations
 
-- [SW02 - Differential Equations](./SW02%20-%20Differential%20Equations)
+- [SW02 - Ordinary Differential Equations](./SW02%20-%20Differential%20Equations)
