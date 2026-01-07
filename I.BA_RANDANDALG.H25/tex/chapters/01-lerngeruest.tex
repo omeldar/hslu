@@ -1,1 +1,277 @@
-abcd
+In diesem Kapitel befindet sich das Lerngerüst.
+
+\section{SW1: Einleitung}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Für welchen Zweck wird Zufall in der Informatik eingesetzt?
+    \item Beispiel von SW1 zur Motivation
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das Problem erklären?
+        \item Was ist die beste Kommunikationskomplexität deterministischer Algorithmen?
+        \item Kenne ich den randomisierten Algorithmus?
+        \item Was für Fehler können vorkommen?
+        \item Habe ich grob die Idee der Abschätzung für die Fehlerwahrscheinlichkeit verstanden?
+        \item Was ändert sich, wenn der randomisierte Algorithmus wiederholt wird?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW2: Modellierung und MAX-SAT}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Modellierung randomisierter Algorithmen
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist der Unterschied zwischen stochastischen und randomisierten Algorithmen?
+        \item Welche zwei Modelle für die Randomisierung gibt es?
+        \item Was ist die erwartete Zeit?
+        \item Was ist die Erfolgs- bzw. Fehlerwahrscheinlichkeit?
+    \end{enumerate}
+    \item MAX-SAT
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das Problem erklären?
+        \item Wie funktioniert der Algorithmus STICH?
+        \item Nach welchem Modell ist STICH aufgebaut?
+        \item Was ist die erwartete Zeit und die erwartete Anzahl wahrere Klauseln von STICH?
+    \end{enumerate}
+    \item Algorithmus RQS
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie funktioniert der Algorithmus?
+        \item Nach welchem Modell ist RQS aufgebaut?
+        \item Was ist die erwartete Anzahl Vergleiche von STICH?
+        \item Warum ist RQS besser als der analoge deterministische Algorithmus QS?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW3: Anwendungsprobleme, LAS-VEGAS}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Anwendungsprobleme
+    \begin{enumerate}[label=(\roman*)]
+        \item Für welche zwei typischen Probleme werden randomisierte Algorithmen entwickelt?
+        \item Was bedeuten falsche Berechnungen?
+    \end{enumerate}
+    \item LAS-VEGAS-Algorithmen
+    \begin{enumerate}[label=(\roman*)]
+        \item Was sind LAS-VEGAS-Algorithmen?
+        \item Was ist der Unterschied der Definitionen Version 1 und Version 2?
+    \end{enumerate}
+    \item \textbf{Beispiel Kommunikationsprotokoll}: Kenne ich die vier Phasen des LAS-VEGAS-Verfahrens nach Version 2?
+    \item \textbf{Version 1 versus Version 2}: Wie entsteht aus einem LAS-VEGAS-Algorithmus der Version 2 ein LAS-VEGAS-Algorithmus der Version 1 und umgekehrt?
+\end{enumerate}
+
+\section{SW4: 1MC-, 2MC, MC-Algorithmen}
+
+\begin{enumerate}[label=(\alph*)]
+    \item 1MC-Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Entscheidungsproblem?
+        \item Wie wird ein 1MC-Algorithmus für Entschiedungsprobleme definiert?
+        \item Was haben 1MC*-Algorithmen für eine zusätzliche Eigenschaft?
+        \item Weiss ich, wie 1MC-Algorithmen mit n Wiederholungen verwendet werden?
+        \item Was hat diese Wiederholung für einen Einfluss auf die Zeitkomplexität und die Fehlerwahrscheinlichkeit?
+    \end{enumerate}
+    \item 2MC-Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie wird ein 2MC-Algorithmus für Berechnung einer Funktion definiert?
+        \item Weiss ich, wie 2MC-Algorithmen mit n Wiederholungen verwendet werden?
+    \end{enumerate}
+    \item MC-Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie wird ein MC-Algorithmus für Berechnung einer Funktion definiert?
+        \item Was kann bei MC-Algorithmen das Problem sein?
+        \item Kann ich das Beispiel (Kommunikationsprotokoll mit zwei Phasen) erklären?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW5: Optimierungsprobleme}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Optimierungsprobleme:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie wird ein randomisierter Algorithmus für ein Optimierungsproblem durch Wiederholungen eingesetzt?
+        \item Was können wir über die Wahrscheinlichkeit für die optimale Lösung sagen?
+        \item Welche Eigenschaft soll eine zulässige Lösung haben?
+        \item Wie wird ein Optimierungsproblem allgemein beschrieben?
+    \end{enumerate}
+    \newpage
+    \item Beispiele:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das TSP-Problem erklären?
+        \item Kann ich das MIN-VCP-Problem erklären?
+        \item Kann ich das MAX-SAT-Problem erklären?
+        \item Kann ich erklären, was IPL-Probleme sind?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW6: Eigenschaften von Algorithmen für Optimierungsprobleme}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Eigenschaften von Algorithmen für Opimtierungsprobleme:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wann ist ein Algorithmus für ein Optimierungsproblem zulässig?
+        \item Was ist die Approximationsgüte?
+        \item Was ist ein $\delta$-Approximations-Algorithmus und was bedeutet diese Eigenschaft konkret für ein Maximums- bzw. Minimumgsproblem?
+        \item Kann ich den VAC-Algorithmus für das MIN-VCP-Problem erklären?
+    \end{enumerate}
+    \item Eigenschaften für randomisierte Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein randomisierter $E[\delta]$-Approximations-Algorithmus?
+        \item Was ist ein randomisierter $\delta$-Approximations-Algorithmus?
+        \item Wie unterscheiden sich die zwei Arten von randomisierten Approximations-Algorithmen?
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{SW7: Randomisierte Approximations-Algorithmen}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Randomisierte Approximations-Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie muss $\delta$ angepasst werden, damit ein randomisierter $E[\delta]$-Approximations-Algorithmus die Eigenschaft eines randomisierten $\delta$*-Approximations-Algorithmus erfüllt?
+        \item Was sagt die Markov-Ungleichung?
+    \end{enumerate}
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Welche Approximations-Eigenschaft hat der STICH Algorithmus für das MAX-Ek-SAT-Problem?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW8: Paradigmen, Überlisten des Gegners, Online-Probleme}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Paradigmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Welche Paradigmen für den Entwurf von randomisierten Algorithmen gibt es?
+    \end{enumerate}
+    \item Überlisten des Gegners:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?
+        \item Was ist das Hashing-Problem?
+        \item Warum ist Hashing ein Musterbeispiel für das überlisten des Gegners?
+        \item Was sind geeignete Hashfunktionen?
+    \end{enumerate}
+    \item Online-Probleme:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Online Problem?
+        \item Kenn ich Beispiele für Online Probleme?
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{SW9: Online Probleme}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Optimierungsprobleme als Online-Problem:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Online Algorithmus?
+        \item Was ist ein Offline Algorithmus?
+        \item Wie wird die Konkurrenzgüte definiert?
+        \item Was ist ein $\delta$-konkurrenzfähiger Algorithmus und was bedeutet diese Eigenschaft konkret für ein Maximums- bzw. Minimumsproblem?
+        \item Was ist ein $\delta$-schweres Online Problem?
+    \end{enumerate}
+    \item Paging:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist das Paging Problem?
+        \item Warum ist Paging für einen Cache-Speicher mit $k$ Bit ein $k$-schweres Problem (Beispiel mit $k=3$)?
+    \end{enumerate}
+    \item Randomisierte Online Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Warum sind Online Probleme Beispiele für das Überlisten des Gegners?
+        \item Was ist die Konkurrenzgẗe und die Konkurrenzfähigkeit bei randomisierten Algorithmen?
+    \end{enumerate}
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das Beispiel zur Arbeitsverteilung erklären?
+        \item Verstehe ich die graphische Darstellung mit zwei Aufträgen?
+        \item Kenne ich Algorithmus DIAG?
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{SW10: Fingerabdrücke}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Fingerabdrücke:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?
+    \end{enumerate}
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kenne ich die Algorithmen PSet, PSchnitt und d-R für die Kommunikationsprotokolle und ihre Eigenschaften?
+        \item Kenne ich den Algorithmus STRING für das Teilstring Problem und seine Eigenschaften?
+        \item Kenne ich den Algorithmus FREIVALDS für die Verifikation der Matrizenmultiplikation und seine Eigenschaften?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW11: Wahrscheinlichkeitsverstärkung}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kenne ich den Algorithmus AQP für die Äquivalenz zweier Polynome und seine Eigenschaften?
+    \end{enumerate}
+    \item Wahrscheinlichkeitsverstärkung und Stichproben:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?
+    \end{enumerate}
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das MIN-CUT Problem erklären?
+        \item Kenne ich den Algorithmus KONTRAKTION und seine Eigenschaften?
+        \item Warum ist der Algorithmus KONTRAKTION auch durch simples Wiederholen nicht brauchbar?
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{SW12: Wiederholungen, 3SAT, Zeugen und Primzahl-Test}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Gezielte Wiederholungen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Mit welcher Grundidee versuchen den Algorithmus KONTRAKTION zu verbessern?
+        \item Kenne ich die Algorithmen DETRAN und WBAUM und ihre Eigenschaften?
+    \end{enumerate}
+    \item Das 3SAT Problem:
+    \begin{enumerate}[label=(\roman*)]
+        \item Warum sind auch randomisierte Algorithmen mit exponentieller Laufzeit interessant?
+        \item Kenne ich den Algorithmus SCHÖNING für das 3SAT Problem und seine Eigenschaften?
+    \end{enumerate}
+    \item Häufige Zeugen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?
+    \end{enumerate}
+    \item Primzahl Test:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Primzahl Test?
+        \item Kenn ich den Algorithmus NAIV undv erstehe ich, wann er unbrauchbar ist?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW13: Wiederholungen, 3SAT, Zeugen und Primzahl-Test}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Zeugenkandidaten:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was sind Zeugenkandidaten und welche Eigenschaften sollen sie haben?
+        \item Wie wird der Satz von Fermat für Zeugenkandidaten gebraucht?
+        \item Wie werden die Zeugenkandidaten mit dem Satz von Euler bzw. dem Satz von Miller-Rabin optimiert?
+        \item Kenne ich den Algorithmus PRIMZAHL und seine Eigenschaften?
+    \end{enumerate}
+    \newpage
+    \item Zufälliges Runden:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?
+        \item Wie können wir das MIN-VCP Problem in ein LP Problem übersetzen?
+        \item Kann ich das MAX-KP Problem erklären?
+        \item Wie können wir das MAX-KP Problem in ein LP Problem übersetzen?
+    \end{enumerate}
+\end{enumerate}
+
+\section{SW14: MAX-SAT, LP}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das MAX-SAT Problem in ein LP Problem übersetzen?
+        \item Kenne ich die zwei Algorithmen RZR und KOMB und ihre Eigenschaften?
+    \end{enumerate}
+\end{enumerate}
