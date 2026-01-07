@@ -1,0 +1,87 @@
+# =========================
+# LaTeX build artifacts
+# =========================
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.toc
+*.synctex.gz
+*.synctex.gz(busy)
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+# =========================
+# Intermediate / temp files
+# =========================
+*.tmp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# =========================
+# latexmk / arara
+# =========================
+.latexmk
+latexmkrc
+.arara
+
+# =========================
+# Build directories
+# =========================
+build/
+out/
+*.cache/
+
+# =========================
+# Generated PDFs (optional)
+# =========================
+# Comment this out if you WANT to version PDFs
+# *.pdf
+
+# =========================
+# Bibliography / indexing
+# =========================
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+
+# =========================
+# Nix / direnv
+# =========================
+.direnv/
+.result
+result
+result-*
+.nix-build/
+
+# =========================
+# Editor / IDE (common, minimal)
+# =========================
+.vscode/
+.idea/
+*.code-workspace
+
+# =========================
+# OS noise (safe even on NixOS)
+# =========================
+.DS_Store

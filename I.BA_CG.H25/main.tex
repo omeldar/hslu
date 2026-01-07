@@ -1,0 +1,96 @@
+% !TeX program = tectonic
+\documentclass[%
+  paper=a4,
+  fontsize=11pt,
+  BCOR=8mm,
+  DIV=12,
+  headings=normal,1
+  parskip=half,
+  numbers=noendperiod
+]{scrreprt}
+
+% Fonts & language: Tectonic uses (Xe)TeX engine; use fontspec + polyglossia
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{german}
+\setotherlanguage{english}
+
+% Choose readable fonts
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{TeX Gyre Cursor}
+
+% Encoding & micro-typography
+\usepackage{microtype}
+
+% Graphics, tables, math (lightweight defaults)
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+\usepackage{pifont}
+\sisetup{locale=DE, detect-all}
+
+% Bibliography with biblatex + biber
+\usepackage[
+  backend=biber,
+  style=ieee
+]{biblatex}
+\addbibresource{bib/references.bib}
+
+% Load hyperlink setup
+\usepackage{xcolor}
+\usepackage{hyperref}
+\input{tex/configuration/hypersetup}
+
+% Load project preamble/macros
+\input{tex/preamble}
+\input{tex/lststyles}
+\input{tex/macros}
+
+% Title meta
+\title{Computer Graphics}
+\subtitle{CG HS25}
+\author{Eldar Omerovic}
+\date{\today}
+
+\begin{document}
+
+\thispagestyle{empty}
+\input{tex/chapters/00-titelseite}
+
+\newpage
+
+\pagenumbering{Roman}
+\setcounter{page}{1}  
+
+\newpage
+\vspace*{0.1\textheight}
+
+\begin{center}
+  {\large\bfseries Abstract\par}
+
+  \vspace{0.5cm}
+
+  Diese Zusammenfassung wurde gemacht, um sich auf die Prüfung des HS25 im Modul CG vorzubereiten.
+
+\end{center}
+
+\newpage
+
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter{Lerngerüst}
+\input{tex/chapters/01-lerngeruest}
+
+\chapter{Einleitung}
+\input{tex/chapters/02-einleitung}
+
+\end{document}
