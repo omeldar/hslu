@@ -1,0 +1,66 @@
+\lstdefinestyle{defaultcode}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{gray!5},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  numbers=left,
+  numberstyle=\tiny\color{gray!70},
+  numbersep=8pt,
+  captionpos=b,
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  upquote=true
+}
+
+\lstdefinelanguage{json}{
+  basicstyle=\ttfamily\small,
+  morestring=[b]",
+  stringstyle=\color{black},
+  showstringspaces=false,
+  breaklines=true,
+  literate=
+   *{0}{{0}}{1}
+    {1}{{1}}{1}
+    {2}{{2}}{1}
+    {3}{{3}}{1}
+    {4}{{4}}{1}
+    {5}{{5}}{1}
+    {6}{{6}}{1}
+    {7}{{7}}{1}
+    {8}{{8}}{1}
+    {9}{{9}}{1}
+    {:}{{:}}{1}
+    {,}{{,}}{1}
+    {\{}{{\{}}{1}
+    {\}}{{\}}}{1}
+    {[}{{[}}{1}
+    {]}{{]}}{1}
+}
+
+\lstdefinestyle{codejson}{
+  style=defaultcode,
+  language=json
+}
+
+\lstdefinestyle{codesql}{
+  style=defaultcode,
+  language=SQL,
+  morekeywords={IDENTITY,UNIQUEIDENTIFIER,NVARCHAR,DATETIME2,GETUTCDATE,NEWID},
+}
+
+\lstdefinestyle{codecsharp}{
+  style=defaultcode,
+  language=[Sharp]C,
+  morekeywords={async,await,var,record,init,Task,ValueTask,IServiceCollection,ILogger},
+}
+
+\lstdefinestyle{coderazor}{
+  style=defaultcode,
+  language=HTML,
+}
+
+\lstset{style=defaultcode}
