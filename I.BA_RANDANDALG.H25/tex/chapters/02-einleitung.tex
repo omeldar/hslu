@@ -41,7 +41,7 @@ Die deterministische Lösung:
 Die Kommunikationskomplexität ist jedoch enorm hoch. Die benötigte Kommunikation beträgt $n$ Bits.
 
 \begin{itemize}
-    \item Für $n = 10^{16}$ BIts würde die Übertragung selbst mit modernsten Netzwerken Jahrtausende dauern.
+    \item Für $n = 10^{16}$ Bits würde die Übertragung selbst mit modernsten Netzwerken Jahrtausende dauern.
     \item Fazit: Jedes deterministische Protokoll, dass $100\%$ige Sicherheit garantiert, benötigt mindestens $n$ Bits Kommunikation. Die Aufgabe ist somit deterministisch praktisch unlösbar.
 \end{itemize}
 
@@ -88,7 +88,7 @@ Vergleich der beiden Methoden mit $n = 10^{16}$ Bits.
     \item Gesendet werden zwei Zahlen: $p$ und $s$.
     \item Das $s \le p \leq n^2$, können beide mit ca. $log_2(n^2)$ Bits dargestellt werden.
     \item Die Formel vereinfacht sich zu $log_2(n^2) = 2 \cdot log_2(n)$.
-    \item Die Gesamtkommunikation (für $p$ und $s$) beträgt also cs. $4 \cdot log_2(n)$ Bits.
+    \item Die Gesamtkommunikation (für $p$ und $s$) beträgt also ca. $4 \cdot log_2(n)$ Bits.
 \end{itemize}
 
 \begin{figure}[H]
@@ -194,6 +194,8 @@ $$
     \item Eine Zahl $w \le 2^n$ hat höchstens $n-1$ verschiedene Primteiler.
     \item Wählen wir $p$ zufällig unter allen Primzahlen $\leq n^2$, so gibt es davon etwa:\newline
 \end{itemize}
+
+Um die möglichen Primzahlen $\leq n^2$ zu approximieren:
 
 $$
 \pi(n^2) \approx \frac{n^2}{2 \ln n}
