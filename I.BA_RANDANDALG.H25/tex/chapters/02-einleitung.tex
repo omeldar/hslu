@@ -223,8 +223,32 @@ $$
 P(\text{Fehler nach k Versuchen}) \leq (P(\text{Fehler}))^k
 $$
 
-Bereits für $k = 10$ und $n = 10^{16}$:
+Bereits für $k = 10$ und $n = 10^{16}$: $\quad P(\text{Fehler}) \approx 10^{-142}$
 
-$$
-P(\text{Fehler}) \approx 10^{-142}.
-$$
+\section{Summary}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Für welchen Zweck wird Zufall in der Informatik eingesetzt?\newline
+    \textbf{Antwort:} Für die Effizienzsteigerung.
+
+    \item Beispiel von SW1 zur Motivation
+    \begin{enumerate}[label=(\roman*)]
+        \vspace{-0.2cm}\item Kann ich das Problem erklären?\newline
+        \textbf{Antwort:} Das Vergleichen und Austauschen von grossen Datenmengen ist ein Problem, das determnistisch kaum lösbar sind (wenn 100\%ige Korrektheit notwendig).
+
+        \vspace{-0.2cm}\item Was ist die beste Kommunikationskomplexität deterministischer Algorithmen?\newline
+        \textbf{Antwort:} n-Bits
+
+        \vspace{-0.2cm}\item Kenne ich den randomisierten Algorithmus?\newline
+        \textbf{Antwort:} Der Algorithmus kombiniert die einzelnen Daten in eine grosse Zahl. Durch Modulo-Operationen mit uniform gewählten Primzahlen wird diese verkleinert. Dieser Rest wird dann ausgetauscht und verglichen.
+
+        \vspace{-0.2cm}\item Was für Fehler können vorkommen?\newline
+        \textbf{Antwort:} Wenn die Daten nicht gleich sind und eine Primzahl gewählt wird, welche ein Primteiler der Differenz der beiden \enquote{Daten-Nummern} ist, wird der Algorithmus fälschlicherweise \enquote{gleich} antworten.
+
+        \vspace{-0.2cm}\item Habe ich grob die Idee der Abschätzung für die Fehlerwahrscheinlichkeit verstanden?\newline
+        \textbf{Antwort:} Man versucht zu verstehen, wie viele Primzahlen wir wählen können, und wie viele davon \enquote{schlechte Primzahlen} sind (also $p \mid w$). Die Anzahl der schlechten Primzahlen geteilt durch alle möglichen wählbaren Primzahlen ergibt die Fehlerwahrscheinlichkeit.
+
+        \vspace{-0.2cm}\item Was ändert sich, wenn der randomisierte Algorithmus wiederholt wird?\newline
+        \textbf{Antwort:} Durch das wiederholen des Algorithmus und der Bedingung, dass alle Wiederholungen \enquote{gleich} zurückgeben. Verkleinern wir die Fehlerwahrscheinlichkeit exponentiell ($\text{Fehlerwahrscheinlichkeit}^{\text{Anz. Wiederholungen}}$).
+    \end{enumerate}
+\end{enumerate}
