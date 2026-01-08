@@ -1,1 +1,228 @@
-abc
+Gibt es Zufall?
+
+\vspace{0.25cm}
+
+Ob es wahren Zufall gibt ist eine philosophische Frage. Für uns in der Informatik können wir Zufall als Quelle zur Effizienz nutzen!
+
+\section{Ein Beispiel zur Motivation}
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/01/beispiel_rechner.png}
+        {Beispiel mit Rechnern}
+    \label{fig:rechnerbeispiel}
+\end{figure}
+
+Das Szenario
+
+\begin{itemize}
+    \item Zwei Rechner, $R_{I}$ und $R_{II}$, an entfernten Orten.
+    \item Jeder besitzt eine riesige Datenbank, dargestellt als Bitstring $x$ (bei $R_{I}$) und $y$ (bei $R_{II}$).
+    \item Aufgabe: Überprüfe, ob die Datenbanken identisch sind, d.h. ob $x=y$.
+\end{itemize}
+
+Dies ist für kleine Datenbanken einfach. Man überprüft einfach Bit für Bit beide Bitstrings. Die entscheidende Hürde: Die Skalierung. Mit $n = 10^{16}$ Bits entspricht dies etwa 1.11 Petabyte oder über einer Million Terabyte.
+
+\subsection{Der intuitive Ansatz - und sein Scheitern}
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/01/det_ansatz_scheitern.jpg}
+        {Scheitern des deterministischen Ansatz}
+    \label{fig:detansatz_scheitern}
+\end{figure}
+
+Die deterministische Lösung:
+
+\begin{itemize}
+    \item $R_I$ sendet seine komplette Datenbank $x$ (Länge $n$) an $R_{II}$.
+    \item $R_{II}$ vergleicht $x$ Bit für Bit mit seiner eigenen Datenbank $y$.
+    \item Ergebnis: $100\%$ige Korrektheit. Kein Fehler möglich.
+\end{itemize}
+
+Die Kommunikationskomplexität ist jedoch enorm hoch. Die benötigte Kommunikation beträgt $n$ Bits.
+
+\begin{itemize}
+    \item Für $n = 10^{16}$ BIts würde die Übertragung selbst mit modernsten Netzwerken Jahrtausende dauern.
+    \item Fazit: Jedes deterministische Protokoll, dass $100\%$ige Sicherheit garantiert, benötigt mindestens $n$ Bits Kommunikation. Die Aufgabe ist somit deterministisch praktisch unlösbar.
+\end{itemize}
+
+\clearpage
+\subsection{Zufall als strategische Ressource}
+
+Müssen wir $100\%$ige Sicherheit fordern? Was, wenn wir eine winzige, kontrollierbare Unsicherheit für einen gewaltigen Effizienzgewinn in Kauf nehmen?
+
+\begin{figure}[H]
+    \img[width=0.8\textwidth]{figures/01/sicherheit_und_effizienz.png}
+        {Sicherheit und Effizienz}
+    \label{fig:sicherheit_effizienz}
+\end{figure}
+
+Die philosophische Grundlage (Zitat aus Hromkovič):
+
+\enquote{Das Gewebe dieser Welt ist aus Notwendigkeit und Zufall gebildet; die Vernunft des Menschen stellt sich zwischen beide und weiss sie zu beherrschen. [\dots] das Zufällige weiss sie zu lenken, zu leiten und zu nutzen.} - Johann Wolfgang von Goethe
+
+\textbf{Die neue Idee}: Statt der gesamten Daten ($x$ und $y$) vergleichen wir einen kleinen, aber charakteristischen \enquote{digitalen Fingerabdruck}.
+
+\subsubsection{Das randomisierte Protokoll}
+
+\begin{enumerate}
+    \item \textbf{Schritt 1: Von Bits zu Zahlen}\newline
+        Die Bitstrings $x$ und $y$ werden als Ganzzahlen interpretiert: \newline
+        $Nummer($x$) = \sum (x_i * 2^{n-i})$
+    \item \textbf{Schritt 2: Die zufällige Komponente}\newline
+        $R_I$ wählt zufällig eine Primzahl $p$ aus der Menge aller Primzahlen $\leq n^2$ (jede mit gleicher Wahrscheinlichkeit - also \enquote{uniform}).
+    \item \textbf{Schritt 3: Der Fingerabdruck}\newline
+        $R_I$ berechnet den Rest: $s = \text{Nummer}(x) \mod p$.
+    \item \textbf{Schritt 4: Die Kommunikation}\newline
+        $R_I$ sendet nur das Paar $(p, s)$ an $R_{II}$.
+    \item \textbf{Schritt 5: Die Verifikation}\newline
+        $R_{II}$ berechnet seinerseits $q = \text{Nummer}(y) \mod p$. $R_{II}$ prüft, ob $q = s$ ist, und gibt \enquote{gleich} oder \enquote{ungleich} aus.
+\end{enumerate}
+
+\subsection{Analyse der Kommunikationskomplexität}
+
+\begin{multicols}{2}
+
+Vergleich der beiden Methoden mit $n = 10^{16}$ Bits.
+
+\begin{itemize}
+    \item Gesendet werden zwei Zahlen: $p$ und $s$.
+    \item Das $s \le p \leq n^2$, können beide mit ca. $log_2(n^2)$ Bits dargestellt werden.
+    \item Die Formel vereinfacht sich zu $log_2(n^2) = 2 \cdot log_2(n)$.
+    \item Die Gesamtkommunikation (für $p$ und $s$) beträgt also cs. $4 \cdot log_2(n)$ Bits.
+\end{itemize}
+
+\begin{figure}[H]
+    \img[width=0.4\textwidth]{figures/01/vergleich_kommunikation.png}
+        {Vergleich Kommunikation}
+    \label{fig:vergleich_kommunikation}
+\end{figure}
+
+\end{multicols}
+
+\subsection{Die Möglichkeit eines Fehlers}
+
+\subsubsection{Fall 1: Die Daten sind identisch}
+
+Für den Fall, dass beide Bitstrings identisch sind: $x=y$:
+
+\begin{itemize}
+    \item $\text{Nummer}(x) = \text{Nummer}(y)$
+    \item Daher gilt: $\text{Nummer}(x) \mod p = \text{Nummer}(y) \mod p$ für jede Primzahl $p$.
+\end{itemize}
+
+Ergebnis: Kein Fehler möglich. Das Protokoll antwortet immer korrekt \enquote{gleich}. Man spricht von einem \enquote{einseitigen Fehler} (1MC-Algorithmus), weil in Fall 2 ein Fehler auftreten kann.
+
+\subsubsection{Fall 2: Die Daten sind verschieden}
+
+Der Algorithmus sagt dann richtigerweise \enquote{ungleich}, wenn:
+
+$$
+\text{Nummer}(x) \mod p \neq \text{Nummer}(y) \mod p
+$$
+
+Wann sagt der Algorithmus trotz verschiedenen Bitstrings \enquote{gleich}?
+
+Der Algorithmus sagt gleich, wenn: 
+$$
+\text{Nummer}(x) \mod p = \text{Nummer}(y) \mod p
+$$
+
+Wann kann dies passieren?
+
+Da $x \neq y$, wäre diese Aussage falsch. Ein Fehler tritt also genau dann auf, wenn trotz verschiedenen Daten gilt:
+
+$$
+\text{Nummer}(x) \equiv \text{Nummer}(y) \quad (\bmod \text{ } p)
+$$
+
+Wie kann es zu dem kommen?
+
+Aus der Zahlentheorie gilt: 
+
+$$
+a \equiv b \quad (\bmod \text{ } p) \iff p \mid (a-b)
+$$
+
+Also hier:
+
+$$
+p \mid (\text{Nummer}(x) - \text{Nummer}(y))
+$$
+
+Setzt man:
+
+$$
+w = | \text{Nummer}(x) - \text{Nummer}(y) |
+$$
+
+erhält man:
+
+$$
+p \mid w
+$$
+
+Das bedeutet, ein Fehler passiert nur, wenn die zufällig gewählte Primzahl $p$ ein Primteiler der festen Zahl $w$ (der Differenz von $\text{Nummer}(x)$ und $\text{Nummer}(y)$) ist.
+
+\begin{itemize}
+    \item Ist $p \mid w \rightarrow$ Reste verschieden $\rightarrow$ Algorithmus sagt \enquote{ungleich} (korrekt).
+    \item Ist $p \mid w \rightarrow$ Reste gleich $\rightarrow$ Algorithmus sagt \enquote{gleich} (Fehler).
+\end{itemize}
+
+\textbf{Kernaussage}: Bei verschiedenen Daten kann der Algorithmus nur dann fälschlich \enquote{gleich} sagen, wenn die zufällig gewählte Primzahl ein Teiler der Differenz der beiden Zahlen ist.
+
+Das ist der einzige mögliche Fehlerfall - deshalb hat der Algorithmus einen \textbf{einseitigen Fehler} und ist somit ein \text{1MC-Algorithmus}.
+
+\clearpage
+\subsection{Fehlerwahrscheinlichkeit}
+
+Setup:
+
+$$
+w := |\text{Nummer}(x) - \text{Nummer}(y)|
+$$
+
+Um das nochmals klar zu machen:
+
+$$
+\text{Nummer}(x) \equiv \text{Nummer}(y) \quad (\bmod \text{ } p) \iff p \mid (\text{Nummer}(x) - \text{Nummer}(y)) \iff p \mid w
+$$
+
+\subsubsection{Abschätzung}
+
+\begin{itemize}
+    \item Da $x,y$ n-Bit-Zahlen sind, gilt $w \le 2^n$
+    \item Eine Zahl $w \le 2^n$ hat höchstens $n-1$ verschiedene Primteiler.
+    \item Wählen wir $p$ zufällig unter allen Primzahlen $\leq n^2$, so gibt es davon etwa:\newline
+\end{itemize}
+
+$$
+\pi(n^2) \approx \frac{n^2}{2 \ln n}
+$$
+
+Damit gilt:
+
+$$
+P(\text{Fehler}) \leq \frac{n - 1}{\pi(n^2)} \approx \frac{2 \ln n}{n}
+$$
+
+Für $n = 10^{16}$ ergibt sich:
+
+$$
+P(\text{Fehler}) \lesssim 7.4 \cdot 10^{-15} = 0.000000000000001
+$$
+
+also praktisch vernachlässigbar.
+
+\subsection{Wahrscheinlichkeitsverstärkung}
+
+Wird das Protokoll $k$-mal unabhängig mit neuen Primzahlen ausgeführt und nur dann \enquote{gleich} ausgegeben, wenn alle Vergleiche übereinstimmen, so gilt:
+
+$$
+P(\text{Fehler nach k Versuchen}) \leq (P(\text{Fehler}))^k
+$$
+
+Bereits für $k = 10$ und $n = 10^{16}$:
+
+$$
+P(\text{Fehler}) \approx 10^{-142}.
+$$
