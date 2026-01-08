@@ -1,4 +1,4 @@
-# WIPRO @ HSLU
+# RANDANDALG @ HSLU
 
 > by Eldar Omerovic
 
