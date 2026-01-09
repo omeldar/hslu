@@ -1,0 +1,297 @@
+\section{Modelle und Metriken}
+
+Was ist ein \enquote{randomisierter Alogirthmus}?
+
+Der Zufall in einem randomisierten Algorithmus liegt nicht in den Daten, sondern im Algorithmus selbst. Das Ziel ist es eine gute Leistung mit hoher Wahrscheinlichkeit für jede einzelne Eingabe zu erzielen. Der Algorithmus muss in jeder Situation relativ zuverlässig sein.
+
+Was ist der Unterschied zu einem \enquote{stochastischen Algorithmus}?
+
+Ein stochastischer Algorithmus nimmt an, dass die Eingabedaten aus einer bestimmten Wahrscheinlichkeitsverteilung stammen. Der Zufall liegt in den Daten, nicht im Algorithmus.
+
+\subsection{Modell 1: Die Werkzeugkiste}
+
+Ein randomisierter Algorithmus A ist eine Menge von deterministischen Algorithmen \\* ${A_1, A_2, \dots, A_n}$. Zu Beginn der Berechnung wird einmalig zufällig ein $A_i$ ausgewählt und ausgeführt.
+
+Beispiel: Der STICH-Algorithmus für MAX-SAT folgt diesem Modell.
+
+\subsection{Modell 2: Die Weggabelung}
+
+Der Algorithmus trifft während seiner Ausführung zufällige Entscheidungen. Der Berechnungspfad ist nicht vorbestimmt.
+
+Beispiel: Der RQS-Algorithmus (Randomized Quicksort) ist ein klassisches Beispiel hierfür.
+
+\subsection{Metrik 1: Erwartete Zeit}
+
+Nicht die Worst-Case-Laufzeit, sondern der gewichtete Durchschnitt der Laufzeiten über alle möglichen zufälligen Entscheidungen des Algorithmus für eine feste Eingabe.
+
+Für einen Algorithmus A und eine Eingabe $w$ ist die erwartete Zeit definiert als:
+
+$$
+\text{Erwartete Zeit}_A(w) = \sum [\text{Wahr}({C_i}) * \text{Zeit}(C_i)]
+$$
+
+für alle möglichen Berechnungspfade $C_i$ von A auf Eingabe w.
+
+\subsection{Metrik 2: Erfolgs- / Fehlerwahrscheinlichkeit}
+
+Die Wahrscheinlichkeit, dass der Algorithmus für eine feste Eingabe das korrekte Ergebnis liefert.
+
+Die Erfolgswahrscheinlichkeit ist $\text{Wahr}(A(x) = F(x))$, wobei $F(x)$ das korrekte Ergebnis ist. Die Fehlerwahrscheinlichkeit ist $1 - \text{Wahr}(A(x) = F(x))$.
+
+\section{Das MAX-SAT Problem}
+
+Problembeschreibung: Gegeben ist eine Formel in Konjunktiver Normalform (KNF). Finde eine Belegung der Variablen, die die maximale Anzahl von Klauseln wahr macht (MAX-SATISFIABILITY).
+
+Beispiel:
+$$
+\phi = (x_1 \lor x_2) \land (\neg x_1 \lor x_3) \land (x_2 \lor \neg x_3) \land (\neg x_1 \lor \neg x_3)
+$$
+
+Wenn wir die Variablen wie folgt belegen: $x_1 = 0, x_2 = 1, x_3 = 0$, können wir alle 4 Klauseln erfüllen:
+
+\begin{multicols}{2}
+    \begin{itemize}
+        \item $x_1 \lor x_2$: $0 \lor 1$
+        \item $\neg x_1 \lor x_3$: $\neg 0 \lor 0$
+    \end{itemize}
+    \begin{itemize}
+        \item $x_2 \lor \neg x_3$: $1 \lor \neg 0$
+        \item $\neg x_1 \lor \neg x_3$: $\neg 0 \lor \neg 0$
+    \end{itemize}
+\end{multicols}
+
+Warum ist das so schwer?
+
+MAX-SAT ist ein NP-schweres Problem. Eine exakte Lösung erfordert in der Regel exponentiellen Aufwand, da man alle $2^n$ möglichen Belegungen prüfen müsste.
+
+\section{Der STICH-Algorithmus für MAX-SAT}
+
+Die Idee: \enquote{Wir raten einfach}
+
+\begin{multicols}{2}
+    Der Algorithmus:
+
+    \begin{enumerate}
+        \item Für jede Variable $x_i$ in der Formel:
+        \begin{enumerate}
+            \item Wirf eine faire Münze
+            \item Bei \enquote{Kopf}, setze $x_i = 1$
+            \item Bei \enquote{Zahl}, setze $x_i = 0$
+        \end{enumerate}
+        \item Gib die resultierende Belegung zurück.
+    \end{enumerate}
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/02/muenzen_werfen.png}
+        {Münzen Werfen für STICH}
+        \label{fig:muenzen_werfen}
+    \end{figure}
+\end{multicols}
+
+Verbindung zum Modell: STICH folgt Modell 1. Jede der $2^n$ möglichen Münzwurf-Sequenzen entspricht einem einzigartigen deterministischen Algorithmus. Wir wählen davon zufällig aus.
+
+\begin{figure}[H]
+    \img[width=0.9\textwidth]{figures/02/stich_tree.jpg}
+    {STICH Baum}
+    \label{fig:stich_tree}
+\end{figure}
+
+\subsection{Analyse des STICH-Algorithmus}
+
+Erwartete Zeit: Sehr effizient. Die Laufzeit ist linear in der Anzahl der Variablen (also $O(n)$), da für jede Variable nur eine einzige Zufallsentscheidung getroffen wird.
+
+Erwartete Anzahl erfüllter Klauseln: Wie viele Klauseln sind im Durchschnitt erfüllt?
+
+\subsubsection{Analyse einer einzelnen Klausel mit $k$ Literalen}
+
+Die Wahrscheinlichkeit, dass ein bestimmtes Literal falsch ist, beträgt $1/2$. Für eine Klausel mit $k$ Literalen ist die Wahrscheinlichkeit, dass alle Literale falsch sind, also $(1/2)^k$. Also ist die Wahrscheinlichkeit, dass die Klausel $F_i$ wahr ist: $1 - (1/2)^k$.
+
+\subsubsection{Linearität des Erwartungswertes}
+
+Der erwartete Gesamtwert ist die Summe der einzelnen Erwartungswerte.
+
+$$
+E[\text{erfüllte Klauseln}] = \sum E[F_i \text{ ist Wahr}] = \sum \left(1 - \left(\frac{1}{2}\right)^{k_i}\right)
+$$
+
+Das Ergebnis: Da $k \geq 1$ ist, ist $E[F_i \text{ ist wahr}] \geq 1/2$. Damit ist die erwartete Anzahl wahrer Klauseln $\geq m/2$ (wobei $m$ die Gesamtanzahl der Klauseln ist). Das bedeutet: Im Erwartungswert sind $\geq 50\%$ der Klauseln erfüllt.
+
+\section{Randomized Quicksort (RQS)}
+
+Das Problem des deterministischen Quicksorts:
+
+\begin{multicols}{2}
+    \begin{itemize}
+        \item Die Effizienz von Quicksort hängt entscheidend von der Wahl des Pivotelements ab.
+        \item Ein \enquote{böswilliger Gegner} kann uns eine Eingabe geben, die eine schlechte Pivot-Strategie ausnutzt.
+    \end{itemize}
+    
+    Worst Case Beispiel: Wenn das Pivot immer das erste Element ist und die Eingabe bereits sortiert ist (z.B. $[1, 2, 3, 4]$). Die Laufzeit degradiert zu $O(n^2)$.
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/02/quicksort.png}
+        {Worst Case Quicksort}
+        \label{fig:quicksort_worstcase}
+    \end{figure}
+\end{multicols}
+
+\clearpage
+\subsubsection{Die Idee}
+
+Nimm dem Gegner die Macht, indem du seine Kenntnis über den Algorithmus nutzlos machst.
+
+\begin{multicols}{2}
+    \begin{enumerate}
+        \item Wenn die Liste mehr als ein Element hat:
+        \begin{enumerate}
+            \item Wähle ein Element zufällig und gleichverteilt als Pivot.
+            \item Teile die restlichen Elemente in zwei Listen auf: kleiner als Pivot und grösser als Pivot.
+            \item Wende dies rekursiv auf die beiden Teillisten an.
+        \end{enumerate}
+    \end{enumerate}
+
+    \begin{figure}[H]
+        \img[width=0.5\textwidth]{figures/02/rqs.png}
+        {Randomized Quicksort}
+        \label{fig:random_quicksort}
+    \end{figure}
+\end{multicols}
+
+\textbf{Verbindung zum Modell}: RQS folgt Modell 2. Der Zufall wird wiederholt innerhalb des Algorithmus bei jedem rekursiven Aufruf eingesetzt. Jede Berechnung ist ein einzigartiger Pfad durch den Berechnungsbaum.
+
+Siehe nächste Seite für Analyse von RQS.
+
+\clearpage
+\subsection{Analyse von RQS}
+
+Die Methode: Wir nutzen wieder die Linearität des Erwartungswertes. Wir zählen nicht rekursiv die Ausführungsschritte, sondern paarweise: Werden die Paare im Verlauf von QuickSort jemals miteinander verglichen? Das ist der Zentrale Trick.
+
+\textbf{Setup}
+
+Seien $s_1, s_2, \dots, s_n$ die Elemente der Eingabe in sortierter Reihenfolge. Definiere eine Zufallsvariable $X_{ij}$ für jedes Paar $(s_i, s_j)$ mit $i < j$. $X_{ij} = 1$, wenn $s_i$ und $s_j$ während der Ausführung von RQS verglichen werden, sonst $X_{ij} = 0$. Gesamtzahl der Vergleiche $T = \sum_{i < j} X_{ij}$.
+
+\textbf{Analyse}
+
+Erwartungswert von $T$: $E[T] = E[\sum_{i \leq j} X_{ij}] = \sum_{i \leq j} E[X_{ij}]$. Dabei ist $E[X_{ij}]$ die Wahrscheinlichkeit $p_{ij}$, dass $s_i$ und $s_j$ verglichen werden.
+
+Wann werden $s_i$ und $s_j$ verglichen? Nur dann, wenn das erste aus der Menge ${s_i, s_{i+1}, \dots, s_j}$ gewählte Pivot-Element entweder $s_i$ oder $s_j$ ist. Die Wahrscheinlichkeit hierfür ist $\frac{2}{j-i+1}$, da wir genau 2 günstige Pivots ($s_i$ oder $s_j$) und insgesamt $j-i+1$ mögliche Pivots haben.
+
+\textbf{Das Ergebnis und Fazit}
+
+Ergebnis: 
+$$
+E[T] = \sum_{i \le j} \frac{2}{j-i+1} \le 2n \cdot H_n \approx 2n \ln n
+$$
+
+wobei $H_n$ die n-te Harmonische Zahl ist.
+
+Fazit: Die erwartete Anzahl der Vergleiche ist $O(n \log n)$ für jede Eingabe. RQS ist immun gegen Worst-Case-Daten.
+
+\textbf{Information: Harmonische Zahlen}
+
+Die n-te Harmonische Zahl $H_n$ ist definiert als die Summe der Kehrwerte der ersten n natürlichen Zahlen:
+
+$$
+H_n = 1 + \frac{1}{2} + \frac{1}{3} + \dots + \frac{1}{n}
+$$
+
+Wichtige Eigenschaft: Für grosse $n$ nähert sich $H_n$ dem natürlichen Logarithmus von n plus der Euler-Mascheroni-Konstante $\gamma$ (ca. 0.5772).
+
+Für Laufzeitanalysen reicht: $H_n = \Theta(\log n)$
+
+\section{STICH vs. RQS}
+
+\begin{longtable}{|p{3cm}|p{5cm}|p{5cm}|}
+    \caption{Kernkonzepte STICH vs RQS}
+    \label{tab:stich_vs_rqs} \\
+
+    \hline
+
+    \textbf{Kriterium} & \textbf{STICH Algorithmus} & \textbf{RQS Algorithmus} \\
+
+    \hline
+
+    Problem & MAX-SAT (NP-schweres Optimierungsproblem) & Sortieren (Polynomial lösbares Problem) \\
+
+    \hline
+
+    Ziel des Zufalls & Eine \enquote{ziemlich gute} Lösung für ein schweres Problem im Erwartungswert finden. & Den Worst-Case eines ansonsten guten Algorithmus eliminieren. \enquote{Überlisten des Gegners}. \\
+
+    \hline
+
+    Modell & Modell 1: Einmalige zufällige Wahl einer deterministischen Strategie (einer Belegung) & Modell 2: Fortlaufende zufällige Entscheidungen während der Ausführung (Pivot-Wahl). \\
+
+    \hline
+
+    Analysefokus & Erwartete Qualität der Lösung (erwartete Anzahl erfüllter Klausen). & Erwartete Laufzeit (erwartete Anzahl von Vergleichen). \\
+
+    \hline
+
+    Ergebnis & Erwartungswert $\geq m/2$ erfüllte Klauseln & Erwartete Laufzeit von $O(n log n)$. \\
+
+    \hline
+
+\end{longtable}
+
+\section{Klassifizierung randomisierter Algorithmen}
+
+\subsection{Las Vegas Algorithmen (z.B. RQS)}
+
+Liefern immer das korrekte Ergebnis.
+
+Unsicherheit: Die Laufzeit ist eine Zufallsvariable.
+
+\subsection{Monte Carlo Algorithmen (z.B. STICH-ähnliche Ansätze)}
+
+Die Laufzeit ist oft deterministisch, aber das Ergebnis kann (mit geringer Wahrscheinlichkeit) falsch sein. STICH liefert zwar keine \enquote{falsche} Lösung, aber eine suboptimale. Das entspricht dem Geist von Monte-Carlo-Approximationen entspricht.
+
+\clearpage
+\section{Summary}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Modellierung randomisierter Algorithmen
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist der Unterschied zwischen stochastischen und randomisierten Algorithmen?\newline
+        \textbf{Antwort:} Stochastische Algorithmen nehmen an, dass die Eingabedaten aus einer bestimmten Wahrscheinlichkeitsverteilung stammen. Der Zufall liegt in den Daten, nicht im Algorithmus. Randomisierte Algorithmen hingegen verwenden Zufall innerhalb des Algorithmus selbst, unabhängig von der Eingabe.
+        
+        \item Welche zwei Modelle für die Randomisierung gibt es?\newline
+        \textbf{Antwort:} Die Werkzeugkiste (Modell 1) und die Weggabelung (Modell 2).
+
+        \item Was ist die erwartete Zeit?\newline
+        \textbf{Antwort:} Der gewichtete Durchschnitt der Laufzeiten über alle möglichen zufälligen Entscheidungen des Algorithmus für eine feste Eingabe.
+
+        \item Was ist die Erfolgs- bzw. Fehlerwahrscheinlichkeit?\newline
+        \textbf{Antwort:} Die Wahrscheinlichkeit, dass der Algorithmus für eine feste Eingabe das korrekte Ergebnis liefert bzw. die Wahrscheinlichkeit, dass er ein falsches Ergebnis liefert.
+    \end{enumerate}
+    \item MAX-SAT
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das Problem erklären?\newline
+        \textbf{Antwort:} Gegeben ist eine Formel in Konjunktiver Normalform (KNF). Finde eine Belegung der Variablen, die die maximale Anzahl von Klauseln wahr macht (MAX-SATISFIABILITY).
+
+        \item Wie funktioniert der Algorithmus STICH?\newline
+        \textbf{Antwort:} Für jede Variable wird eine faire Münze geworfen. Bei \enquote{Kopf} wird die Variable auf 1 gesetzt, bei \enquote{Zahl} auf 0. Die resultierende Belegung wird zurückgegeben.
+
+        \item Nach welchem Modell ist STICH aufgebaut?\newline
+        \textbf{Antwort:} STICH folgt Modell 1: Die Werkzeugkiste
+
+        \item Was ist die erwartete Zeit und die erwartete Anzahl wahrere Klauseln von STICH?\newline
+        \textbf{Antwort:} Die erwartete Zeit ist $O(n)$, da für jede Variable $n$ nur eine einzige Zufallsentscheidung getroffen wird. Die erwartete Anzahl wahrer Klauseln ist mindestens $m/2$, also mindestens 50\% der Klauseln werden im Erwartungswert erfüllt.
+
+    \end{enumerate}
+    \clearpage
+    \item Algorithmus RQS
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie funktioniert der Algorithmus?\newline
+        \textbf{Antwort:} Wenn die Liste mehr als ein Element hat, wird ein Element zufällig als Pivot gewählt. Die restlichen Elemente werden in zwei Listen aufgeteilt: kleiner als Pivot und grösser als Pivot. Dies wird rekursiv auf die beiden Teillisten angewendet.
+
+        \item Nach welchem Modell ist RQS aufgebaut?\newline
+        \textbf{Antwort:} RQS folgt Modell 2: Die Weggabelung.
+
+        \item Was ist die erwartete Anzahl Vergleiche von STICH?\newline
+        \textbf{Antwort:} Die erwartete Anzahl der Vergleiche ist $O(n \log n)$ für jede Eingabe.
+
+        \item Warum ist RQS besser als der analoge deterministische Algorithmus QS?\newline
+        \textbf{Antwort:} RQS ist immun gegen Worst-Case-Daten, da die Pivot-Wahl zufällig erfolgt und somit nicht von der Eingabe abhängt. Dadurch wird die erwartete Laufzeit von $O(n \log n)$ beibehalten, unabhängig von der Eingabe.
+
+    \end{enumerate}
+\end{enumerate}
