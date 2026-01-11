@@ -1,6 +1,43 @@
-\section{abc}
+\section{Grundlagen: Entscheidungsprobleme}
 
-def
+\begin{figure}[H]
+    \img[width=0.9\textwidth]{figures/04/grundlagen.png}
+    {Grundlagen Entscheidungsprobleme}
+    \label{fig:grundlagen-entscheidungsprobleme}
+\end{figure}
+
+Ein Entscheidungsproblem $(\Sigma, L)$ verlangt für jede Eingabe $x$ zu entscheiden, ob $x \in L$ oder $x \notin L$ gilt.
+
+Das Ziel: Wir suchen Algorithmen, die effizienter sind als deterministische Verfahren, indem wir eine kleine Fehlerwahrscheinlichkeit akzeptieren.
+
+\section{1MC-Algorithmen (einseitiger Fehler)}
+
+\textbf{Definition}: Ein 1MC-Algorithmus darf sich nur in eine Richtung irren.
+
+Entweder kann der Algorithmus für $x \in L$ fälschlich 0 liefern (falsch negativ), aber für $x \notin L$ liefert er niemals fälschlich 1 oder umgekehrt. Es darf aber nicht beidseitig möglich sein einen Fehler zu erzeugen.
+
+Genau dieser \enquote{einseitige Fehler} macht 1MC so angenehm, weil man Ergebnisse logisch aufsammeln kann.
+
+\textbf{1MC* (Zusatz-Eigenschaft)}
+Zusätzlich wird 1MC* definiert als: Für $x \in L$ soll die Erfolgswahrscheinlichkeit mit wachsender Eingabelänge gegen 1 konvergieren. Das passt gut zu Protokollen/Algorithmen, deren Fehler mit $n$ onehin klein werden.
+
+\subsection{Wahrscheinlichkeitsverstärkung bei 1MC: Mit ODER-Wiederholungen}
+
+Sei $A$ ein 1MC-Algorithmus für $L$ mit:
+$$
+Pr[A(x) = 0] \leq \frac{1}{2} \quad \forall x \in L
+$$
+und $Pr[A(y) = 1] = 0$ für $y \notin L$. Dann definiert man $A_k$ als $k$ unabhängige Läufe und Ausgabe 1 falls mindestens ein Lauf 1 zurückgibt und sonst 0.
+
+Fehler kann dann nur passieren, wenn $x \in L$ ist und alle $k$ Läufe fälschlich 0 liefern:
+$$
+Pr[\text{Fehler von } A_k \text{ auf } x] = Pr[A(x) = 0]^k \leq \left(\frac{1}{2}\right)^k = 2^{-k}
+$$
+1MC + ODER-Wiederholung ist \enquote{billige Sicherheit}: linear mehr Zeit - aber exponentiell weniger Fehler.
+
+\section{2MC-Algorithmen (beschränkter zweiseitiger Fehler)}
+
+
 
 \clearpage
 \begin{enumerate}[label=(\alph*)]
@@ -24,3 +61,4 @@ def
         \item Kann ich das Beispiel (Kommunikationsprotokoll mit zwei Phasen) erklären?
     \end{enumerate}
 \end{enumerate}
+
