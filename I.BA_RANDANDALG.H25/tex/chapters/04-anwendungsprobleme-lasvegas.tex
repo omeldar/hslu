@@ -1,0 +1,181 @@
+\section{Anwendungsprobleme \& \enquote{Falsche Berechnungen}}
+
+Randomisierte Algorithmen werden typischerweise für zwei grosse Problemklassen entworfen:
+
+\subsection{Entschiedungs- \& Funktionsprobleme}
+
+Hier wird eine exakte Ja/Nein-Antwort oder ein Funktionswert berechnet.
+
+\begin{itemize}
+    \item Beispiele: Primzahltest, Äquivalenz von Datenbanken (Strings \enquote{x}, \enquote{y}), Verifikation von Matrizenmultiplikation.
+    \item \enquote{Falsche Berechnung} bedeutet: Der Algorithmus liefert ein Ergebnis $s$, das nicht dem korrekten Wert $F(x)$ entspricht. (z.B. \enquote{Ja}, obwohl die Antwort \enquote{Nein} ist).
+    \item Las-Vegas-Algorithmen: Liefern niemals eine falsche Berechnung in diesem Sinne.
+    \item Monte-Carlo-Algorithmen: Erlauben falsche Berechnungen mit einer gewissen kleinen Wahrscheinlichkeit.
+\end{itemize}
+
+\subsection{Such- \& Optimierungsprobleme}
+
+Hier wird eine Lösung gesucht, die eine bestimmte (oft optimale) Eigenschaft hat.
+
+\begin{itemize}
+    \item MAX-SAT (möglichst viele Klauseln erfüllen), Traveling Salesperson Problem (TSP).
+    \item \enquote{Falsche Berechnung} ist hier seltener ein Thema. Meist liefert der Algorithmus eine zulässige, aber nicht-optimale Lösung. Die Qualität (Approximationsgüte) wird bewertet.
+\end{itemize}
+
+In diesem Kapitel fokussieren wir uns auf Algorithmen der Problemklasse A - die Las-Vegas-Algorithmen.
+
+\subsection{Das Prinzip der garantierten Korrektheit}
+
+Ein Las-Vegas-Algorithmus ist ein randomisierter Algorithmus, der niemals ein falsches Ergebnis ausgibt. Das Kernprinzip ist:
+
+\begin{itemize}
+    \item Ergebnis: Immer korrekt.
+    \item Laufzeit: Eine Zufallsvariable. Die Analyse konzentriert sich auf die erwartete Laufzeit: $E[\text{Time}(x)]$.
+\end{itemize}
+
+\begin{figure}[H]
+    \img[width=0.9\textwidth]{figures/03/las-vegas.png}
+    {LAS-VEGAS Prinzip}
+    \label{fig:lasvegasprinzip}
+\end{figure}
+
+\subsection{Die zwei Versionen von Las-Vegas-Algorithmen}
+
+Die beiden Versionen von Las-Vegas-Algorithmen unterscheiden sich darin, wie sie mit \enquote{unglücklichen} Zufallswahlen umgehen.
+
+Sie nächste Seite für Vergleichstabelle.
+
+\clearpage
+\begin{longtable}{|p{3cm}|p{5cm}|p{5cm}|}
+    \caption{Vergleich der zwei Versionen von Las-Vegas-Algorithmen}
+    \label{tab:versionen_lasvegas} \\
+
+    \hline
+
+    \textbf{Eigenschaft} & \textbf{Version 1 (Die Strikte)} & \textbf{Version 2 (Die Vorsichtige)} \\
+
+    \hline
+
+    Mögliche Ausgaben & Liefert immer das korrekte Ergebnis $F(x)$ & Liefert entweder das korrekte Ergebnis $F(x)$ oder ein spezielles Symbol wie \enquote{?} (\enquote{keine Antwort}) \\
+
+    \hline
+
+    Fehler- wahrscheinlichkeit & 0\%. Es wird niemals ein falsches Ergebnis $y \neq F(x)$ ausgegeben. & Es wird niemals ein falsches Ergebnis $y \neq F(x)$ ausgegeben. \\
+
+    \hline
+
+    Garantie & Die Berechnung endet immer mit dem korrekten Ergebnis. Die erwartete Laufzeit $E[\text{Time}(x)]$ ist endlich. & Wenn ein Ergebnis geliefert wird, ist es korrekt. Die Wahrscheinlichkeit für ein korrektes Ergebnis muss positiv sein, typischerweise $P(A(x) = F(x)) \geq 1/2$. \\
+
+    \hline
+
+    Beispiel & Randomisierter Quicksort (RQS). Sortiert eine Liste immer korrekt, aber die Anzahl der Vergleiche variiert. & Kommunikationsprotokoll: Meldet bei Unsicherheit lieber \enquote{weiss nicht} (?), als fälschlicherweise Gleichheit zu bestätigen. \\
+
+    \hline
+
+\end{longtable}
+
+Merkhilfe:
+
+\begin{itemize}
+    \item Version 1: Garantiert ein Ergebnis, aber nicht die Laufzeit eines einzelnen Laufs.
+    \item Version 2: Garantiert die Korrektheit des Ergebnisses, falls eines geliefert wird.
+\end{itemize}
+
+\clearpage
+\subsection{Protokoll $\text{LV}_{10}$: Das 4-Phasen Las-Vegas (Version 2)}
+
+Das Ziel: Gibt es mindestens einen Index $i$ mit $x_i = y_i$?
+Wichtig: Das Ziel ist nicht, das alle Paare $x_i = y_i$ sein müssen. Wir wollen schauen, \textbf{ob es mindestens ein Paar gibt, das gleich ist}.
+
+Rechner $R_I$ hat einen String $x$, Rechner $R_{II}$ hat einen String $y$. Beide wollen prüfen, ob $x = y$, ohne die gesamten Strings zu übertragen.
+
+Idee: $R_I$ sendet nur einen kurzen \enquote{Fingerabdruck} von $x$. Bei Übereinstimmung der Fingerabdrücke muss zur Sicherheit der ganze String verifiziert werden, da es eine zufällige Kollision sein könnte.
+
+\textbf{Ausgangslage}
+
+$R_I$ hat 10 Strings $x_1, x_2, \dots, x_{10}$. $R_{II}$ hat auch 10 Strings $y_1, y_2, \dots, y_{10}$.
+
+
+\textbf{Phase 1 : Zufällige Primzahlwahl}
+
+$R_I$ wählt uniform zufällig $k$ Primzahlen $p_1, p_2, \dots, p_k$ aus der Menge aller Primzahlen $\leq n^2$.
+
+\textbf{Phase 2: Fingerabdrücke von $x$ berechnen}
+
+Für jedes $i = 1, \dots, k$ berechnet $R_I$ den Fingerabdruck:
+
+$$
+s_i = \text{Nummer}(x) \mod p_i
+$$
+
+$R_I$ sendet an $R_{II}$ die Paare $(p_i, s_i)$ für $i = 1, \dots, k$:
+
+$$
+(p_1, s_1), (p_2, s_2), \dots, (p_k, s_k)
+$$
+
+\textbf{Phase 3: Vergleich mit $y$}
+
+$R_{II}$ berechnet für jedes $i$:
+
+$$
+q_i = \text{Nummer}(y) \mod p_i
+$$
+
+$R_{II}$ vergleicht nun alle $s_i$ und $q_i$.
+
+Falls: $s_i \neq q_i$, dann weiss $R_{II}$ mit Sicherheit, dass $x_i \neq y_i$ gilt, und sendet \enquote{verwerfe} (0) an $R_I$.
+
+Sonst: Es gibt mindestens ein $i$, für das $s_i = q_i$ gilt. $R_{II}$ nimmt den kleinsten Index $j$ mit $s_j = q_j$ (Jeder Index würde funktionieren, aber der kleinste damit es eindeutig und reproduzierbar ist). Der kleinste Index $j$ wird mit dem kompletten String $y_j$ an $R_I$ zurückgesendet.
+
+\textbf{Phase 4: Entscheidung}
+
+Falls $R_{II}$ \enquote{ungleich} zurücksendet, gibt $R_I$ ebenfalls \enquote{ungleich} zurück.
+
+Falls kein ungleich kam, erhält $R_I$ den Index $j$ und den String $y_j$. $R_I$ vergleicht $x_j$ mit $y_j$:
+
+$$
+x_j \stackrel{?}{=} y_j
+$$
+
+Falls ja, gibt $R_I$ \enquote{gleich} zurück. Sonst \enquote{?}.
+
+Warum geben wir im zweiten Fall \enquote{?} zurück und nicht \enquote{ungleich}?
+
+$R_I$ weiss in diesem Fall wirklich nicht, ob für ein $k > j$ vielleicht $x_k = y_k$ gilt. Es könnte ja sein, dass die Fingerabdrücke für $k$ kollidiert sind, also $s_k = q_k$ gilt, obwohl $x_k \neq y_k$. In diesem Fall müsste $R_{II}$ ja eigentlich \enquote{ungleich} zurücksenden. Da $R_I$ dies nicht sicher wissen kann, sendet es lieber \enquote{?} zurück.
+
+$R_I$ rät nicht und gibt keine falsche Antwort zurück. Es gibt nur dann eine definitive Antwort (\enquote{gleich} oder \enquote{ungleich}), wenn es diese mit Sicherheit geben kann. \textbf{Genau das macht es zu einem Las-Vegas-Algorithmus der Version 2}.
+
+\subsection{Beispiele für $\text{LV}_{10}$ (alle 3 Fälle)}
+
+\textbf{Fall 1: $R_{II}$ sendet \enquote{verwerfe}}
+
+$R_I$ hat $x_1, x_2, x_3$: $1011, 1100, 0011$\newline
+$R_{II}$ hat $y_1, y_2, y_3$: $1110, 1000, 0101$
+
+Hier gilt für alle $x_i \neq y_i$ und somit $s_i \neq q_i$. $R_{II}$ gibt \enquote{verwerfe} zurück. Somit gibt $R_I$ auch \enquote{ungleich} zurück.
+
+\textbf{Fall 2: $R_{II}$ sendet \enquote{gleich}, String sind identisch}
+
+$R_I$ hat $x_1, x_2, x_3$: $1011, 1100, 0011$\newline
+$R_{II}$ hat $y_1, y_2, y_3$: $1011, 1100, 0011$
+
+Hier gilt für alle $x_i = y_i$ und somit $s_i = q_i$. $R_{II}$ sendet den kleinsten Index 1 und den String $y_1$ zurück. $R_I$ vergleicht $x_1$ mit $y_1$ und gibt \enquote{gleich} zurück (da Strings tatsächlich gleich).
+
+\clearpage
+\textbf{Fall 3: $R_{II}$ sendet \enquote{gleich}, Strings nicht identisch}
+
+$R_I$ hat $x_1, x_2, x_3$: $1011, 1100, 0011$\newline
+$R_{II}$ hat $y_1, y_2, y_3$: $0101, 1110, 0001$
+
+Hier gilt nach der Berechnung der Fingerabdrücke (Kollision):
+
+$$
+s_1 = q_1, \quad s_2 \neq q_2, \quad s_3 \neq q_3
+$$
+
+Obwohl die Strings insgesamt nicht identisch sind, kollidieren die Fingerabdrücke für Index 1.
+
+Es gibt also ein $j = 1$ mit $s_j = q_j$. $R_{II}$ sendet den Index 1 und den String $y_1$ zurück. $R_I$ vergleicht $x_1$ mit $y_1$ und gibt \enquote{?} zurück. 
+
+Die Strings scheinen nicht gleich zu sein, dennoch hat $R_{II}$ nicht \enquote{ungleich} zurückgesendet, da es ja eine Kollision der Fingerabdrücke gab.
