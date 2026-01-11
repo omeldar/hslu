@@ -103,13 +103,11 @@ $R_I$ wählt uniform zufällig $k$ Primzahlen $p_1, p_2, \dots, p_k$ aus der Men
 \textbf{Phase 2: Fingerabdrücke von $x$ berechnen}
 
 Für jedes $i = 1, \dots, k$ berechnet $R_I$ den Fingerabdruck:
-
 $$
 s_i = \text{Nummer}(x) \mod p_i
 $$
 
 $R_I$ sendet an $R_{II}$ die Paare $(p_i, s_i)$ für $i = 1, \dots, k$:
-
 $$
 (p_1, s_1), (p_2, s_2), \dots, (p_k, s_k)
 $$
@@ -117,7 +115,6 @@ $$
 \textbf{Phase 3: Vergleich mit $y$}
 
 $R_{II}$ berechnet für jedes $i$:
-
 $$
 q_i = \text{Nummer}(y) \mod p_i
 $$
@@ -133,7 +130,6 @@ Sonst: Es gibt mindestens ein $i$, für das $s_i = q_i$ gilt. $R_{II}$ nimmt den
 Falls $R_{II}$ \enquote{ungleich} zurücksendet, gibt $R_I$ ebenfalls \enquote{ungleich} zurück.
 
 Falls kein ungleich kam, erhält $R_I$ den Index $j$ und den String $y_j$. $R_I$ vergleicht $x_j$ mit $y_j$:
-
 $$
 x_j \stackrel{?}{=} y_j
 $$
@@ -146,6 +142,15 @@ $R_I$ weiss in diesem Fall wirklich nicht, ob für ein $k > j$ vielleicht $x_k =
 
 $R_I$ rät nicht und gibt keine falsche Antwort zurück. Es gibt nur dann eine definitive Antwort (\enquote{gleich} oder \enquote{ungleich}), wenn es diese mit Sicherheit geben kann. \textbf{Genau das macht es zu einem Las-Vegas-Algorithmus der Version 2}.
 
+Die Fehlerwahrscheinlichkeit für eine \enquote{schlechte Primzahl} kennen wir bereits: $< \frac{2 ln(n)}{n}$.
+
+Somit gilt für dieses Protokoll:
+$$
+Pr(A(x) = F(x)) \overset{|x| \rightarrow \inf}{\longrightarrow} 1
+$$
+
+Dies ein Las-Vegas*-Algorithmus (da die Wahrscheinlichkeit für ein korrektes Ergebnis gegen 1 geht, wenn die Eingabegrösse wächst).
+
 \subsection{Beispiele für $\text{LV}_{10}$ (alle 3 Fälle)}
 
 \textbf{Fall 1: $R_{II}$ sendet \enquote{verwerfe}}
@@ -155,6 +160,7 @@ $R_{II}$ hat $y_1, y_2, y_3$: $1110, 1000, 0101$
 
 Hier gilt für alle $x_i \neq y_i$ und somit $s_i \neq q_i$. $R_{II}$ gibt \enquote{verwerfe} zurück. Somit gibt $R_I$ auch \enquote{ungleich} zurück.
 
+\clearpage
 \textbf{Fall 2: $R_{II}$ sendet \enquote{gleich}, String sind identisch}
 
 $R_I$ hat $x_1, x_2, x_3$: $1011, 1100, 0011$\newline
@@ -162,20 +168,87 @@ $R_{II}$ hat $y_1, y_2, y_3$: $1011, 1100, 0011$
 
 Hier gilt für alle $x_i = y_i$ und somit $s_i = q_i$. $R_{II}$ sendet den kleinsten Index 1 und den String $y_1$ zurück. $R_I$ vergleicht $x_1$ mit $y_1$ und gibt \enquote{gleich} zurück (da Strings tatsächlich gleich).
 
-\clearpage
 \textbf{Fall 3: $R_{II}$ sendet \enquote{gleich}, Strings nicht identisch}
 
 $R_I$ hat $x_1, x_2, x_3$: $1011, 1100, 0011$\newline
 $R_{II}$ hat $y_1, y_2, y_3$: $0101, 1110, 0001$
 
 Hier gilt nach der Berechnung der Fingerabdrücke (Kollision):
-
 $$
 s_1 = q_1, \quad s_2 \neq q_2, \quad s_3 \neq q_3
 $$
 
-Obwohl die Strings insgesamt nicht identisch sind, kollidieren die Fingerabdrücke für Index 1.
+Obwohl die Strings insgesamt nicht identisch sind, kollidieren die Fingerabdrücke für die Strings mit Index 1.
 
 Es gibt also ein $j = 1$ mit $s_j = q_j$. $R_{II}$ sendet den Index 1 und den String $y_1$ zurück. $R_I$ vergleicht $x_1$ mit $y_1$ und gibt \enquote{?} zurück. 
 
 Die Strings scheinen nicht gleich zu sein, dennoch hat $R_{II}$ nicht \enquote{ungleich} zurückgesendet, da es ja eine Kollision der Fingerabdrücke gab.
+
+\subsection{Transformation Version 2 zu Version 1}
+
+Die Version 1 hat eine erwartete Laufzeit $E[T]$. Die Laufzeit ist eine Zufallsvariable, es gibt aber kein \enquote{?}. Die Version 1 liefert immer ein korrektes Ergebnis.
+
+Idee: Wenn der V2-Algorithmus unsicher ist und \enquote{?} zurückgibt, wird der gesamte Algorithmus einfach wiederholt, bis eine definitive Antwort (\enquote{gleich} oder \enquote{ungleich}) zurückgegeben wird.
+
+\subsection{Optimierung des Protokolls}
+
+Das ursprüngliche Protokoll $\text{LV}_{10}$ verwendet in Phase 1 zehn unabhängige zufällig gewählte Primzahlen.
+$$
+p_1, p_2, \dots, p_{10}
+$$
+
+Für jedes Paar $(x_i, y_i)$ wird ein Fingerabdruck $\mod p_i$ berechnet.
+
+\clearpage
+\subsubsection{Änderung des Protokolls}
+
+Statt zehn verschiedener Primzahlen wird nur eine einzige zufällige Primzahl gewählt, die für alle Fingerabdrücke verwendet wird:
+$$
+p \in \text{PRIM}(n^2)
+$$
+Die weiteren Phasen bleiben inhaltlich unverändert. Die Logik des Protokolls ändert nicht, nur die Art der Fingerabdrücke.
+
+\subsubsection{Analyse des neuen Protokolls}
+
+Durch den Austausch von nur einer Primzahl statt zehn spart das Protokoll $18 \lceil \log_2 n \rceil $ Kommunikationsbits.
+
+Die Werte in der folgenden Grafik sind beispielhaft und dienen nur der Illustration des Prinzips.
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/03/wachsend.png}
+    {$\text{LV}_{10}$ als LAS-VEGAS*}
+    \label{fig:lasvegasstern}
+\end{figure}
+
+\clearpage
+\section{Summary}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Anwendungsprobleme
+    \begin{enumerate}[label=(\roman*)]
+        \item Für welche zwei typischen Probleme werden randomisierte Algorithmen entwickelt?\newline
+        \textbf{Antwort:} (1) Für Effizienz-Probleme (z.B. schnellere Algorithmen als deterministisch möglich) und (2) für Informations- bzw. Kommunikationsprobleme (z.B. weniger Datenübertragung).
+
+        \item Was bedeuten falsche Berechnungen?\newline
+        \textbf{Antwort:} Der Algorithmus liefert ein falsches Ergebnis mit kleiner Wahrscheinlichkeit. Die Korrektheist ist nicht garantiert, aber kontrollierbar.
+    \end{enumerate}
+    \item LAS-VEGAS-Algorithmen
+    \begin{enumerate}[label=(\roman*)]
+        \item Was sind LAS-VEGAS-Algorithmen?\newline
+        \textbf{Antwort:} Randomisierte Algorithmen, die nie ein falsches Ergebnis liefern. Zufall beeinflusst nur Laufzeit oder Abbruch, nicht die Korrektheit.
+
+        \item Was ist der Unterschied der Definitionen Version 1 und Version 2?\newline
+        \textbf{Antwort:} (1) Version 1 garantiert immer ein korrektes Ergebnis, zufällige Laufzeit. (2) Version 2 gibt entweder ein korrektes Ergebnis oder \enquote{?} zurück, mit einer Wahrscheinlichkeit $\geq 1/2$ für ein korrektes Ergebnis.
+    \end{enumerate}
+    \item Beispiel Kommunikationsprotokoll: Kenne ich die vier Phasen des LAS-VEGAS-Verfahrens nach Version 2?\newline
+    \textbf{Antwort:}
+    \begin{enumerate}
+        \item Zufällige Wahl (z.B. Primzahlen)
+        \item Berechnung und Versand von Fingerabdrücken
+        \item Vergleich der Fingerabdrücke
+        \item Deterministische Überprüfung und Entscheidung
+    \end{enumerate}
+
+    \item Version 1 versus Version 2: Wie entsteht aus einem LAS-VEGAS-Algorithmus der Version 2 ein LAS-VEGAS-Algorithmus der Version 1 und umgekehrt?\newline
+    \textbf{Antwort:} (1) $V2 \rightarrow V1$: Wiederhole den Algorithmus, bis ein Ergebnis $\neq ?$ erscheint. (2) $V1 \rightarrow V2$: Brich nach Zeitlimit ab und gib bei Überschreitung \enquote{?} zurück.
+\end{enumerate}

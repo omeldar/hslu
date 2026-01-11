@@ -86,7 +86,7 @@ Vergleich der beiden Methoden mit $n = 10^{16}$ Bits.
 
 \begin{itemize}
     \item Gesendet werden zwei Zahlen: $p$ und $s$.
-    \item Das $s \le p \leq n^2$, können beide mit ca. $log_2(n^2)$ Bits dargestellt werden.
+    \item Das $s < p \leq n^2$, können beide mit ca. $log_2(n^2)$ Bits dargestellt werden.
     \item Die Formel vereinfacht sich zu $log_2(n^2) = 2 \cdot log_2(n)$.
     \item Die Gesamtkommunikation (für $p$ und $s$) beträgt also ca. $4 \cdot log_2(n)$ Bits.
 \end{itemize}
@@ -190,8 +190,8 @@ $$
 \subsubsection{Abschätzung}
 
 \begin{itemize}
-    \item Da $x,y$ n-Bit-Zahlen sind, gilt $w \le 2^n$
-    \item Eine Zahl $w \le 2^n$ hat höchstens $n-1$ verschiedene Primteiler.
+    \item Da $x,y$ n-Bit-Zahlen sind, gilt $w < 2^n$
+    \item Eine Zahl $w < 2^n$ hat höchstens $n-1$ verschiedene Primteiler.
     \item Wählen wir $p$ zufällig unter allen Primzahlen $\leq n^2$, so gibt es davon etwa:\newline
 \end{itemize}
 
