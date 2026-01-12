@@ -232,16 +232,31 @@ Gesucht sind ganzzahlige Variablenwerte, die lineare Nebenbedingungen erfüllen 
 \begin{enumerate}[label=(\alph*)]
     \item Optimierungsprobleme:
     \begin{enumerate}[label=(\roman*)]
-        \item Wie wird ein randomisierter Algorithmus für ein Optimierungsproblem durch Wiederholungen eingesetzt?
-        \item Was können wir über die Wahrscheinlichkeit für die optimale Lösung sagen?
-        \item Welche Eigenschaft soll eine zulässige Lösung haben?
-        \item Wie wird ein Optimierungsproblem allgemein beschrieben?
+        \item Wie wird ein randomisierter Algorithmus für ein Optimierungsproblem durch Wiederholungen eingesetzt?\newline
+        \textbf{Antwort}: Man führt den randomisierten Algorithmus mehrmals unabhängig auf derselben Instanz aus und behält am Ende die beste gefundene zulässige Lösung (bei Minimum: kleinster Wert, bei Maximum: grösster Wert).
+
+        \item Was können wir über die Wahrscheinlichkeit für die optimale Lösung sagen?\newline
+        \textbf{Antwort}: Wenn ein einzelner Lauf das Optimum mit Wahrscheinlichkeit mindestens $p$ findet, dann ist nach $t$ unabhängigdn Läufen die Erfolgswahrscheinlichkeit $1 - (1-p)^t$. Falls: $p \geq \frac{1}{|x|}$, dann liefern $|x|$ Wiederholungen schon konstante Erfolgswahrscheinlichkeit (mind. $1 - 1 / e$), und mit $|x| \log |x|$ geht sie sehr nahe zu 1 (100\%).
+
+        \item Welche Eigenschaft soll eine zulässige Lösung haben?\newline
+        \textbf{Antwort}: Sie muss alle Nebenbedingungen/Constraints der Instanz erfüllen, also wirklich eine erlaubte Lösung des Problemfalls sein.
+
+        \item Wie wird ein Optimierungsproblem allgemein beschrieben?\newline
+        \textbf{Antwort}: Ein Optimierungsproblem wird durch (1) Menge zulässiger Eingaben, (2) Menge zulässiger Lösungen pro Eingabe, (3) Kosten-/Bewertungsfunktion und (4) Zielrichtung (Minimum oder Maximum) beschrieben.
     \end{enumerate}
     \item Beispiele:
     \begin{enumerate}[label=(\roman*)]
-        \item Kann ich das TSP-Problem erklären?
-        \item Kann ich das MIN-VCP-Problem erklären?
-        \item Kann ich das MAX-SAT-Problem erklären?
-        \item Kann ich erklären, was IPL-Probleme sind?
+        \item Kann ich das TSP-Problem erklären?\newline
+        \textbf{Antwort}: Eingabe: gewichteter Graph. Z.B. Städte mit Distanzen. Zulässige Lösungen: Rundreisen, die jede Stadt genau einmal besuchen (Hamiltonkreis). Ziel: Gesamtlänge minimieren.
+
+        \item Kann ich das MIN-VCP-Problem erklären?\newline
+        \textbf{Antwort}: Eingabe: Graph. Gesucht ist eine möglichst kleine Knotenmenge $U \subseteq V$, sodass jede Kante in $E$ an mindestens einem Endpunkt in $U$ liegt. Ziel: $U$ minimieren.
+
+        \item Kann ich das MAX-SAT-Problem erklären?\newline
+        \textbf{Antwort}: Eingabe: Formel in KNF (UND von Klauseln). Lösung: Wahrheitsbelegung der Variablen. Ziel: Anzahl erfüllter Klauseln maximieren.
+
+        \item Kann ich erklären, was IPL-Probleme sind?\newline
+        \textbf{Antwort}: Man hat lineare Nebenbedingungen (Gleichungen/Ungleichungen) und eine lineare Zielfunktion. Gesucht ist eine optimale Lösung, bei der die Variablen ganzzahlig (z.B. in $\Z$ oder $\N$) sein müssen. Ziel: Zielfunktion minimieren oder maximieren.
+
     \end{enumerate}
 \end{enumerate}
