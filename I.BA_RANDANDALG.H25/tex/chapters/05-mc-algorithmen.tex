@@ -1,26 +1,173 @@
-\section{abc}
+\section{Entscheidungsproblem vs. Funktionsproblem}
 
-def
+\textbf{Entscheidungsproblem}
+
+Ein Entscheidungsproblem ist ein Paar $\Sigma, L$:
+
+\begin{itemize}
+    \item Eingabe ist ein Wort $x \in \Sigma^{*}$
+    \item Ausgabe ist 1 (Ja), wenn $x \in L$, sonst 0 (Nein).
+\end{itemize}
+
+\textbf{Funktionsproblem}
+
+Hier berechnen wir eine Funktion $F(x)$ (nicht nur JA/NEIN), z.B. eine Zahl, ein String, ein Objekt. Genau dafür sind 2MC und MC formuliert.
+
+\section{1MC-Algorithmen}
+
+Intuition: Bei 1MC ist nur eine Fehlerseite erlaubt:
+
+\begin{itemize}
+    \item Wenn $x \notin L$: nie ein Fehler (immer korrekt \enquote{Nein}).
+    \item Wenn $x \in L$: darf es passieren, dass der Algorithmus \enquote{Nein} sagt (Fehler), aber \enquote{Ja} kommt mit mindestens $1/2$.
+\end{itemize}
+
+\textbf{Formale Definition}: Algorithmus $A$ ist 1MC für $L$, wenn:
+
+\begin{enumerate}
+    \item Für alle $x \in L: Pr[A(x) = 1] \geq 1/2$
+    \item Für alle $y \notin L: Pr[A(y) = 0] = 1$
+\end{enumerate}
+
+Was ist zusätzlich bei 1MC*? Ein 1MC*-Algorithmus hat die Extra-Eigenschaft:
+\begin{itemize}
+    \item Für $x \in L$ konvergiert $Pr[A(x) = 1]$ mit wachsender Eignabelänge gegen 1.
+\end{itemize}
+
+\subsection{Wiederholung bei 1MC}
+
+Strategie: $k$-mal unabhängig laufen lassen und am Ende ODER verknüfen:
+
+\begin{itemize}
+    \item Gib 1 aus, sobald mindestens ein Lauf 1 liefert.
+    \item Gib 0 aus, wenn alle Läufe 0 liefern.
+\end{itemize}
+
+Fehleranalyse:
+
+\begin{itemize}
+    \item Für $y \notin L$: Fehler bleibt 0 (weil niemals 1 ausgegeben wird).
+    \item Für $x \in L$: Fehler passiert nur, wenn alle $k$ Läufe fälschlich 0 liefern:
+    $$
+    Pr[\text{Fehler}] \leq (1/2)^k = 2^{-k}
+    $$
+\end{itemize}
+
+Einfluss auf Zeit \& Fehler:
+\begin{itemize}
+    \item Zeitkomplexität: multpliziert sich linear mit $k$
+    \item Fehlerwahrscheinlichkeit: fällt exponentiell in $k$
+\end{itemize}
+
+\section{2MC-Algorithmen}
+
+Intuition: \enquote{feste Lücke} (Gap) über 1/2
+
+Bei 2MC darf der Fehler auf beiden Seiten passieren, aber wir haben eine garantierte Trefferzone:
+$$
+Pr[A(x) = F(x)] \geq 1/2 + c
+$$
+mit einer festen Konstante $c > 0$, die nicht von $|x|$ abhängt. Das ist genau die \enquote{fixe Lücke $c$} in den Slides.
+
+\textbf{Formale Definition}
+
+$A$ ist 2MC für eine Funktion $F$, wenn es ein $c$ mit $0 < c \leq 1/2$ gibt, sodass für alle Eingaben $x$:
+$$
+Pr[A(x) = F(x)] \geq 1/2 + c
+$$
+
+\subsection{Wiederholung bei 2MC: Majority Vote}
+
+Da Fehler beidseitig möglich sind, funktioniert bei 2MC nicht das ODER-Kriterium wie bei 1MC. Stattdessen: $t$ unabhängige Läufe und nimm das Resultat, das am häufigsten vorkommt (Mehrheitsentscheid / Majority Vote).
+
+\textbf{Warum hilft das?} Weil der Erwartungs-\enquote{Vorsprung} $c$ bei vielen unabhängigen Läufen stabilisiert wird: die Mehrheit wird mit sehr hoher Wahrscheinlichkeit korrekt.
+
+Typische Schranke: Die Fehlerwahrscheinlichkeit sinkt exponentiell in $t$, z.B. in der Form:
+$$
+Pr[\text{Fehler nach } t \text{ Läufen}] \leq (1 - 4c^2)^{t/2}
+$$
+Daraus folgt für gewünschte Fehlerschranke $\delta$:
+$$
+t \gtrsim \frac{2 \ln(\delta)}{\ln(1 - 4c^2)}
+$$
+Wichtig ist die Aussage: Wenn $c$ konstant ist, reichen konstant viele Wiederholungen für konstantes $\delta \rightarrow$ bleibt effizient.
+
+\section{MC-Algorithmen}
+
+\textbf{Formale Definition}: Ein Algorithmus $A$ ist MC für eine Funktion $F$, wenn für alle $x$:
+$$
+Pr[A(x) = F(x)] \geq 1/2
+$$
+Mehr wird nicht verlangt.
+
+Der entscheidende Unterschied zu 2MC: \enquote{verschwindende Lücke}. Bei 2MC war der Abstand zu $1/2$ durch ein fixes $c$ gesichert. Bei MC darf die Lücke:
+$$
+c_x := Pr[A(x) = F(x)] - 1/2
+$$
+mit wachsender Eingabelänge gegen 0 gehen. Genau das ist die \enquote{verschwindende Lücke}.
+
+Warum ist das ein Problem? Mehr Wiederholungen helfen nur, wenn man \enquote{genug Abstand} haben. Wenn $c_x$ winzig ist, brauchen wir extrem viele Läufe, um Mehrheitsentscheidung zuverlässig zu machen (typisch proportional zu $1 / c_x^2$). Wenn $c_x$ z.B. exponentiell klein ist, wird die nötige Wiederholungszahl exponentiell gross. Das ist ineffizient.
+
+\section{Beispiel MC/UMC: Kommunikationsprotokoll mit zwei Phasen}
+
+Idee (UMC-Protokoll):
+
+\begin{itemize}
+    \item Zwei Strings $x,y \in {0, 1}^n$. Wir wollen entscheiden, ob $x \neq y$ (Sprache $L_{\text{ungleich}}$).
+    \item Phase 1: Wähle zufällig eine Position $j$, sende $j$ und $x_j$.
+    \item Phase 2: Wenn $x_j \neq y_j$: akzeptiere sicher (weil dann $x \neq y$). Wenn $x_j = y_j$: entscheide mit einer leicht \enquote{biased} Münze.
+\end{itemize}
+
+Kernpunkt der Analyse:
+\begin{itemize}
+    \item Wenn $x = y$, ist die korrekte Antwort \enquote{gleich} (also verwerfen). Das passiert nur mit Wahrscheinlichkeit $> 1/2$, aber der Vorsprung über $1/2$ ist nur etwa in der Grössenordnung $1/n$.
+    \item Wenn $x \neq y$, hängt die Erfolgswahrscheinlichkeit davon ab, wie viele Position sich unterscheiden. Im Worst Case (nur 1 Unterschied) ist die Chance, den Unterschied in Phase 1 zu treffen, nur $1/n$, und der Gesamtvorsprung über $1/2$ kann extrem klein werden (typisch Grössenordnung $1/n^2$).
+\end{itemize}
+
+\textbf{Take-away}:
+
+Das Protokoll ist MC (immer knapp über $1/2$ korrekt), aber die Lücke wird mit grossem $n$ so klein, dass man exponentiell/astronomisch viele Wiederholungen bräuchte $\rightarrow$ \enquote{formal korrekt, aber praktisch oft nutzlos}.
 
 \clearpage
 \begin{enumerate}[label=(\alph*)]
     \item 1MC-Algorithmen:
     \begin{enumerate}[label=(\roman*)]
-        \item Was ist ein Entscheidungsproblem?
-        \item Wie wird ein 1MC-Algorithmus für Entschiedungsprobleme definiert?
-        \item Was haben 1MC*-Algorithmen für eine zusätzliche Eigenschaft?
-        \item Weiss ich, wie 1MC-Algorithmen mit n Wiederholungen verwendet werden?
-        \item Was hat diese Wiederholung für einen Einfluss auf die Zeitkomplexität und die Fehlerwahrscheinlichkeit?
+        \item Was ist ein Entscheidungsproblem?\newline
+        \textbf{Antwort}: Ein Problem, bei dem zu einer Eingabe $x$ nur JA/NEIN entschieden wird (formal: Sprache $L \subseteq \Sigma^{*}$). Ausgabe 1 falls $x \in L$, sonst 0.
+
+        \item Wie wird ein 1MC-Algorithmus für Entschiedungsprobleme definiert?\newline
+        \textbf{Antwort}: Ein randomisierter Algorithmus $A$ mit einseitigem Fehler. Nur bei einer Antwort darf sich der Algorithmus irren.
+
+        \item Was haben 1MC*-Algorithmen für eine zusätzliche Eigenschaft?\newline
+        \textbf{Antwort}: Für $x \in L$ wird die Erfolgswahrscheinlichkeit mit wachsender Eingabelänge immer besser (typisch geht gegen 1).
+
+        \item Weiss ich, wie 1MC-Algorithmen mit n Wiederholungen verwendet werden?\newline
+        \textbf{Antwort}: Füre $A$ n-mal unabhängig aus und gib JA aus, sobald ein Lauf JA liefert (ODER-Regel). Sonst NEIN.
+
+        \item Was hat diese Wiederholung für einen Einfluss auf die Zeitkomplexität und die Fehlerwahrscheinlichkeit?\newline
+        \textbf{Antwort}: (1) Zeit wird $n$-mal so gross (linear in $n$). (2) Fehler nur möglich für z.B. $x \in L$, dann $Pr[\text{Fehler}] \leq (1/2)^n = 2^{-n}$ (exponentiell klein, je mehr Ausführungen desto kleiner).
+
     \end{enumerate}
     \item 2MC-Algorithmen:
     \begin{enumerate}[label=(\roman*)]
-        \item Wie wird ein 2MC-Algorithmus für Berechnung einer Funktion definiert?
-        \item Weiss ich, wie 2MC-Algorithmen mit n Wiederholungen verwendet werden?
+        \item Wie wird ein 2MC-Algorithmus für Berechnung einer Funktion definiert?\newline
+        \textbf{Antwort}: Ein randomisierter Algorithmus $A$ berchnet $F(x)$ mit $Pr[A(x) = F(x)] \geq 1/2 + c$ für alle $x$, wobei $c > 0$ eine feste Konstante ist. Bedeutet: ,Ein randomisierter Algorithmus ist 2MC für $F$, wenn er für jede Eingabe $x$ den richtigen Wert $F(x)$ mit Wahrscheinlichkeit mindestens $1/2 + c$ liefert.
+
+        \item Weiss ich, wie 2MC-Algorithmen mit n Wiederholungen verwendet werden?\newline
+        \textbf{Antwort}: Führe $A$ n-mal unabhängig aus und gib den Wert aus, der am häufigsten vorkommt (Majority-Vote).
+
     \end{enumerate}
     \item MC-Algorithmen:
     \begin{enumerate}[label=(\roman*)]
-        \item Wie wird ein MC-Algorithmus für Berechnung einer Funktion definiert?
-        \item Was kann bei MC-Algorithmen das Problem sein?
-        \item Kann ich das Beispiel (Kommunikationsprotokoll mit zwei Phasen) erklären?
+        \item Wie wird ein MC-Algorithmus für Berechnung einer Funktion definiert?\newline
+        \textbf{Antwort}: $Pr[A(x) = F.(x)] > 1/2$ für alle $x$. (Kein fester Abstand über 1/2 gefordert). Bedeutet: Ein randomisierter Algorithmus ist MC für $F$, wenn er für jede Eingabe $x$ den richtigen Wert $F(x)$ mit Wahrscheinlichkeit grösser als $1/2$ liefert. Aber der Vorsprung über $1/2$ muss nicht fest sein (kann sehr klein werden).
+
+        \clearpage
+        \item Was kann bei MC-Algorithmen das Problem sein?\newline
+        \textbf{Antwort}: Der Vorsprung über $1/2$ kann sehr klein sein und mit $|x|$ gegen 0 gehen (\enquote{verschwindende Lücke}). Dann braucht man extrem viele Wiederholungen $\rightarrow$ praktisch ineffizient.
+
+        \item Kann ich das Beispiel (Kommunikationsprotokoll mit zwei Phasen) erklären?\newline
+        \textbf{Antwort}: Phase 1 findet zufällig eine Position, an der sich $x$ und $y$ unterscheiden (klappt nur mit kleiner Wahrscheinlichkeit, z.B. $1/n$). Phase 2 nutzt dann eine leicht verzerrte Entscheidung. Insgesamt ist die Erfolgswahrscheinlichkeit zwar $> 1/2$, aber der Vorteil über $1/2$ wird für grosse $n$ winzig.
+
     \end{enumerate}
 \end{enumerate}
