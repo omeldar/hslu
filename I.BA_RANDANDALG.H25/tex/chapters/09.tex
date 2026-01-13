@@ -1,0 +1,122 @@
+\section{Paradigmen für randomisierte Algorithmen (Überblick)}
+
+\begin{enumerate}
+    \item Überlisten des Gegners
+    \item Fingerprinting
+    \item Wahrscheinlichkeitsverstärkung
+    \item Häufige Zeugen
+    \item Random Rounding
+\end{enumerate}
+
+\section{Überlisten des Gegners}
+
+\textbf{Deterministisch}: Der Gegner kennt deinen Algorithmus genau und kann die Eingabe so wählen, dass du garantiert im Worst Case landest.
+
+\textbf{Randomisiert}: Der Gegner kennt zwar den Algorithmus, aber nicht deine Zufallsentscheidungen. Dadurch kann er den Worst Case nicht mehr zuverlässig \enquote{treffen}. Ziel: Worst-Case (gegen Gegner) wird zu Average-Case (über Zufall).
+
+Wichtig: Das heisst nicht \enquote{kein Worst Case existiert}, sondern: Er wird unwahrscheinlich, weil der Gegner nicht weiss, welchen zufälligen Pfad der Algorithmus nimmt.
+
+\clearpage
+\section{Hashing-Problem (Musterbeispiel fürs Überlisten)}
+
+\textbf{Was ist das Hashing Problem?}
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/hashing.png}
+    {Hashing Problem}
+    \label{fig:hashingproblem}
+\end{figure}
+
+Wir haben ein grosses Universum $U$ möglicher Schlüssel (z.B. alle möglichen IDs), aber nur eine Tabelle $T$ mit $m$ Slots ($0$ bis $m-1$). In der Anwendung liegt jeweils eine aktuelle Menge $S$ von Schlüsseln vor, typischerweise mit $n = |S|$. Wir wählen die Hashfunktion $h$, die jeden Schlüssel $x$ auf einen Slot abbildet: $h: U \rightarrow {0, \dots, m-1}$.
+
+\textbf{Problem}: Weil $U$ viel grösser als $T$ ist, sind Kollisionen unvermeidbar (verschiedene Schlüssel landen im gleichen Slot). Dann hängen in einem Slot mehrere Elemente (typisch als Liste/Chain), und Suchen/Einfügen/Löschen wird so langsam wie die Listenlänge.
+
+\subsection{Warum scheitert deterministisches Hashing}
+
+Wenn wir eine feste Hashfunktion $h$ benutzen, kann ein Gegner (der $h$ kennt) gezielt Schlüssel wählen, die alle in denselben Slot fallen. Dann wird eine $O(1)$-Suche zu einer lineare Liste der Länge $n$, also $O(n)$. Genau das ist \enquote{Gegner erzwingt Worst Case}.
+
+\subsection{Warum ist Hashing ein Musterbeispiel fürs Überlisten}
+
+Wir machen den Gegner mit der Randomisierung blind, indem wir die Hashfunktion zufällig auswählen (aus einer geeigneten Familie). Dann kann der Gegner zwar Schlüssel wählen, aber er weiss nicht, welche Hashfunktion verwendet wird, also kann er Kollisionen nicht zuverlässig erzwingen.
+
+\section{Geeignete Hashfunktionen: Universelles Hashing}
+
+\textbf{Grundidee}: Nicht \enquote{eine perfekte Hashfunktion finden}, sondern: eine Familie $H$ von Hashfunktionen definieren und beim Start zufällig $h \in H$ wählen.
+
+\textbf{Definition}: Eine Familie $H$ heisst (in diesem Kontex) universell, wenn für jedes Paar verschiedener Schlüssel $x \neq y$ gilt:
+$$
+Pr_h[ h(x) = h(y)] \leq \frac{1}{m}
+$$
+wobei die Wahrscheinlichkeit über die zufällige Wahl von $h$ aus $H$ läuft.
+
+Intuition: Für jedes feste Paar $x,y$ ist die Kollisionschance höchstens so klein, als würden wir \enquote{komplett zufällig} verteilen (ungefähr $1/m$).
+
+\textbf{Warum bringt das erwartete $O(1)$?}
+
+Wenn Kollisionen pro Paar so selten sind, ist die erwartete Kettenlänge pro Slot ungefähr $n/m$ (das ist der \enquote{Load Factor}). Wenn wir also $m$ proportional zu $n$ wählen (z.B. $m \approx n$), dann ist die erwartete Listenlänge konstant $\Rightarrow$ Search/Insert/Delete sind erwartungsgemäss $O(1)$. Das ist genau der gewünschte Effekt.
+
+\textbf{Konkretes Beispiel einer universellen Familie}
+
+Eine praktische universelle Klasse ist:
+
+\begin{itemize}
+    \item Wähle eine Primzahl $p > |U|$ (damit Rechnen \enquote{sauber} ist).
+    \item Wähle zufällig Parameter $a \in {1, \dots, p-1}$ und $b \in {0, \dots, p-1}$.
+    \item Definiere: $h_{a,b}(x) = ((a \cdot x + b) \mod p) \mod m$
+\end{itemize}
+
+\clearpage
+Was bedeutet dies?
+
+\begin{itemize}
+    \item $a \cdot x + b$: lineare \enquote{Durchmischung} des Schlüssels $x$ ($a$: Steigung, $b$: Offset).
+    \item $\bmod p$: Wir arbeiten in einem Bereich $0..p-1$ (Primzahl sorgt dafür, dass die Abbildung sich gut verteilt)
+    \item $\bmod m$: Am Ende wird auf die Tabellengrösse $m$ reduziert (Slot $0..m-1$).
+\end{itemize}
+
+Das ist \enquote{geeignet}, weil man zeigen kann: diese Familie ist universell (Kollisionswahrscheinlichkeit bleibt $\lesssim 1/m$) und $h$ ist schnell berechenbar.
+
+\section{Online-Probleme: Was ist das (und Beispiele)?}
+
+Ein Online-Problem heisst: Die Eingabe kommt stückweise/sequenziell. Wir müssen nach jedem Teil sofort entscheiden, und die Entscheidung ist unwiderruflich (wir könne sie später nicht einfach rückgängig machen), obwohl wir die Zukunft nicht kennen. Der Gegner kann dabei sogar das Timing/\enquote{was als Nächstes kommt} so wählen, dass unsere früheren Entscheidungen schlecht aussehen.
+
+Typische Beispiele:
+
+\begin{itemize}
+    \item Paging/Caching: Cache ist voll, neue Seite kommt $\rightarrow$ welche Seite werfen wir raus? (Zukunft unbekannt).
+    \item Ski-Rental: Kaufen oder mieten, ohne zu wissen, wie oft wir noch fahren (Fixkosten vs. laufende Kosten).
+    \item Scheduling: Jobs kommen nacheinander $\rightarrow$ welche Maschine/zeitliche Einplanung, ohne alle zukünftigen Jobs zu kennen.
+\end{itemize}
+
+\clearpage
+\section{Summary}
+\begin{enumerate}[label=(\alph*)]
+    \item Paradigmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Welche Paradigmen für den Entwurf von randomisierten Algorithmen gibt es?\newline
+        \textbf{Antwort}: (1) Überlisten des Gegners, (2) Fingerprinting, (3) Wahrscheinlichkeitsverstärkung, (4) Häufige Zeugen und (5) Random Rounding
+    \end{enumerate}
+    \item Überlisten des Gegners:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?\newline
+        \textbf{Antwort}: Ein Gegner kann bei deterministischen Algorithmen eine Eingabe so wählen, dass immer der Worst Case passiert. Mit Randomisierung kennt der Gegner die Zufallsentscheidungen nicht und kann den Worst Case nicht gezielt erzwingen. Dadurch bekommen wir eine gute Leistung im Erwartungswert statt garantiert schlecht.
+
+        \item Was ist das Hashing-Problem?\newline
+        \textbf{Antwort}: Viele mögliche Schlüssel müssen auf wenige Tabellenplätze abgebildet werden. Dabei entstehen Kollisionen (mehrere Schlüssel landen im gleichen Slot), was Suche/Einfügen langsam machen kann, wenn sich zu viele in einem Slot sammeln.
+
+        \item Warum ist Hashing ein Musterbeispiel für das überlisten des Gegners?\newline
+        \textbf{Antwort}: Wenn die Hashfunktion fix ist, kann ein Gegner Schlüssel so wählen, dass sie alle kollidieren. Wählen wir die Hashfunktion zufällig, kann der Gegner diese Kollision nicht zuverlässig planen.
+
+        \item Was sind geeignete Hashfunktionen?\newline
+        \textbf{Antwort}: Solche, die Schlüssel gleichmässig verteilen und Kollisionen selten machen. Typisch: zufällige Wahl aus einer universellen Hashfamilie, sodass für jedes Schlüsselpaar die Kollisionswahrscheinlichkeit klein ist.
+
+    \end{enumerate}
+    \item Online-Probleme:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Online Problem?\newline
+        \textbf{Antwort}: Die Eingabe kommt schrittweise, und wir müssen sofort Entscheidungen treffen, ohne die Zukunft zu kennen. Entscheidungen sind meistens nicht oder nur teuer rückgängig zu machen.
+
+        \item Kenn ich Beispiele für Online Probleme?\newline
+        \textbf{Antwort}: (1) Caching/Paging (welche Seite rauswerfen), (2) Ski-Rental (mieten vs. kaufen) und (3) Online-Scheduling (Jobs kommen nach und nach und müssen direkt eingeplant werden).
+    \end{enumerate}
+\end{enumerate}

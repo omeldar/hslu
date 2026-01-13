@@ -41,4 +41,18 @@ Approximationsgarantie (als $E[\delta]$-Approximation): Das Optimum ist höchste
 $$
 \delta = \frac{m}{m(1-2^{-k})} = \frac{1}{1 - 2^{-k}} = \frac{2^k}{2^k-1}
 $$
-Beispiel: $k = 1 \Rightarrow \delta \leq 2, \quad k = 2 \Rightarrow \delta \leq 4/3, k= 3 \Rightarrow \delta \leq 8/7$.
+Beispiel: $k = 1 \Rightarrow \delta \leq 2, \quad k = 2 \Rightarrow \delta \leq 4/3, \quad k= 3 \Rightarrow \delta \leq 8/7$.
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/markov.png}
+    {Markov Summary}
+    \label{fig:markovsummary}
+\end{figure}
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/STICH.png}
+    {STICH Summary}
+    \label{fig:stichsummary}
+\end{figure}
+
+Wobei $m$ die Anzahl Klauseln in der Formel ist. $m \cdot (1 - 2^{-k})$ ist somit die erwartete Anzahl erfüllter Klauseln.
