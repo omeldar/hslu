@@ -1,0 +1,176 @@
+\section{Approximations-Güte}
+
+Wir vergleichen:
+
+\begin{itemize}
+    \item $\text{cost}(A(x))$ = Wert/Kosten der Lösung des Algorithmus
+    \item $\text{Opt}(x)$ = Wert/Kosten der optimalen Lösung
+\end{itemize}
+
+Da es Minimierungs- und Maximierungsprobleme gibt, nutzt man eine Definition, die immer $\geq 1$ ist:
+$$
+\text{Güte}_A(x) = \max\left\{\frac{\mathrm{cost}(A(x))}{\mathrm{Opt}(x)},\ \frac{\mathrm{Opt}(x)}{\mathrm{cost}(A(x))}\right\}
+$$
+
+Intuition:
+
+\begin{itemize}
+    \item $1.0$ bedeutet: Algorithmus ist optimal.
+    \item Je grösser, desto schlechter (weiter weg vom Optimum).
+\end{itemize}
+
+Warum dieses \enquote{max}?
+
+\begin{itemize}
+    \item Beim Minimum ist $\text{cost}(A)$ normalerweise $\geq \text{Opt}$, dann ist $\frac{\text{cost}(A)}{\text{Opt}} \geq 1$.
+    \item Beim Maximum ist $\text{cost}(A)$ normalerweise $\leq \text{Opt}$,
+    dann ist $\frac{\text{Opt}}{\text{cost}(A)} \geq 1$.
+\end{itemize}
+
+\clearpage
+\section{Was ist ein $\delta$-Approximationsalgorithmus}
+
+Ein Algorithmus $A$ ist ein $\delta$-Approximationsalgorithmus, wenn seine Gẗe für jede Eingabe höchstens $\delta$ ist:
+$$
+\text{Güte}_A(x) \leq \delta, \quad \forall x
+$$
+
+\textbf{Minimum-Problem (z.B. \enquote{Kosten minimieren})}
+
+Hier gilt typischerweise $\text{cost}(A(x)) \geq \text{Opt}(x)$. Dann bedeutet $\delta$-Approximation:
+$$
+\text{cost}(A(x)) \leq \delta \cdot \text{Opt}(x)
+$$
+Sprich: Die Lösung ist höchstens Faktor $\delta$ teurer/schlechter als optimal.
+
+\textbf{Maximum-Problem (z.B. \enquote{Gewinn maximieren})}
+
+Hier gilt typischerweise $\text{cost}(A(x)) \leq \text{Opt}(x)$. Dann bedeutet $\delta$-Approximation:
+$$
+\text{Opt}(x) \leq \delta \cdot \text{cost}(A(x))
+$$
+Umgestellt (oft intuitiver):
+$$
+\text{cost}(A(x)) \geq \frac{1}{\delta} \cdot \text{Opt}(x)
+$$
+Sprich: Du erreichst mindestens neinen $\frac{1}{\delta}$-Anteil des Optimums.
+
+\section{VAC-Algorithmus für MIN-VCP (Vertex Cover)}
+
+\textbf{Problem (MIN-VCP)}
+
+Gegeben ein ungerichteter Graph $G = (V, E)$.
+
+Gesucht: möglichst wenige Knoten $C \subseteq V$, so dass jede Kante mindestens einen Endpunkt in $C$ hat.
+
+Ziel: minimiere $|C|$.
+
+\clearpage
+\textbf{VAC-Idee}
+
+Algorithmus:
+
+\begin{enumerate}
+    \item Wähle irgendeine Kante ${u,v}$
+    \item Nimm beide Knoten $u$ und $v$ ins Cover $C$.
+    \item Entferne alle Kanten, die an $u$ oder $v$ hängen (die sind jetzt abgedeckt).
+    \item Wiederhole, bis keine Kanten mehr übrig sind.
+\end{enumerate}
+
+\textbf{Warum ist das eine 2-Approximation?}
+
+Denk an jede Kante, die VAC auswählt. Für diese Kante ${u, v}$ gilt:
+
+\begin{itemize}
+    \item Jedes gültige Vertex Cover (also auch das Optimum) muss mindestens einen der beiden Knoten nehmen, sonst wäre diese Kante nicht abgedeckt.
+    \item VAC nimmt immer beide. \enquote{bezahlt} 2 statt mindestens 1.
+\end{itemize}
+
+Wenn VAC insgesamt $k$ Kanten auf diese Weise \enquote{auswählt}, nimmt VAC $2k$ Knoten. Das Optimum braucht mindestens $k$ Knoten (weil pro ausgewählter Kante mindestens 1 nötig ist). Also:
+$$
+|C_{VAC}| \leq 2 \cdot |C_{\text{Opt}}|
+$$
+
+\section{Zwei Arten von Garantien}
+
+Bei randomisierten Algorithmen ist das Ergebnis (und damit die Güte) zufällig (also eine Zufallsvariable).
+
+\textbf{Typ 1: Randomisierter $E[\delta]$-Approximationsalgorithmus}
+
+Eigenschaften:
+
+\begin{enumerate}
+    \item Liefert immer eine zulässige Lösung.
+    \item Der Erwartungswert der Güte ist höchstens $\delta$:
+\end{enumerate}
+$$
+\mathbb{E}[\text{Güte}_A(x)] \leq \delta
+$$
+
+Bedeutung: Im Durchschnitt gut, aber es können selten auch sehr schlechte Ausreisser passieren.
+
+\textbf{Typ 2: Randomisierter $\delta$-Approximationsalgorithmus}
+
+Eigenschaften:
+
+\begin{enumerate}
+    \item Liefert immer eine zulässige Lösung.
+    \item Mit Wahrscheinlichkeit mindestens $1/2$ ist die Güte wirklich höchstens $\delta$:
+\end{enumerate}
+$$
+Pr(\text{Güte}_A(x) \leq \delta) \geq \frac{1}{2}
+$$
+Bedeutung: Mindestens in 50\% der Läufe bekommst du eine Lösung, die den Faktor $\delta$ wirklich einhält (eine \enquote{Trefferquote}-Garantie).
+
+\subsection{Unterschied Typ 1 vs. Typ 2}
+
+Typ 1 (Erwartungswert):
+\begin{itemize}
+    \item bewertet den Durchschnitt.
+    \item kann durch wenige extreme Ausreisser \enquote{versaut} werden.
+\end{itemize}
+
+Typ 2 (Wahrscheinlichkeit / Trefferquote):
+\begin{itemize}
+    \item garantiert, dass du mit $\geq$ 50\% Wahrscheinlichkeit wirklich \enquote{gut genug} bist.
+    \item sagt nichts darüber, wie schlimm die anderen $\leq$ 50\% sein können.
+\end{itemize}
+
+Wenn 10 von 12 Läufen super sind (Güte 2), aber 2 Läufe extrem schlecht (Güte 50), dann kann der Erwartungswert ziemlich gross werden, obwohl die Trefferquote (10/12) sehr gut ist.
+
+\clearpage
+\section{Summary}
+
+\begin{enumerate}[label=(\alph*)]
+    \item Eigenschaften von Algorithmen für Opimtierungsprobleme:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wann ist ein Algorithmus für ein Optimierungsproblem zulässig?\newline
+        \textbf{Antwort}: Ein Algorithmus $A$ ist für ein Optimierungsproblem zulässig, wenn er für jede Eingabe $x$ immer eine gültige Lösung ausgibt. Also: $A(x)$ erfüllt alle Nebenbedingungen des Problems (auch wenn die Lösung nicht optimal ist).
+
+        \item Was ist die Approximationsgüte?\newline
+        \textbf{Antwort}: Die Approximationsgüte misst, wie weit die Algorithmuslösung vom Optimum entfernt ist. Damit es für Minimum und Maximum gleich \enquote{funktioniert}, definiert man sie so, dass sie immer $\geq 1$ ist. Siehe Kapitel 7.1.
+
+        \item Was ist ein $\delta$-Approximations-Algorithmus und was bedeutet diese Eigenschaft konkret für ein Maximums- bzw. Minimumgsproblem?\newline
+        \textbf{Antwort}: $A$ ist ein $\delta$-Approximationsalgorithmus, wenn für alle Eingaben gilt: $\text{Güte}_A(x) \leq \delta$. Konkret:\newline
+        Minimierungsproblem (z.B. Kosten minimieren): Der Algorithmus ist höchstens Faktor $\delta$ teurer/schlechter als optimal.\newline
+        Maximierungsproblem (z.B. Gewinn maximieren):
+        Der Algorithmus erreicht mindestens einen $1 / \delta$-Anteil des Optimums.
+
+        \item Kann ich den VAC-Algorithmus für das MIN-VCP-Problem erklären?\newline
+        \textbf{Antwort}: Beim Vertex-Cover wählt VAC wiederholt eine beliebige Kante ${u, v}$, nimmt beide Endpunkte ins Cover und entfernt alle dadurch abgedeckten Kanten. Am Ende sind alle Kanten abgedeckt, also ist die Lösung zulässig. Es ist eine 2-Approximation, weil pro ausgewälter Kante jedes Cover mindestens einen Endpunkt braucht, da VAC aber immer zwei nimmt, wird es höchstens doppelt so gross wie optimal.
+
+    \end{enumerate}
+    Weiter auf nächster Seite.
+    \clearpage
+    \item Eigenschaften für randomisierte Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein randomisierter $E[\delta]$-Approximations-Algorithmus?\newline
+        \textbf{Antwort}: Ein randomisierter Algorithmus ist ein $E[\delta]$-Approximationsalgorithmus, wenn er immer zulässige Lösungen liefert und der Erwartungswert der Approximationsgüte höchstens $\delta$ ist, also im Durchschnitt Faktor-$\delta$-gut (trotz möglicher Ausreisser).
+
+        \item Was ist ein randomisierter $\delta$-Approximations-Algorithmus?\newline
+        \textbf{Antwort}: Das ist ein randomisierter Algorithmus, der immer zulässig ist und mit Wahrscheinlichkeit mindestens $1/2$ tatsächlich eine Lösung mit Güte $\leq \delta$ liefert (also eine \enquote{Trefferquote}-Garantie für eine $\delta$-gute Lösung).
+
+        \item Wie unterscheiden sich die zwei Arten von randomisierten Approximations-Algorithmen?\newline
+        \textbf{Antwort}: $E[\delta]$ garantiert \enquote{gut im Mittel} (kann selten sehr schlechte Ergebnisse haben), während der randomisierte $\delta$-Approximationsalgorithmus \enquote{oft gut} garantiert (mindestens 50\% der Läufe sind wirklich $\delta$-gut), aber nichts darüber sagt, wie schlecht die restlichen Läufe sein können.
+    \end{enumerate}
+\end{enumerate}
