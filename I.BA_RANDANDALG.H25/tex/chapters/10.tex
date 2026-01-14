@@ -1,0 +1,267 @@
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/online-vs-offline.png}
+    {Online vs. Offline}
+    \label{fig:onlinevsoffline}
+\end{figure}
+
+Offline Algorithmen bekommen die ganze Eingabe komplett am Anfang. Somit kennt man \enquote{die Zukunft} und kann dadurch perfekt planen.
+
+Online Algorithmen bekommen die Eingabe stückweise: erst $x_1$, dann $x_2$, .... Wir müssen dann oft sofort entscheiden, ohne zu wissen, was als nächstes kommt. Die Entscheidungen sind unumkehrbar (man darf später nicht zurückspulen).
+
+\clearpage
+\section{Konkurrenzgüte}
+
+Die Grundidee: Wir vergleichen den Online-Algorithmus mit einem hypothetischen \enquote{perfekten} Offline-Algorithmus $\text{Opt}$, der alles vorher weiss.
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/konkurrenzgüte.png}
+    {Konkurrenzgüte}
+    \label{fig:konkurrenzgüte}
+\end{figure}
+
+Kosten:
+
+\begin{itemize}
+    \item $\text{cost}(A(I))$: Kosten, die Algorithmus $A$ auf Eingabe $I$ verursacht.
+    \item $\text{cost}(\text{Opt}(I))$: minimale (optimale) Kosten mit voller Zukunftskenntnis.
+\end{itemize}
+
+\textbf{Konkurrenzfaktor / Competitive Ratio}
+
+Typisch (für Minimierungsprobleme), also \enquote{Kosten klein machen}:
+$$
+\text{cost}(A(I)) \leq c \cdot \text{cost}(\text{Opt}(I)) + b
+$$
+wobei:
+\begin{itemize}
+    \item $c$ = Konkurrenzfaktor (je kleiner, desto besser)
+    \item $b$ = kleine Startkonstante (manchmal weggelassen, wenn unwichtig)
+\end{itemize}
+
+Wenn $b = 0$, sieht man oft auch einfach:
+$$
+\frac{\text{cost}(A(I))}{\text{cost}(\text{Opt}(I))} \leq c
+$$
+
+\clearpage
+Was bedeutet \enquote{$\delta$-konkurrenzfähig}?
+
+\begin{itemize}
+    \item Ein Algorithmus heisst $\delta$-konkurrenzfähig, wenn er für alle Eingaben $I$ einen Konkurrenzfaktor $\leq \delta$ garantiert.
+    \item Für Minimierung: \enquote{nicht mehr als $\delta$-mal so teuer}
+    \item Für Maximierung (Gewinn gross machen) dreht sich der Vergleich um: Man will mindestens ein $1 / \delta$-Anteil des Optimums erreichen (gleiche Idee, nur andersherum formuliert).
+\end{itemize}
+
+\section{$\delta$-schwere Online Probleme}
+
+Ein Online-Problem heisst $\delta$-schwer, wenn kein Online-Algorithmus eine bessere Konkurrenzgüte als $\delta$ erreichen kann (also $\delta$ ist eine echte Untergrenze).
+
+Warum passiert das?
+
+\begin{multicols}{2}
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/chess.png}
+        {Schach}
+        \label{fig:schach}
+    \end{figure}
+
+    Weil ein Widersacher (Gegner, Adversary) die Eingabe so wählt, dass sie unserem Algorithmus maximal schadet:
+
+\begin{itemize}
+    \item Er kennt unseren deterministischen Algorithmus
+    \item Er wartet unsere Entscheidung ab
+    \item Dann gibt er genau den nächsten Input, der uns \enquote{bestraft}
+\end{itemize}
+    
+\end{multicols}
+
+\clearpage
+\section{Beispiel: Paging (Cache-Verwaltung)}
+
+\textbf{Problemidee}: Wir haben einen Cache (schnell), der nu $k$ Seiten speichern kann. Es kommt eine Anfrage nach einer Seite:
+
+\begin{itemize}
+    \item Wenn sie im Cache ist: Treffer, kein Problem.
+    \item Wenn nicht: Page Fault $\rightarrow$ Seite muss aus dem langsamen Speicher geladen werden (teuer).
+    \item Wenn der Cache voll ist müssen wir eine Seite rauswerfen (Eviction).
+\end{itemize}
+
+Ziel: Minimieren der Anzahl Page Faults.
+
+\subsection{Warum ist Paging für deterministische Online-Algorithmen $k$-schwer?}
+
+
+\begin{multicols}{2}
+    Intuition (klassische Gegner-Falle):
+
+    \begin{enumerate}
+        \item Der Cache enthält anfangs $k$ Seiten, z.B. $p_1, \dots, p_k$
+        \item Der Gegner fordert eine neue Seite $p_{k+1}$ an. Der Cache ist voll, wir müssen eine Seite rauswerfen (z.B. immer die $p_j$ mit dem kleinsten $j$).
+        \item Sofort danach fordert der Gegner genau die Seite $p_j$ an, die wir gerade entfertn haben.
+        \item Das wiederholt er so, dass wir bei jedem Schritt einen Page Fault erhalten.
+    \end{enumerate}
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/paging-problem.jpg}
+        {Paging Problem}
+        \label{fig:pagingproblem}
+    \end{figure}
+\end{multicols}
+
+Ergebnis:
+
+\begin{itemize}
+    \item Unser Online-Algorithmus kann zu $k$ Faults gezwungen werden,
+    \item während $\text{Opt}$ oft mit 1 Fault auskommt (weil wir beim ersten Rauswerfen \enquote{richtig} planen). Damit ist das Verhältnis $\frac{\text{cost}(A)}{\text{cost}(\text{Opt})} = k$. Also: $k$-schwer.
+\end{itemize}
+
+\subsection{Randomisierte Online-Algorithmen}
+
+Idee: Den Gegner \enquote{entwaffnen}. Wenn der Algorithmus zufällig entscheidet, kann der Gegner nicht mehr sicher vorhersagen, was passiert.
+
+Typisches Modell (fair für Randomisierung): \textbf{Oblivious Adversary}. Die Eingabe musst festgelegt werden, bevor der Algorithmus die zufällige Entscheidung trifft.
+
+\textbf{Neue Messlatte: Erwartungswert}
+
+Statt \enquote{immer garantiert} schaut man auf die erwarteten Kosten:
+$$
+\mathbb{E}[\text{cost}(A(I))] \leq c \cdot \text{cost}(\text{Opt}(I))
+$$
+\begin{itemize}
+    \item $\mathbb{E}[\cdot]$ heisst: Erwartungswert (Durchschnitt über viele Münzwürfe).
+    \item $c$ heisst dann oft erwartete Konkurrenzgüte
+\end{itemize}
+
+Warum passt das zum Paradigma \enquote{Überlisten des Gegners}?
+
+\begin{itemize}
+    \item Wir haben viele mögliche deterministische Strategien
+    \item Wir wählen zufällig eine davon
+    \item Der Gegner kann nicht mehr \enquote{massschneidern}, welche Eingabe exakt unsere Strategie zerstört.
+\end{itemize}
+
+\section{Beispiel 2: Arbeitsverteilung (Unit Job-Scheduling)}
+
+Problem in Worten:
+
+\begin{itemize}
+    \item Es gibt zwei Jobs (Aufträge)
+    \item Es gibt $m$ Maschinen-Schritte pro Job (jeder Job braucht jede Maschine genau einmal, aber in eigener Reihenfolge).
+    \item Konflikt: Beide Jobs wollen gleichzeitig dieselbe Maschine. Also muss einer warten.
+\end{itemize}
+
+\clearpage
+Man stellt die Situation als Weg von $(0, 0)$ nach $(m, m)$ dar:
+
+\begin{itemize}
+    \item x-Achse: Fortschritt Job 1
+    \item y-Achse: Fortschritt Job 2
+    \item Ein Schritt diagonal bedeutet: beide arbeiten gleichzeitig (ideal).
+    \item Ein Hindernis/Block bedeutet: diagonal geht nicht. Einer muss horizontal/vertikal \enquote{ausweichen} (Warten).
+\end{itemize}
+
+\begin{figure}[H]
+    \img[width=0.8\textwidth]{figures/grid.png}
+    {Gitter-Bild. Quelle: \cite[S. 145]{hromkovic2004randomisierte}}
+    \label{fig:jobs-grid}
+\end{figure}
+
+Die Kostenformel (einfach):
+$$
+\text{cost} = m + \text{Delay}
+$$
+\begin{itemize}
+    \item $m$ ist \enquote{Grundkosten} (man braucht insgesamt $m$ Diagonal-Schritte, wenn alles perfekt wäre)
+    \item $\text{Delay}$ ist die zusätzliche Wartezeit durch Konflikte
+\end{itemize}
+
+\subsection{Die deterministische Falle}
+
+Wenn wir deterministisch ausweichen, kann der Gegner die Hindernisse so legen, dass wir immer wieder ins nächste Hindernis laufen. Dadurch gäbe es sehr viel Delay. Die Competitive Ration kann sehr schlechten werden (linear in $m$).
+
+\subsection{Algorithmus DIAG (randomisiert)}
+
+Ziel: Nicht vorhersagbar sein, auf welcher \enquote{Spur} (Diagonal-Nähe) man läuft.
+
+DIAG in 3 einfachen Schritten:
+
+\begin{enumerate}
+    \item Random: Wähle zufällig eine Diagonale $D_i$ in einem Bereich der Hauptdiagonale.
+    \item Follow: Laufe so gut wie möglich auf dieser Diagonale (so viele Diagonalschritte wie möglich).
+    \item Recover: Wenn ein Hindernis kommt: kurz ausweichen (1 horizontal + 1 vertikal), dann zurück zur Diagonale.
+\end{enumerate}
+
+Warum das hilft:
+
+\begin{itemize}
+    \item Der Gegner kann Hindernisse nicht so platzieren, das alle möglichen zufällig gewählten Diagonalen \enquote{gleich schlimm} sind.
+    \item Dadurch wird die erwartete Zusatzwartezeit klein: ungefähr in der Grössenordnung $\sqrt{m}$
+\end{itemize}
+
+Präzise gemäss Buch: Die erwarteten Kosten liegen etwa bei $m + O(\sqrt{m})$, und damit ist die erwartete (normierte) Konkurrenz sehr gut.
+
+\begin{figure}[H]
+    \img[width=0.7\textwidth]{figures/grid_diag_moved.png}
+    {Gitter, neue Diagonale. Quelle: \cite[S. 148]{hromkovic2004randomisierte}}
+    \label{fig:jobs-grid-moved}
+\end{figure}
+
+Key-Facts:
+
+\begin{itemize}
+    \item Oft meint man mit \enquote{Faktor} in der Intuition den Warte-Teil (Delay): deterministisch kann Delay $\approx m$ sein, randomisiert wird erwarteter Delay $\approx \sqrt{m}$.
+    \item Wenn man den Gesamt-Cost $m + \text{Delay}$ betrachtet, ist das Verhältnis zu $\text{Opt} \geq m$ sogar nahe bei $1$ (weil beide mindestens m zahlen müssen).
+\end{itemize}
+
+\clearpage
+\begin{enumerate}[label=(\alph*)]
+    \item Optimierungsprobleme als Online-Problem:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Online Algorithmus?\newline
+        \textbf{Antwort}: Ein Algorithmus, der die Eingabe Schritt für Schritt bekommt und nach jedem Schritt sofort entscheiden muss, ohne die Zukunft zu kennen.
+
+        \item Was ist ein Offline Algorithmus?\newline
+        \textbf{Antwort}: Ein Algorithmus, der die komplette Eingabe von Anfang an kennt und dadurch optimal planen kann.
+
+        \item Wie wird die Konkurrenzgüte definiert?\newline
+        \textbf{Antwort}: Man vergleicht die Kosten (oder den Gewinn) des Online-Algorithmus mit dem optimalen Offline-Algorithmus $\text{Opt}$. Für Minimierung typisch:\\$\text{cost}(A(I)) \leq c \cdot \text{cost}(\text{Opt}(I))$
+
+        \item Was ist ein $\delta$-konkurrenzfähiger Algorithmus und was bedeutet diese Eigenschaft konkret für ein Maximums- bzw. Minimumsproblem?\newline
+        \textbf{Antwort}: Ein Algorithmus ist $\delta$-konkurrenzfähig, wenn er für jede Eingabe höchstens um Faktor $\delta$ schlechter ist als $\text{Opt}$. Bei (1) Minimumsproblem höchstens $\delta$-mal so hohe Kosten wie $\text{Opt}$ und bei (2) Maximumsproblem mindestens $1 / \delta$ vom optimalen Gewinn.
+
+        \item Was ist ein $\delta$-schweres Online Problem?\newline
+        \textbf{Antwort}: Ein Online-Problem ist $\delta$-schwer, wenn kein Online-Algorithmus eine bessere Konkurrenzgüte als $\delta$ garantieren kann ($\delta$ ist eine echte Untergrenze).
+    \end{enumerate}
+    \item Paging:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist das Paging Problem?\newline
+        \textbf{Antwort}: Man hat einen Cache mit Platz für $k$ Seiten. Bei einer Anfrage: ist die Seite nicht im Cache, gibt es einen Page Fault und man muss sie laden. Ist der Cache voll, muss man eine Seite auswerfen. Ziel: möglichst wenige Page Faults.
+
+        \item Warum ist Paging für einen Cache-Speicher mit $k$ Bit ein $k$-schweres Problem (Beispiel mit $k=3$)?\newline
+        \textbf{Antwort}: Ein Gegner kann Anfragen so wählen, dass wir fast immer genau die Seite braucheny, die wir gerade rausgeworfen haben. Bei $k = 3$: Cache enthält z.B. ${1,2,3}$. Anfrage: $4 \rightarrow$ Wir werfen eine raus (z.B. 1). Nächste Anfrage ist wieder $1 \rightarrow$ Page Fault. Dann wieder eine neue Seite, wir werfen sie raus, Gegner fragt genau diese wieder an. So kann unser Algorithmus ungefähr 3-mal so viele Faults haben wie $\text{Opt}$. Daher ist das Problem $k$-schwer.
+
+    \end{enumerate}
+    \clearpage
+    \item Randomisierte Online Algorithmen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Warum sind Online Probleme Beispiele für das Überlisten des Gegners?\newline
+        \textbf{Antwort}: Weil man oft mit einem Gegner denkt, der die Eingabe so wählt, dass der Online-Algorithmus schlecht aussieht. Randomisierung hilft, weil der Gegner nicht genau vorhersagen kann, welche Entscheidungen der Algorithmus trifft.
+
+        \item Was ist die Konkurrenzgẗe und die Konkurrenzfähigkeit bei randomisierten Algorithmen?\newline
+        \textbf{Antwort}: Man bewertet nicht die festen Kosten, sondern die erwarteten Kosten über die Zufallsentscheidungen: $\text{Erwartete Kosten}(\text{Algorithmus}) \leq c \cdot \text{Kosten}(\text{Opt})$. Dann heisst der Algorithmus $c$-konkurrenzfähig \enquote{im Erwartungswert}.
+
+    \end{enumerate}
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das Beispiel zur Arbeitsverteilung erklären?\newline
+        \textbf{Antwort}: Zwei Aufträge müssen jeweils durch $m$ Maschinen-Schritte. Wenn beide gleichzeitig dieselbe Maschine brauchen, muss einer warten. Ziel ist minimale Gesamtzeit bzw. minimale Verzögerung.
+
+        \item Verstehe ich die graphische Darstellung mit zwei Aufträgen?\newline
+        \textbf{Antwort}: Man zeichnet ein $m \times m$-Gitter. Ein Diagonalschritt bedeutet \enquote{beide Jobs machen Fortschritt gleichzeitig}. Wenn das wegen Konflikt nicht geht, muss man horizontal/vertikale ausweichen (einer wartet). Hindernisse markieren Konflikte.
+
+        \item Kenne ich Algorithmus DIAG?\newline
+        \textbf{Antwort}: DIAG wählt zufällig eine Diagonale (eine \enquote{Spur} nahe der Hauptdiagonalen) und versucht, möglichst entlang dieser Spur zu laufen. Bei einem Hindernis weicht er kurz aus und kehrt zur Spur zurück. Die Zufallswahl macht es schwer, ihn systematisch in viele Konflikte zu erzwingen, daher ist die erwartete Verzögerung klein.
+
+    \end{enumerate}
+\end{enumerate}
