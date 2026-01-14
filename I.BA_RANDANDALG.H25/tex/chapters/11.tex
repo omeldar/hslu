@@ -1,13 +1,239 @@
+Oft sind Objekte sehr gross (z.B. lange Bitstrings, ganze Matrizen). Ein direkter Vergleich wäre teuer: man müsste im schlimmsten Fall alles vollständig übertragen / ausrechnen / vergleichen.
+
+Trick: Statt das ganze Objekt zu vergleichen, berechnet man einen kleinen \enquote{Fingerabdruck} (eine kurze Zahl oder einen kurzen Vektor). Danach vergleicht man nur diese Fingerabdrücke.
+
+\begin{itemize}
+    \item Wenn zwei Objekte gleich sind, sollen ihre Fingerabdrücke immer gleich sein.
+    \item Wenn zwei Objekte verschieden sind, sollen ihre Fingerabdrücke meistens verschieden sein (mit hoher Wahrscheinlichkeit).
+\end{itemize}
+
+Das heisst: Man akzeptiert eine kleine Fehlerwahrscheinlichkeit (typisch Monte-Carlo) oder man macht einen zusätzlichen sicheren Check, sobald Fingerabdrücke gleich aussehen (dann ist es Las-Vegas und immer korrekt).    
+
+\section{Fingerabdruck}
+
+Wir betrachten Bitstrings $x \in \{0, 1\}^n$. Man interpretiert den String als Zahl:
+$$
+\text{Nummer}(x) = \sum^{n}_{i=1} 2^{n-i} \cdot x_i
+$$
+Also wie eine Binärzahl.
+
+Dann wählt man zufällig eine Primzahl $p$ aus einer grossen Menge (z.B. alle Primzahlen $\leq n^2$) und definiert den Fingerabdruck:
+$$
+\text{Finger}_p(x) = \text{Nummer}(x) \mod p
+$$
+
+\clearpage
+\textbf{Warum funktioniert das?}
+
+\begin{itemize}
+    \item Falls $x = y$, dann ist \text{Nummer}(x) = \text{Nummer}(y), also auch für jedes $p$:
+    $$
+    \text{Finger}_p(x) = \text{Finger}_p(y)
+    $$
+    \item Falls $x \neq y$, dann ist $d = \text{Nummer}(x) - \text{Nummer}(y) \neq 0$. Ein Fehler passiert nur, wenn $p$ den Unterschied \enquote{versteckt}, also wenn $p \mid d$. Es gibt aber nur wenige Primzahlen, die eine feste Zahl $d$ teilen können (maximal so viele wie $d$ Primfaktoren hat; in dieser Anwendung ergibt sich eine sehr kleine obere Schranke auf \enquote{schlechte Primzahlen}). Daraus folgt: mit hoher Wahrscheinlichkeit ist $\text{Finger}_p(x) \neq \text{Finger}_p(y)$.
+\end{itemize}
+
+\section{Kommunikationsprotokolle: PSet, PSchnitt, d-R}
+
+\subsection{PSet - \enquote{Ist $x$ in der Menge $U$?}}
+
+Situation:
+
+\begin{itemize}
+    \item Rechner $R_I$ hat einen String $x$
+    \item Rechner $R_{n}$ hat eine Menge $U = \{u_1, \dots, u_k\}$ (alle Länge $n$). 
+    \item Ziel: Entscheiden, ob $x \in U$, ohne dass $R_I$ den ganzen String $x$ schicken muss.
+\end{itemize}
+
+Protokoll PSet (vereinfacht):
+
+\begin{enumerate}
+    \item $R_I$ wählt zufällig eine Primzahl $p \in \text{PRIM}(n^2)$.
+    \item $R_I$ berechnet $s = \text{Nummer}(x) \mod p$ und sendet $p$ und $s$.
+    \item $R_n$ berechnet für jedes $u_i$ den Rest $q_i = \text{Nummer}(u_i) \mod p$.
+    \begin{itemize}
+        \item Falls $s$ in $\{ q_1, \dots, q_k \}$ vorkommt: Ausgabe \enquote{$x \in U$}
+        \item sonst: Ausgabe $x \notin U$
+    \end{itemize}
+\end{enumerate}
+
+\clearpage
+Fehlerart und Eigenschaft:
+
+\begin{itemize}
+    \item Wenn wirklich $x \in U$: dann ist $x = u_j$ für ein $j$ und der Rest passt für jejdes $p$. Fehlerwahrscheinlichkeit ist 0.
+    \item Wenn $x \notin U$: Fehler nur möglich, wenn für irgendein $u_i$ zufällig:
+    $$
+    \text{Nummer}(x) \equiv \text{Nummer}(u_i) (\bmod p)
+    $$
+    obwohl die Zahlen verschieden sind. Das kann passieren, aber selten.
+\end{itemize}
+
+Eine typische Abschätzung der Fehlerwahrscheinlichkeit ist:
+$$
+Pr[\text{Fehler}] \leq k \cdot \frac{2 \ln n}{n}
+$$
+Solange $k$ nicht zu gross ist, ist das klein (z.B. für $k \leq \frac{n}{4 \ln n}$ ist der Fehler $\leq \frac{1}{2}$).
+
+Einordnung: einseitiger Monte-Carlo (1MC): nie fälschlich \enquote{nicht drin}, wenn $x \in U$; aber manchmal fälschlich \enquote{drin}, wenn $x \notin U$.
+
+\subsection{PSchnitt - \enquote{Ist $U \cap V$ leer?}}
+
+Situation:
+
+\begin{itemize}
+    \item $R_I$ hat $V = \{ v_1, \dots, v_l \}$
+    \item $R_n$ hat $U = \{ u_1, \dots, u_k \}$
+    \item Ziel: Entscheiden, ob $U \cap V = \empty$ oder nicht.
+\end{itemize}
+
+Protokoll PSchnitt (vereinfacht):
+
+\begin{enumerate}
+    \item $R_I$ wählt zufällig Primzahl $p \in \text{PRIM}(n^2)$.
+    \item $R_I$ sendet $p$ und alle Reste $s_i = \text{Nummer}(v_i) \mod p$.
+    \item $R_n$ berechnet $q_j = \text{Nummer}(u_j) \mod p$ und prüft, ob sich Restmengen schneiden.
+\end{enumerate}
+
+\clearpage
+Fehlerart und typische Schranke
+
+\begin{itemize}
+    \item Wenn $U \cap V \neq \empty$: Es gibt wirklich gleiche Strings $\rightarrow$ Reste passen für jedes $p$. Fehler ist 0.
+    \item Wenn $U \cap V = \empty$: Fehler nur durch \enquote{Rest-Kollisionen}.
+\end{itemize}
+
+$$
+Pr[\text{Fehler}] \leq l \cdot k \cdot \frac{2 \ln n}{n}
+$$
+
+Damit geht die Fehlerwahrscheinlichkeit gegen 0, wenn $l \cdot k = o(\frac{n}{\ln n})$.
+
+Einordnung: Dies ist ein 1MC* in dem Sinn, dass bei wachsenden $n$ die Fehlerwahrscheinlichkeit gegen 0 geht (unter den Grössenbedingungen).
+
+\subsection{d-R - \enquote{Gleiche Strings} mit stärkerer Zuverlässigkeit}
+
+Hier ist die Idee: Statt Primzahlen $\leq n^2$ nimmt man Primzahlen $\leq n^d$ mit $d > 2$.
+
+\textbf{Warum hilft das?}
+
+Die Anzahl \enquote{schlechter Primzahlen} bleibt im wesentlichen ähnlich (für feste Eingabe), aber die Gesamtmenge möglicher Primzahlen wird viel grösser. Das heisst der Anteil schlechter Primzahlen wird sehr klein:
+$$
+Pr[\text{Fehler}] \leq \frac{n-1}{|\text{PRIM}(n^d)|} \approx \frac{d \ln n}{n^{d-1}}
+$$
+Trade-off (wichtig):
+\begin{itemize}
+    \item Kommunikation steigt linear mit $d$ (weil $p$ mehr Bits braucht).
+    \item Fehler sinkt sehr schnell mit wachsendem $d$.
+\end{itemize}
+
+\clearpage
+\section{STRING - Teilstringproblem (Las-Vegas mit Fingerabdrücken)}
+
+\textbf{Problem}: Gegeben Muster $x$ (Länge $n$) und Text $Y$ (Länge $m$), finde die kleinste Position $r$, so dass $x$ gleich dem Teilstring $Y[r..r + n - 1]$ ist, oder \enquote{nicht vorhanden}.
+
+\textbf{Naiv}: Vergleiche $x$ mit jedem Teilstring $O(n \cdot m)$.
+
+\textbf{Idee}: Vergleiche zuerst nur Fingerabdrücke $\bmod p$. Nur wenn Fingerabdrücke gleich sind, mache einen echten Zeichen-für-Zeichen-Vergleich.
+
+Algorithmus STRING (vereinfacht):
+
+\begin{enumerate}
+    \item Wähle zufällig eine Primzahl $p$ aus einer geeigneten Menge
+    \item Berechne $\text{Finger}_p(x)$.
+    \item Laufe über alle Fenster $Y[r..r + n - 1]$:
+    \begin{itemize}
+        \item Berechne $\text{Finger}_p(Y[r..r + n - 1])$
+        \item Falls Fingerabdrücke verschieden: sicher kein Match, also weiter.
+        \item Falls gleich: verifiziere echt durch direkten Vergleich; wenn gleich, gib $r$ aus.
+    \end{itemize}
+\end{enumerate}
+
+Wichtiger Trick: \enquote{Rolling Hash} (Fingerabdruck schnell updaten)
+
+Man kann den Fingerabdruck des nächsten Fensters aus dem vorherigen in $O(1)$ updaten (statt jedes Fenster neu in $O(n)$ zu berechnen). Im Buch steht dafür eine Update-Formel (in Bits mit Basis 2).
+
+Eigenschaften
+\begin{itemize}
+    \item Las-Vegas: Ergebnis ist immer korrekt, weil bei Fingerabdruck-Treffern zusätzlich wirklich verglichen wird.
+    \item Erwartete Laufzeit kann (mit passender Wahl von $p$) linear in $m$ sein, weil falsche Fingerabdruck-Treffer selten sind.
+\end{itemize}
+
+\clearpage
+\section{FREIVALDS - Verifikation von Matrixmultiplikationen}
+
+\textbf{Problem}: Drei $n \times n$ Matrizen $A, B, C$. Prüfen, ob wirklich $A \cdot B = C$.
+
+Deterministisch \enquote{einfach}: $A \cdot B$ ausrechnen und vergleichen. Das ist teuer (klassisch $O(n^3)$ arithmetische Operationen).
+
+Freivalds-Idee: Matrizen wirken wie Funktionen auf Vektoren. Wenn $A \cdot B = C$, dann gilt für jeden Vektor $a$:
+$$
+A(Ba) = Ca
+$$
+Also testen wir das nur für einen zufälligen Vektor $a$.
+
+Algorithmus FREIVALDS:
+
+\begin{enumerate}
+    \item Wähle zufällig $a \in \{0,1\}^n$
+    \item Berechne $\beta = A(Ba)$ und $\gamma = Ca$.
+    \item Wenn $\beta = \gamma$: gib \enquote{gleich} aus, sonst \enquote{ungleich}.
+\end{enumerate}
+
+Fehlerwahrscheinlichkeit (einseitig)
+
+\begin{itemize}
+    \item Falls $A \cdot B = C$: Gleichheit gilt für alle $a \rightarrow$ Fehler 0.
+    \item Falls $A \cdot B \neq C$: Dann unterscheiden sich die Matrizen in mindestens einer Zeile/Eintrag. Es lässt sich zeigen: mindestens die Hälfte aller $a \in \{0,1\}^n$ \enquote{entlarvt} den Unterschied, d.h. liefert $\beta \neq \gamma$. Also:
+    $$
+    Pr[\text{Fehler}] \leq \frac{1}{2}
+    $$
+    und durch $t$ unabhängige Wiederholungen wird das $\leq 2^{-t}$.
+\end{itemize}
+
+Eine Matrix-Vektor-Multiplikation kostet $O(n^2)$. Es sind konstant viele davon, also insgesamt $O(n^2)$ arithmetische Operationen.
+
+Hinweis zur Konsistenz: An einer STelle steht \enquote{$O(n^3)$}, aber gleichzeitig ist das erklärte Ziel ein $O(n^2)$-Verfahren. Mit der üblichen Kostenrechnung (Matrix-Vektor) ist $O(n^2)$ korrekt.
+
+\clearpage
+\section{Typische Stolperfallen}
+
+\begin{itemize}
+    \item \enquote{Gleicher Fingerabdruck $\Rightarrow$ gleiches Objekt} ist falsch (Kollision möglich). Bei Monte-Carlo akzeptiert man dann eine kleine Fehlerrate, bei Las-Vegas überprüft man danach sicher.
+    \item Fehlerwahrscheinlichkeit hängt von der Grösse der Kandidatenmenge ab: Bei PSet/PSchnitt wirds schlechter, wenn $k$ bzw. $kl$ gross wird.
+    \item Fehler senken geht auf zwei Arten:
+    \begin{enumerate}
+        \item Wiederholen (unabhängig): Fehler fällt exponentiell.
+        \item Grössere Primzahlen zulassen (d-R): Fingerabdruck länger, aber Fehler sinkt stark.
+    \end{enumerate}
+\end{itemize}
+
 \clearpage
 \begin{enumerate}[label=(\alph*)]
     \item Fingerabdrücke:
     \begin{enumerate}[label=(\roman*)]
-        \item Kann ich die Idee erklären?
+        \item Kann ich die Idee erklären?\newline
+        \textbf{Antwort}: Ein Fingerabdruck ist eine kurze Repräsentation eines grossen Objekts (z. B. eines langen Bitstrings). Statt zwei Objekte komplett zu vergleichen, vergleicht man ihre Fingerabdrücke. Gleiche Objekte haben immer gleiche Fingerabdrücke; verschiedene Objekte haben mit hoher Wahrscheinlichkeit verschiedene Fingerabdrücke (kleine Kollisions-/Fehlerwahrscheinlichkeit).
     \end{enumerate}
     \item Beispiel:
     \begin{enumerate}[label=(\roman*)]
-        \item Kenne ich die Algorithmen PSet, PSchnitt und d-R für die Kommunikationsprotokolle und ihre Eigenschaften?
-        \item Kenne ich den Algorithmus STRING für das Teilstring Problem und seine Eigenschaften?
-        \item Kenne ich den Algorithmus FREIVALDS für die Verifikation der Matrizenmultiplikation und seine Eigenschaften?
+        \item Kenne ich die Algorithmen PSet, PSchnitt und d-R für die Kommunikationsprotokolle und ihre Eigenschaften?\newline
+        \textbf{Antwort}: PSet: Prüft, ob ein String $x$ in einer Menge $U$ liegt, indem man zufällig ein Primzahl-Modul $p$ wählt und nur den Rest (Fingerabdruck) vergleicht. Einseitiger Fehler: Wenn $x \in U$, ist das ERgebnis sicher richtig. Falsch-Positive sind möglich, aber selten.
+
+        PSchnitt: Prüft, ob zwei Mengen $U$ und $V$ einen gemeinsamen String haben, über Fingerabdrücke $\mod p$. Einseitiger Fehler: Wenn es wirklich einen gemeinsamen String gibt, wird er sicher erkannt. Ansosnsten sind falsch-positive durch Kollisionen möglich.
+
+        d-R: Gleiche Grundidee, aber man wählt $p$ aus einer grösseren Menge (Primzahlen bis $n^d$). Effekt: viel kleinere Fehlerwahrscheinlichkeit, aber etwas mehr Kommunikationsaufwand (weil $p$ mehr Bits hat).
+
+        \item Kenne ich den Algorithmus STRING für das Teilstring Problem und seine Eigenschaften?\newline
+        \textbf{Antwort}: Findet, ob ein Muster $x$ in einem Text $Y$ vorkommt, indem man Fingerabdrücke von \enquote{Fenstern} im Text vergleicht (schnell per Rolling Update). Bei Fingerabdruck-Treffern wird immer noch echt nachgeprüft. Eigenschaft: Las-Vegas (immer korrekt), typischerweise sehr schnell, weil selten nachgeprüft werden muss.
+
+        \item Kenne ich den Algorithmus FREIVALDS für die Verifikation der Matrizenmultiplikation und seine Eigenschaften?\newline
+        \textbf{Antwort}: Testet $A \cdot B = C$, indem man einen zufälligen 0/1-Vektor $a$ wählt und prüft, ob $A(Ba) = Ca$. Eigenschaften:
+        \begin{itemize}
+            \item Wenn $A \cdot B = C$. immer \enquote{richtig} (kein Fehler).
+            \item Wenn $A \cdot B \neq C$: Fehlerchance pro Test höchstens $1/2$; durch Wiederholen fällt sie auf $2^{-t}$.
+            \item Laufzeit pro Test: $O(n^2)$ (nur Matrix-Vektor-Produkte)
+        \end{itemize}
+
     \end{enumerate}
 \end{enumerate}
