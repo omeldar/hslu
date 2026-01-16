@@ -30,7 +30,7 @@ Warum dieses \enquote{max}?
 \clearpage
 \section{Was ist ein $\delta$-Approximationsalgorithmus}
 
-Ein Algorithmus $A$ ist ein $\delta$-Approximationsalgorithmus, wenn seine Gẗe für jede Eingabe höchstens $\delta$ ist:
+Ein Algorithmus $A$ ist ein $\delta$-Approximationsalgorithmus, wenn seine Güte für jede Eingabe höchstens $\delta$ ist:
 $$
 \text{Güte}_A(x) \leq \delta, \quad \forall x
 $$
@@ -53,7 +53,7 @@ Umgestellt (oft intuitiver):
 $$
 \text{cost}(A(x)) \geq \frac{1}{\delta} \cdot \text{Opt}(x)
 $$
-Sprich: Du erreichst mindestens neinen $\frac{1}{\delta}$-Anteil des Optimums.
+Sprich: Du erreichst mindestens einen $\frac{1}{\delta}$-Anteil des Optimums.
 
 \section{VAC-Algorithmus für MIN-VCP (Vertex Cover)}
 
@@ -88,7 +88,7 @@ Denk an jede Kante, die VAC auswählt. Für diese Kante ${u, v}$ gilt:
 
 Wenn VAC insgesamt $k$ Kanten auf diese Weise \enquote{auswählt}, nimmt VAC $2k$ Knoten. Das Optimum braucht mindestens $k$ Knoten (weil pro ausgewählter Kante mindestens 1 nötig ist). Also:
 $$
-|C_{VAC}| \leq 2 \cdot |C_{\text{Opt}}|
+|C_{\text{VAC}}| \leq 2 \cdot |C_{\text{Opt}}|
 $$
 
 \section{Zwei Arten von Garantien}

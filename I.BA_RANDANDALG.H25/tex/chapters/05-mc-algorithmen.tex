@@ -67,7 +67,7 @@ Bei 2MC darf der Fehler auf beiden Seiten passieren, aber wir haben eine garanti
 $$
 Pr[A(x) = F(x)] \geq 1/2 + c
 $$
-mit einer festen Konstante $c > 0$, die nicht von $|x|$ abhängt. Das ist genau die \enquote{fixe Lücke $c$} in den Slides.
+mit einer festen Konstante $c > 0$, die nicht von $|x|$ abhängt.
 
 \textbf{Formale Definition}
 
@@ -76,6 +76,7 @@ $$
 Pr[A(x) = F(x)] \geq 1/2 + c
 $$
 
+\clearpage
 \subsection{Wiederholung bei 2MC: Majority Vote}
 
 Da Fehler beidseitig möglich sind, funktioniert bei 2MC nicht das ODER-Kriterium wie bei 1MC. Stattdessen: $t$ unabhängige Läufe und nimm das Resultat, das am häufigsten vorkommt (Mehrheitsentscheid / Majority Vote).
@@ -106,14 +107,14 @@ c_x := Pr[A(x) = F(x)] - 1/2
 $$
 mit wachsender Eingabelänge gegen 0 gehen. Genau das ist die \enquote{verschwindende Lücke}.
 
-Warum ist das ein Problem? Mehr Wiederholungen helfen nur, wenn man \enquote{genug Abstand} haben. Wenn $c_x$ winzig ist, brauchen wir extrem viele Läufe, um Mehrheitsentscheidung zuverlässig zu machen (typisch proportional zu $1 / c_x^2$). Wenn $c_x$ z.B. exponentiell klein ist, wird die nötige Wiederholungszahl exponentiell gross. Das ist ineffizient.
+Warum ist das ein Problem? Mehr Wiederholungen helfen nur, wenn man \enquote{genug Abstand} hat. Wenn $c_x$ winzig ist, brauchen wir extrem viele Läufe, um Mehrheitsentscheidung zuverlässig zu machen (typisch proportional zu $1 / c_x^2$). Wenn $c_x$ z.B. exponentiell klein ist, wird die nötige Wiederholungszahl exponentiell gross. Das ist ineffizient.
 
 \section{Beispiel MC/UMC: Kommunikationsprotokoll mit zwei Phasen}
 
 Idee (UMC-Protokoll):
 
 \begin{itemize}
-    \item Zwei Strings $x,y \in {0, 1}^n$. Wir wollen entscheiden, ob $x \neq y$ (Sprache $L_{\text{ungleich}}$).
+    \item Zwei Strings $x,y \in \{0, 1\}^n$. Wir wollen entscheiden, ob $x \neq y$ (Sprache $L_{\text{ungleich}}$).
     \item Phase 1: Wähle zufällig eine Position $j$, sende $j$ und $x_j$.
     \item Phase 2: Wenn $x_j \neq y_j$: akzeptiere sicher (weil dann $x \neq y$). Wenn $x_j = y_j$: entscheide mit einer leicht \enquote{biased} Münze.
 \end{itemize}
@@ -142,7 +143,7 @@ Das Protokoll ist MC (immer knapp über $1/2$ korrekt), aber die Lücke wird mit
         \textbf{Antwort}: Für $x \in L$ wird die Erfolgswahrscheinlichkeit mit wachsender Eingabelänge immer besser (typisch geht gegen 1).
 
         \item Weiss ich, wie 1MC-Algorithmen mit n Wiederholungen verwendet werden?\newline
-        \textbf{Antwort}: Füre $A$ n-mal unabhängig aus und gib JA aus, sobald ein Lauf JA liefert (ODER-Regel). Sonst NEIN.
+        \textbf{Antwort}: Führe $A$ n-mal unabhängig aus und gib JA aus, sobald ein Lauf JA liefert (ODER-Regel). Sonst NEIN.
 
         \item Was hat diese Wiederholung für einen Einfluss auf die Zeitkomplexität und die Fehlerwahrscheinlichkeit?\newline
         \textbf{Antwort}: (1) Zeit wird $n$-mal so gross (linear in $n$). (2) Fehler nur möglich für z.B. $x \in L$, dann $Pr[\text{Fehler}] \leq (1/2)^n = 2^{-n}$ (exponentiell klein, je mehr Ausführungen desto kleiner).
@@ -160,7 +161,7 @@ Das Protokoll ist MC (immer knapp über $1/2$ korrekt), aber die Lücke wird mit
     \item MC-Algorithmen:
     \begin{enumerate}[label=(\roman*)]
         \item Wie wird ein MC-Algorithmus für Berechnung einer Funktion definiert?\newline
-        \textbf{Antwort}: $Pr[A(x) = F.(x)] > 1/2$ für alle $x$. (Kein fester Abstand über 1/2 gefordert). Bedeutet: Ein randomisierter Algorithmus ist MC für $F$, wenn er für jede Eingabe $x$ den richtigen Wert $F(x)$ mit Wahrscheinlichkeit grösser als $1/2$ liefert. Aber der Vorsprung über $1/2$ muss nicht fest sein (kann sehr klein werden).
+        \textbf{Antwort}: $Pr[A(x) = F(x)] > 1/2$ für alle $x$. (Kein fester Abstand über 1/2 gefordert). Bedeutet: Ein randomisierter Algorithmus ist MC für $F$, wenn er für jede Eingabe $x$ den richtigen Wert $F(x)$ mit Wahrscheinlichkeit grösser als $1/2$ liefert. Aber der Vorsprung über $1/2$ muss nicht fest sein (kann sehr klein werden).
 
         \clearpage
         \item Was kann bei MC-Algorithmen das Problem sein?\newline

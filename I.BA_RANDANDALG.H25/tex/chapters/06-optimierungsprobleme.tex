@@ -17,15 +17,15 @@ Dabei trennt man sauber (1) wie Instanzen/Lösungen dargestellt werden von (2) w
 \begin{itemize}
     \item $\Sigma_I$: (Input-)Alphabet, aus dem die Zeichen bestehen, mit denen Eingaben kodiert werden (z.B. $\{0,1\}$ oder ein ASCII-Alphabet). Instanzen sind dann Wörter aus $\Sigma_I^{*}$.
     \item $\Sigma_O$: (Output-)Alphabet, zur Kodierung von Ausgaben (also von Lösungen). Lösungen werden als Wörter aus $\Sigma_O$ dargestellt.
-    \item $L \subseteq \Sigma_I^{*}$: Sprache der zulässigen Eingaben. Menge aller sinnvollen Eingaben/Instanzen. Ein $x \in L$ heisst Problemfall/Instanz. Wichtig: Man betrachtet hier bewusst das Optimierungsproblem und nimmt an, dass Eingaben ausserhalv on $L$ nicht vorkommen.
+    \item $L \subseteq \Sigma_I^{*}$: Sprache der zulässigen Eingaben. Menge aller sinnvollen Eingaben/Instanzen. Ein $x \in L$ heisst Problemfall/Instanz. Wichtig: Man betrachtet hier bewusst das Optimierungsproblem und nimmt an, dass Eingaben ausserhalb von $L$ nicht vorkommen.
     \item $M$: Menge zulässiger Lösungen. Funktion; $M: L \rightarrow \mathcal{P}(\Sigma_O^{*})$. Für jede Instanz $x$ ist $M(x)$ die Menge aller zulässigen Lösungen (die alle Constraints von $x$ erfüllen).
     \item $\text{cost}$: Kostenfunktion. Bewertet eine zulässige Lösung $\alpha \in M(x)$ für die Instanz $x$ durch einen nichtnegativen rationalen Wert (typisch: \enquote{Länge}, \enquote{Gewicht}, \enquote{Anzahl}, \enquote{Zeit}).
-    \item $\text{goal} \in \{\text{Minimum, Maximum}\}$: Optimierungsziel. Left fest, ob die kleinsten oder grössten Kosten gesucht werden (Minimierungs- vs. Maximierungsproblem).
+    \item $\text{goal} \in \{\text{Minimum, Maximum}\}$: Optimierungsziel. Legt fest, ob die kleinsten oder grössten Kosten gesucht werden (Minimierungs- vs. Maximierungsproblem).
 \end{itemize}
 
 Damit ist eine Lösung $\alpha \in M(x)$ optimal, wenn sie das Ziel erreicht:
 $$
-\text{cost}(\alpha, x) = \text{Opt}_U(x) = \text{goal} \{ \text{cost}(\beta, x) | \beta \in M(x) \}
+\text{cost}(\alpha, x) = \text{Opt}_U(x) = \text{goal} \{ \text{cost}(\beta, x) \mid \beta \in M(x) \}
 $$
 Ein Algorithmus \enquote{löst} $U$, wenn er für jedes $x \in L$ eine zulässige Lösung aus $M(x)$ ausgibt und diese optimal ist.
 
@@ -56,7 +56,7 @@ Ein Algorithmus \enquote{löst} $U$, wenn er für jedes $x \in L$ eine zulässig
     $$
     \text{cost}(\alpha, x) = \text{Opt}_U(x)
     $$ $$ 
-    = \text{goal}\{\text{cost}(\beta, x) | \beta \in M(x)\}
+    = \text{goal}\{\text{cost}(\beta, x) \mid \beta \in M(x)\}
     $$
     \vspace{0.5cm}
     $\phantom{a}$
@@ -84,7 +84,7 @@ Was bringt die Wiederholung? Wenn ein einzelner Lauf die optimale Lösung mit Wa
 $$
 1 - (1 - p)^k
 $$
-Das ist genau die Idee der Wahrscheinlichkeitsverstärkung durch Wiederholungen: Die Erfolgswahrscheinlichkeit steigt schnell, währendn die Laufzeit nur um den Faktor $k$ (linear) wächst.
+Das ist genau die Idee der Wahrscheinlichkeitsverstärkung durch Wiederholungen: Die Erfolgswahrscheinlichkeit steigt schnell, während die Laufzeit nur um den Faktor $k$ (linear) wächst.
 
 \clearpage
 \section{Wahrscheinlichkeit der optimalen Lösung}
@@ -140,7 +140,7 @@ Gegeben sind Städte und Distanzen. Gesucht ist eine Rundreise, die jede Stadt g
     $M(G,c)$: Die Menge aller Hamiltonschen Kreise (Permutation aller Knoten, jeder genau einmal besucht).
     
     \textbf{Kosten}:\newline
-    Summe der GEwichte aller Kanten im Kreis.
+    Summe der Gewichte aller Kanten im Kreis.
     
     \textbf{Ziel}: Minimum
 
@@ -154,19 +154,15 @@ Gegeben sind Städte und Distanzen. Gesucht ist eine Rundreise, die jede Stadt g
 
 \subsection{MIN-VCP (Vertex Cover)}
 
-Gegeben ist ein Graph. Gesucht ist eine kleinste Menge von Knoten, sodass jede Kante mindestens einem ausgewählten Knoten \enquote{hängt}. Ein klassischer grober Ansatz ist die 2-Approximation über ein maximales Matching: Nimm zu jeder gewählten Matching-Kante beide endpunkte ins Cover. Dies garantiert hächstens Faktor 2 vom Optimum.
+Gegeben ist ein Graph. Gesucht ist eine kleinste Menge von Knoten, sodass jede Kante an mindestens einem ausgewählten Knoten \enquote{hängt}. Ein klassischer grober Ansatz ist die 2-Approximation über ein maximales Matching: Nimm zu jeder gewählten Matching-Kante beide endpunkte ins Cover. Dies garantiert hächstens Faktor 2 vom Optimum.
 
 \begin{multicols}{2}
     
-    \textbf{Eingabe}:\newline
-    Ein ungerichteter Graph $G = (V, E)$
-    
+    \textbf{Eingabe}: Ein ungerichteter Graph $G = (V, E)$\newline
     \textbf{Einschränkungen}:\newline
     $M(G)$. Eine Teilmenge von Knoten $U \subseteq V$, sodass jede Kante in $E$ mit mindestens einem Knoten aus $U$ verbunden ist.
-    
-    \textbf{Kosten}:\newline
-    Die Anzahl der Knoten in $U (|U|)$.
-    
+    \textit{In der Abbildung gibt es eine Kante die keinen blauen Knoten berührt (ganz links, Abbildung 6.7)}\newline
+    \textbf{Kosten}: Die Anzahl der Knoten in $U (|U|)$.\newline
     \textbf{Ziel}: Minimum
 
     \begin{figure}[H]
