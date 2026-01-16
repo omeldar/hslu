@@ -27,10 +27,10 @@ Nicht die Worst-Case-Laufzeit, sondern der gewichtete Durchschnitt der Laufzeite
 Für einen Algorithmus A und eine Eingabe $w$ ist die erwartete Zeit definiert als:
 
 $$
-\text{Erwartete Zeit}_A(w) = \sum [\text{Wahr}({C_i}) * \text{Zeit}(C_i)]
+\text{Erwartete Zeit}_A(w) = \sum [\text{Pr}({C_i}) * \text{Zeit}(C_i)]
 $$
 
-für alle möglichen Berechnungspfade $C_i$ von A auf Eingabe w.
+$\text{Pr}[C_i]$ ist dabei die Chance, dass dieser Berechnungspfad gewählt wird.
 
 \subsection{Metrik 2: Erfolgs- / Fehlerwahrscheinlichkeit}
 
