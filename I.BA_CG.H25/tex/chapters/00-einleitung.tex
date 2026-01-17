@@ -1,0 +1,89 @@
+Ziel dieses Kapitels: Begriffe und Gesamtbild verstehen.
+
+\section{Was ist Computer Graphics}
+
+Definition: Computer Graphics beschäftigt sich damit, Bilder (oder Animationen) mit einem Computer erzeugen. Folgende zentrale Bausteine/Themenanker sind zu beachten:
+
+\begin{itemize}
+    \item Polygons
+    \item Visibility
+    \item Rendering
+    \item Shading and Materials
+\end{itemize}
+
+\section{Typische Anwendungsfelder}
+
+Typische Anwendungsfelder sind:
+
+\begin{itemize}
+    \item Games
+    \item Film/Movies
+    \item Medizin / Virtual Surgery
+    \item History \& cultural heritage
+    \item VR/AR
+\end{itemize}
+
+Motivation: 3D-Grafik wird allgegenwärtig (GUI/Visualisierung, Browser/Mobile, Film/Werbung/Architektur, Games/VR).
+
+\section{Grundbegriffe}
+
+\textbf{Polygone}: Viele 3D-Objekte werden als Polygonmshes repräsentiert (in der Praxis oft Dreiecke). Das ist die Grundlage für die klassische Echtzeit-Pipeline (Rasterization).
+
+\textbf{Visibility (Sichtbarkeit / Hidden Surface Removal)}: Für eine realistische Darstellung sollen nur sichtbare Flächen/Linien gezeichnet werden. Typische Methoden sind:
+
+\begin{itemize}
+    \item Backface Culling: Rückseiten geschlossener Objekte weglassen
+    \item Painter's Algorithm: Tiefensortierung: hinten zuerst, vorne zuletzt.
+    \item Z-Buffer: (Depth-Test pro Pixel; Hardware/WebGL-typisch)
+    \item ausserdem als Kategorie: Raycasting/Raytracing
+\end{itemize}
+
+\textbf{Rendering}: Rendering ist grundlegend die Aufgabe, für jeden Pixel die passende Farbe (RGB) zu bestimmen, die zu einem Objektpunkt in der Szene gehört.
+
+\textbf{Shading \& Materials}
+
+\begin{itemize}
+    \item \textbf{Shading}: Berechnung des Lichteffekts auf ein Material (wie \enquote{hell}/welche Farbe wirkt es an einer Stelle).
+    \item Materialeigenschaften erklären den Look (Plastik/Glsa/Metall/Holz; Highlights, Gloss, Caustics, etc.).
+    \item BRDF: Bidirectional Reflectance Distribution Function. Eine Funktion, die beschreibt, wie Licht je Richtung von einer Oberfläche gestreut/reflektiert wird.
+\end{itemize}
+
+\section{Überblick: Graphics Pipeline}
+
+Die Pipeline ist wie folgt:
+$$
+\text{Objekte} \rightarrow \text{3D-Szene} \rightarrow \text{2D-Szene} \rightarrow \text{Darstellung}
+$$
+diese kommt mit Schritten wie: Modelltransformation, Viewingtransformation, 3D-Clipping, Entfernen verdeckter Flächen, Beleuchtung, Perspektive, 2D-Clipping, Rasterung.
+
+Die GPU-Pipeline mit grober Aufteilung ist:
+
+\begin{itemize}
+    \item Geometry Stage: Model/View Transformation, Vertex Shading, Projection, Clipping, Screen Mapping.
+    \item Rasterizer Stage: Triangle Setup $\rightarrow$ Triangle Traversal $\rightarrow$ Pixel (Fragment) Shading $\rightarrow$ Merging (Merging löst u. a. die Sichtbarkeit, typischerweise mit Z-Buffer).
+\end{itemize}
+
+Es gibt einige Kernbegriffe in WebGL/GPU:
+\begin{itemize}
+    \item Vertex Processing berechnet Vertex-Positionen (und kann Daten fürs Fragment vorbereiten).
+    \item Fragment Processing berechnet die Pixelfarbe.
+\end{itemize}
+
+\section{Rasterization vs. Ray Tracing}
+
+\textbf{Rasterization}
+
+\begin{itemize}
+    \item Rasterization bedeutet die Umwandlung von (projizierten) 3D-Vertices im Screen-Space zu Pixeln.
+    \item Sichtbarkeit wird in der Standard-Pipeline typischerweise mit Z-Buffer gelöst.
+\end{itemize}
+
+\textbf{Ray Tracing}
+
+\begin{itemize}
+    \item Grundidee (Ray Casting): pro Pixel einen Strahl durch den  Pixel in die Szene schicken und das zuerst getroffene Objekt bestimmen.
+    \item Raytracing: pro pxiel Strahl bestimmen, Schnittpunkte testen, nächsten Treffer wählen, Farbe berechnen.
+    \item Rekursiv für zusätzliche Effekte: Spiegelung, Transparenz/Refraktion, Schatten; Anti-Aliasing über mehrere Primärstrahlen pro Pixel.
+    \item View dependent: Lösung wird primär nur für Richtungen durch die Pixel im Viewport bestimmt (nicht \enquote{flächig} für die ganze Szene).
+\end{itemize}
+
