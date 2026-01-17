@@ -242,7 +242,7 @@ Key-Facts:
         \textbf{Antwort}: Man hat einen Cache mit Platz für $k$ Seiten. Bei einer Anfrage: ist die Seite nicht im Cache, gibt es einen Page Fault und man muss sie laden. Ist der Cache voll, muss man eine Seite auswerfen. Ziel: möglichst wenige Page Faults.
 
         \item Warum ist Paging für einen Cache-Speicher mit $k$ Bit ein $k$-schweres Problem (Beispiel mit $k=3$)?\newline
-        \textbf{Antwort}: Ein Gegner kann Anfragen so wählen, dass wir fast immer genau die Seite braucheny, die wir gerade rausgeworfen haben. Bei $k = 3$: Cache enthält z.B. ${1,2,3}$. Anfrage: $4 \rightarrow$ Wir werfen eine raus (z.B. 1). Nächste Anfrage ist wieder $1 \rightarrow$ Page Fault. Dann wieder eine neue Seite, wir werfen sie raus, Gegner fragt genau diese wieder an. So kann unser Algorithmus ungefähr 3-mal so viele Faults haben wie $\text{Opt}$. Daher ist das Problem $k$-schwer.
+        \textbf{Antwort}: Ein Gegner kann Anfragen so wählen, dass wir fast immer genau die Seite brauchen, die wir gerade rausgeworfen haben. Bei $k = 3$: Cache enthält z.B. ${1,2,3}$. Anfrage: $4 \rightarrow$ Wir werfen eine raus (z.B. 1). Nächste Anfrage ist wieder $1 \rightarrow$ Page Fault. Dann wieder eine neue Seite, wir werfen sie raus, Gegner fragt genau diese wieder an. So kann unser Algorithmus ungefähr 3-mal so viele Faults haben wie $\text{Opt}$. Daher ist das Problem $k$-schwer.
 
     \end{enumerate}
     \clearpage
@@ -251,7 +251,7 @@ Key-Facts:
         \item Warum sind Online Probleme Beispiele für das Überlisten des Gegners?\newline
         \textbf{Antwort}: Weil man oft mit einem Gegner denkt, der die Eingabe so wählt, dass der Online-Algorithmus schlecht aussieht. Randomisierung hilft, weil der Gegner nicht genau vorhersagen kann, welche Entscheidungen der Algorithmus trifft.
 
-        \item Was ist die Konkurrenzgẗe und die Konkurrenzfähigkeit bei randomisierten Algorithmen?\newline
+        \item Was ist die Konkurrenzgüte und die Konkurrenzfähigkeit bei randomisierten Algorithmen?\newline
         \textbf{Antwort}: Man bewertet nicht die festen Kosten, sondern die erwarteten Kosten über die Zufallsentscheidungen: $\text{Erwartete Kosten}(\text{Algorithmus}) \leq c \cdot \text{Kosten}(\text{Opt})$. Dann heisst der Algorithmus $c$-konkurrenzfähig \enquote{im Erwartungswert}.
 
     \end{enumerate}
