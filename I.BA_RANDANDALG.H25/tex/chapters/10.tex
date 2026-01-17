@@ -79,7 +79,7 @@ Warum passiert das?
 \clearpage
 \section{Beispiel: Paging (Cache-Verwaltung)}
 
-\textbf{Problemidee}: Wir haben einen Cache (schnell), der nu $k$ Seiten speichern kann. Es kommt eine Anfrage nach einer Seite:
+\textbf{Problemidee}: Wir haben einen Cache (schnell), der nur $k$ Seiten speichern kann. Es kommt eine Anfrage nach einer Seite:
 
 \begin{itemize}
     \item Wenn sie im Cache ist: Treffer, kein Problem.
@@ -101,6 +101,8 @@ Ziel: Minimieren der Anzahl Page Faults.
         \item Sofort danach fordert der Gegner genau die Seite $p_j$ an, die wir gerade entfertn haben.
         \item Das wiederholt er so, dass wir bei jedem Schritt einen Page Fault erhalten.
     \end{enumerate}
+
+    \columnbreak
 
     \begin{figure}[H]
         \img[width=0.4\textwidth]{figures/paging-problem.jpg}
