@@ -1,0 +1,141 @@
+\section{Grundidee: Was ist Ray Tracing?}
+Ray Tracing beantwortet Sichtbarkeit und Beleuchtung aus einer anderen Richtung als Rasterisierung.
+Statt \enquote{Geometrie zu Pixeln} zu machen, macht Ray Tracing \enquote{Pixel zu Geometrie}:
+
+\begin{itemize}
+  \item Für jedes Pixel wird ein \textbf{Strahl (Ray)} von der Kamera in die Szene geschickt.
+  \item Man sucht, \textbf{welches Objekt der Strahl zuerst trifft}.
+  \item Aus diesem Treffer berechnet man die \textbf{Farbe} des Pixels.
+\end{itemize}
+
+\textbf{Merksatz:} Ray Tracing ist \enquote{Sichtbarkeit durch Strahlen}: der erste Treffer gewinnt.
+
+\section{Grundalgorithmus (konzeptionell): Strahl pro Pixel, Intersection, nächste Intersection, Farbe}
+Der Ablauf pro Pixel sieht konzeptionell so aus:
+
+\begin{enumerate}
+  \item \textbf{Primärstrahl erzeugen:} Von der Kamera durch das Pixel in die Szene.
+  \item \textbf{Schnittpunkte testen (Intersections):} Welche Objekte schneidet der Strahl?
+  \item \textbf{Nächsten Treffer wählen:} Der kleinste positive Abstand entlang des Strahls ist sichtbar.
+  \item \textbf{Shading am Trefferpunkt:} Mit Material, Normalen und Lichtern bestimmen, wie der Punkt aussieht.
+\end{enumerate}
+
+\clearpage
+\textbf{Wichtig für die Prüfung:}
+\begin{itemize}
+  \item Das \enquote{nächste Intersection}-Prinzip löst Hidden-Surface-Removal automatisch.
+  \item Der Aufwand ist das Problem: naive Intersection-Tests gegen alle Dreiecke sind viel zu teuer.
+  \item Deshalb braucht man in der Praxis \textbf{Beschleunigungsstrukturen} (z.\,B. BVH), sonst skaliert es nicht.
+\end{itemize}
+
+\section{Rekursion: Spiegelung, Transparenz/Refraktion, Schattenstrahlen}
+Ray Tracing wird spannend, weil man am Trefferpunkt weitere Strahlen losschicken kann.
+Das ist die Idee hinter \textbf{rekursivem} Ray Tracing.
+
+\subsection*{Spiegelung (Reflection Rays)}
+\begin{itemize}
+  \item Für spiegelnde Materialien schickt man einen \textbf{Reflexionsstrahl} in die reflektierte Richtung.
+  \item Die Pixel-Farbe mischt dann \enquote{lokale Beleuchtung} und \enquote{reflektierte Umgebung}.
+\end{itemize}
+\textbf{Konzept:} Spiegelung ist \enquote{nochmal sehen, was in der Spiegelrichtung sichtbar wäre}.
+
+\subsection*{Transparenz und Refraktion (Refraction/Transmission Rays)}
+\begin{itemize}
+  \item Transparente Materialien (Glas, Wasser) lassen Licht durch, aber oft \textbf{gebrochen}.
+  \item Man schickt einen \textbf{Transmissions-/Refraktionsstrahl} in das Material hinein bzw. hindurch.
+  \item Das Material entscheidet, wie stark reflektiert und wie stark gebrochen wird (konzeptionell: \enquote{Fresnel-Effekt}).
+\end{itemize}
+\textbf{Konzept:} Transparenz ist \enquote{ich sehe durch ein Objekt, aber die Richtung kann sich ändern}.
+
+\clearpage
+\subsection*{Schattenstrahlen (Shadow Rays)}
+Für direkte Beleuchtung will man wissen, ob eine Lichtquelle den Trefferpunkt erreicht.
+Dazu schickt man einen \textbf{Schattenstrahl} vom Trefferpunkt zur Lichtquelle:
+\begin{itemize}
+  \item \textbf{Wenn etwas im Weg ist:} Punkt liegt im Schatten (für dieses Licht).
+  \item \textbf{Wenn nichts im Weg ist:} Licht trägt zur Helligkeit bei.
+\end{itemize}
+
+\textbf{Prüfungs-Merksatz:} Schattenstrahl ist eine \enquote{Sichtbarkeitsfrage zur Lichtquelle}.
+
+\subsection*{Warum braucht man eine Rekursionsgrenze?}
+Wenn man immer weiter reflektiert/brechen würde, endet es nie.
+In der Praxis gibt es:
+\begin{itemize}
+  \item \textbf{Maximale Tiefe} (z.\,B. 2--10 Bounces),
+  \item oder \textbf{stochastisches Abbrechen} (Russian Roulette), wenn Beiträge klein werden.
+\end{itemize}
+\textbf{Konzept:} Man stoppt, wenn weiterer Aufwand kaum noch Bildwirkung bringt.
+
+\section{Aliasing im Ray Tracing und Supersampling}
+\subsection*{Warum gibt es Aliasing auch beim Ray Tracing?}
+Ein Pixel ist eine Fläche, aber ein einzelner Strahl ist nur ein Punkt-Sample.
+Wenn du pro Pixel nur einen Strahl nimmst:
+\begin{itemize}
+  \item Kanten flimmern und wirken \enquote{gezackt}.
+  \item Feine Details (dünne Geometrie, Hochfrequenz-Texturen) werden falsch abgetastet.
+\end{itemize}
+
+\clearpage
+\subsection*{Supersampling (mehr Strahlen pro Pixel)}
+\textbf{Idee:} Statt einem Strahl nimmt man mehrere Strahlen mit leicht versetzten Pixelpositionen
+und mittelt die Ergebnisse.
+\begin{itemize}
+  \item \textbf{Pro:} Glattere Kanten, weniger Flimmern, bessere Detailwiedergabe.
+  \item \textbf{Contra:} Linear teurer: doppelt so viele Samples ist grob doppelt so viel Aufwand.
+\end{itemize}
+
+\textbf{Kontext:} Viele Ray-Tracing-Renderer kombinieren Supersampling mit \textbf{Denoising},
+weil stochastische Effekte (weiche Schatten, indirektes Licht) sonst stark rauschen.
+
+\section{Harte vs. weiche Schatten (Flächenlicht, Umbra/Penumbra)}
+\subsection*{Harte Schatten (Punktlicht)}
+\textbf{Punktlicht} ist ein idealisiertes Licht ohne Ausdehnung.
+Dann ist die Schattenfrage binär:
+\begin{itemize}
+  \item Licht sichtbar $\rightarrow$ beleuchtet
+  \item Licht verdeckt $\rightarrow$ Schatten
+\end{itemize}
+Das ergibt harte, scharfe Schattenkanten.
+
+\subsection*{Weiche Schatten (Flächenlicht) und Umbra/Penumbra}
+Reale Lichter haben Ausdehnung (Flächenlicht, grosse Leuchtquelle).
+Dann kann ein Punkt die Lichtquelle teilweise sehen:
+
+\begin{itemize}
+  \item \textbf{Umbra:} Lichtquelle komplett verdeckt $\rightarrow$ voll im Schatten (dunkelster Bereich).
+  \item \textbf{Penumbra:} Lichtquelle teilweise sichtbar $\rightarrow$ teilweiser Schatten (weiche Übergangszone).
+\end{itemize}
+
+\textbf{Wie erzeugt Ray Tracing weiche Schatten (konzeptionell)?}
+\begin{itemize}
+  \item Man samplet viele Punkte auf der Lichtfläche.
+  \item Für jedes Sample schickt man einen Schattenstrahl.
+  \item Der Anteil \enquote{nicht blockierter} Strahlen bestimmt, wie hell der Punkt ist.
+\end{itemize}
+
+\textbf{Merksatz:} Weiche Schatten entstehen durch \enquote{teilweise Sichtbarkeit} einer ausgedehnten Lichtquelle.
+
+\section{Einordnung zu WebGPU (als Referenz-Kontext)}
+In WebGPU ist klassische Rasterisierung der Standardpfad, aber Ray Tracing kann man konzeptionell einordnen als:
+\begin{itemize}
+  \item \textbf{Compute-basierter Ansatz:} Rays pro Pixel in einem Compute-Shader, Ausgabe in eine Texture.
+  \item \textbf{Hybrid Rendering:} Rasterisierung für Basisbild + Ray Tracing für ausgewählte Effekte (Schatten, Reflexionen).
+\end{itemize}
+\textbf{Konzeptuell wichtig:} Ray Tracing ist sehr flexibel, aber braucht gute Beschleunigung und Sampling-Strategien, um in Echtzeit zu funktionieren.
+
+\section{Typische konzeptionelle Prüfungsfragen (Kernantworten)}
+\begin{itemize}
+  \item \textbf{Was ist der Grundalgorithmus von Ray Tracing?}
+    -- Pro Pixel einen Strahl, nächste Intersection finden, dort Shading berechnen.
+  \item \textbf{Warum löst Ray Tracing Hidden-Surface-Removal automatisch?}
+    -- Weil der erste Treffer entlang des Strahls per Definition sichtbar ist.
+  \item \textbf{Wofür braucht man Rekursion?}
+    -- Für Spiegelungen, Transparenz/Refraktion und indirekte Lichtpfade; man sendet zusätzliche Strahlen vom Trefferpunkt.
+  \item \textbf{Wie prüft man Schatten?}
+    -- Schattenstrahl zur Lichtquelle: blockiert oder nicht.
+  \item \textbf{Warum ist Aliasing ein Thema, und was hilft?}
+    -- Ein Strahl ist nur ein Sample pro Pixel; Supersampling (mehr Strahlen) reduziert Treppeneffekte.
+  \item \textbf{Harte vs. weiche Schatten: Ursache?}
+    -- Punktlicht gibt harte Kanten; Flächenlicht gibt Umbra/Penumbra durch teilweise Sichtbarkeit der Lichtquelle.
+\end{itemize}
