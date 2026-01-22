@@ -1,0 +1,145 @@
+\section{Motivation: physikalisch korrekt vs. Standardmodelle (Echtzeit)}
+\textbf{Worum geht's?}
+Beleuchtung im Rendering beantwortet die Frage: \enquote{Wie hell und welche Farbe hat ein Punkt auf einer Oberfläche, wenn Licht darauf trifft?}
+
+Es gibt zwei grosse Denkrichtungen:
+
+\begin{itemize}
+  \item \textbf{Physikalisch korrekt (physically based):}
+  Man versucht, Lichttransport möglichst realistisch zu modellieren (Energieerhaltung, richtige Materialreaktionen, Mehrfachstreuung, indirektes Licht).
+  Das ist konzeptionell nah an der \enquote{Rendering Equation}.
+  \item \textbf{Standardmodelle (klassisch in Echtzeit):}
+  Einfachere Modelle, die \enquote{gut aussehen} und sehr schnell berechenbar sind.
+  Sie sind nicht vollständig physikalisch korrekt, aber extrem praktisch für hohe Bildraten.
+\end{itemize}
+
+\textbf{Prüfungs-Merksatz:}
+Physikalisch korrekt ist \enquote{realistisch und allgemein}, Standardmodelle sind \enquote{schnell und kontrollierbar}.
+
+\section{Bausteine klassischer Beleuchtungsmodelle}
+In vielen klassischen Echtzeitmodellen setzt sich das Licht an einem Punkt aus drei typischen Anteilen zusammen:
+\begin{itemize}
+  \item \textbf{Ambient:} Grundhelligkeit ohne Richtung (Fake für indirektes Licht)
+  \item \textbf{Diffus (Lambert):} matte Reflexion, abhängig vom Einfallswinkel
+  \item \textbf{Specular (Phong/Blinn-Phong):} Glanzlicht, abhängig von Blickrichtung und Oberflächenglätte
+\end{itemize}
+Diese Bausteine erklären viele typische \enquote{3D-Looks} aus Spielen und Demos.
+
+\section{Ambient: warum es existiert (und warum es ein Fake ist)}
+\textbf{Ambient} ist eine konstante Helligkeit, die nicht davon abhängt, wo die Lampe steht oder wie die Oberfläche ausgerichtet ist.
+
+\begin{itemize}
+  \item \textbf{Motivation:} In der Realität gibt es indirektes Licht (Licht, das von Wänden reflektiert wird).
+  \item \textbf{Im klassischen Modell:} Man nimmt einfach einen konstanten Anteil, damit Schatten nicht komplett schwarz werden.
+  \item \textbf{Schwäche:} Es ist nicht richtungsabhängig und nicht ortsabhängig, wirkt daher oft \enquote{flach}.
+\end{itemize}
+
+\textbf{Merksatz:} Ambient ist \enquote{indirektes Licht als Abkürzung}.
+
+\section{Lambert (diffus): matte Oberflächen und der cos-Term}
+\textbf{Diffus nach Lambert} beschreibt matte Oberflächen (Kreide, Papier, unpoliertes Holz).
+Die zentrale Beobachtung:
+\enquote{Je flacher Licht auftrifft, desto weniger Energie pro Fläche kommt an.}
+
+\begin{itemize}
+  \item Die Helligkeit hängt von der \textbf{Ausrichtung der Oberfläche} zur Lichtquelle ab.
+  \item Das wird konzeptionell über einen \textbf{cos-Term} ausgedrückt:
+        maximal, wenn Licht \enquote{frontal} auftrifft, und null, wenn es \enquote{hinten} auftrifft.
+  \item Diffuses Licht ist \textbf{blickrichtungsunabhängig}:
+        Wenn du dich um ein mattes Objekt herumbewegst, bleibt die diffuse Helligkeit (für gleiche Beleuchtung) ähnlich.
+\end{itemize}
+
+\textbf{Merksatz:} Lambert ist \enquote{Winkel zwischen Normalenrichtung und Licht}.
+
+\clearpage
+\section{Phong und Blinn-Phong (specular): Glanzlichter}
+Specular-Anteile modellieren Glanz (Plastik, Lack, Metall-Highlights).
+Hier ist der Kern:
+\enquote{Glanz hängt davon ab, ob die Blickrichtung nahe an der idealen Reflexionsrichtung liegt.}
+
+\subsection*{Phong-Specular (Konzept)}
+\begin{itemize}
+  \item Man denkt in einer \textbf{Reflexionsrichtung}: Licht wird wie bei einem Spiegel reflektiert.
+  \item Je näher die Kamera an dieser Richtung ist, desto stärker das Highlight.
+  \item Ein \textbf{Shininess/Exponent} steuert die Breite:
+        hoher Wert $\rightarrow$ kleines, scharfes Highlight (glatt),
+        niedriger Wert $\rightarrow$ breites, weiches Highlight (rau).
+\end{itemize}
+
+\subsection*{Blinn-Phong (Konzept)}
+\begin{itemize}
+  \item Statt Reflexionsrichtung nutzt man den \textbf{Half-Vector}:
+        die Richtung \enquote{genau zwischen Licht und Blick}.
+  \item Das ist rechnerisch oft stabiler/effizienter und sehr verbreitet in Echtzeit.
+  \item Visuell ähnlich zu Phong, aber nicht identisch.
+\end{itemize}
+
+\textbf{Merksatz:} Specular ist \enquote{blickabhängig} und hängt stark von \enquote{Glätte/Rauheit} ab.
+
+\section{Rolle von Normalen: warum sie so wichtig sind}
+Die \textbf{Normale} ist die Richtung, in die die Oberfläche \enquote{zeigt}.
+Sie ist der zentrale Input für fast alles in Beleuchtung:
+
+\begin{itemize}
+  \item \textbf{Diffus:} Normale bestimmt, wie steil Licht einfällt (Lambert).
+  \item \textbf{Specular:} Normale beeinflusst Reflexions- oder Half-Vektor-Bewertung.
+  \item \textbf{Shading-Qualität:} Ohne gute Normalen wirkt alles kantig oder falsch.
+\end{itemize}
+
+\clearpage
+\textbf{Wichtige Unterscheidung (mündlich beliebt):}
+\begin{itemize}
+  \item \textbf{Flat Shading:} pro Dreieck eine Normale $\rightarrow$ facettiert, kantig
+  \item \textbf{Smooth Shading:} Normalen an Vertices werden interpoliert $\rightarrow$ glatter Look
+  \item \textbf{Normal Mapping:} zusätzliche Textur verändert Normalen scheinbar $\rightarrow$ feine Details ohne mehr Geometrie
+\end{itemize}
+
+\section{Reflectivity: was das Material steuert}
+\textbf{Reflectivity} meint hier konzeptionell: \enquote{Wie stark reflektiert die Oberfläche Licht, und in welcher Art?}
+
+In klassischen Modellen zeigt sich das oft als Parameter:
+\begin{itemize}
+  \item \textbf{Diffuse Farbe (Albedo):} Grundfarbe der matten Reflexion
+  \item \textbf{Specular-Stärke/Farbe:} wie stark und ggf. wie farbig das Highlight ist
+  \item \textbf{Shininess:} wie scharf das Highlight ist (als grober Ersatz für Rauheit)
+\end{itemize}
+
+\textbf{Wichtig:} Klassische Modelle erlauben \enquote{künstlerische Kontrolle},
+sind aber nicht automatisch energieerhaltend oder materialphysikalisch korrekt.
+
+\section{BRDF als Konzept (Einordnung Richtung Rendering Equation)}
+\textbf{BRDF} steht für \enquote{Bidirectional Reflectance Distribution Function}.
+Konzeptionell ist das einfach:
+\enquote{Eine Funktion, die sagt, wie viel Licht aus einer Einfallsrichtung in eine Ausfallsrichtung reflektiert wird.}
+
+\begin{itemize}
+  \item Input: \textbf{Lichtrichtung} (woher kommt das Licht?) und \textbf{Blick-/Ausfallsrichtung} (wohin geht es?)
+  \item Output: \textbf{Reflektierte Intensität} (wie stark wird reflektiert?)
+\end{itemize}
+
+\clearpage
+\textbf{Warum ist das wichtig?}
+\begin{itemize}
+  \item Es ist die konzeptionelle Brücke von \enquote{ein paar Heuristiken} (Phong) zu
+        \enquote{physikalisch motivierten Modellen} (PBR).
+  \item In der \textbf{Rendering Equation} ist die BRDF der Teil, der das Materialverhalten beschreibt.
+  \item Viele moderne Echtzeitmodelle sind letztlich \enquote{bestimmte BRDFs} plus vereinfachte Lichtintegration.
+\end{itemize}
+
+\textbf{Merksatz:} BRDF ist \enquote{Materialgesetz}: Winkel rein, Winkel raus, Anteil reflektiert.
+
+\section{Typische konzeptionelle Prüfungsfragen (Kernantworten)}
+\begin{itemize}
+  \item \textbf{Warum benutzt man in Echtzeit oft Standardmodelle statt physikalisch korrekt?}
+    -- Weil sie viel billiger sind und trotzdem plausibel aussehen; physikalisch korrekt ist oft zu teuer.
+  \item \textbf{Was ist der Zweck von Ambient?}
+    -- Schneller Fake für indirektes Licht, damit Schatten nicht komplett schwarz sind.
+  \item \textbf{Was beschreibt Lambert?}
+    -- Matte Reflexion, abhängig vom Winkel zwischen Normale und Licht (cos-Effekt).
+  \item \textbf{Warum sind Specular-Modelle blickabhängig?}
+    -- Highlights entstehen, wenn Blickrichtung nahe an der reflektierten Richtung liegt.
+  \item \textbf{Warum sind Normalen so zentral?}
+    -- Sie bestimmen, wie Licht auf die Oberfläche trifft; Shading ohne korrekte Normalen wirkt sofort falsch.
+  \item \textbf{Was ist eine BRDF in einem Satz?}
+    -- Eine Funktion, die Materialreflexion von Einfalls- zu Ausfallsrichtung beschreibt.
+\end{itemize}
