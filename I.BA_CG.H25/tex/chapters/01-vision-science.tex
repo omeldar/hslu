@@ -196,81 +196,221 @@ Wenn wir blaues Licht sehen (kurze Wellenlängen, die S-Zapfen feuern) und rotes
 
 Darum existiert diese gerade Linie (Purpurlinie) nur in unserem Kopf: Sie überbrückt diese mathematische Lücke zwischen Rot und Blau. Es ist eine wunderschöne Halluzination.
 
-\subsection{Überblick Farbmodelle (Kategorien)}
+
+\section{Überblick Farbmodelle vs. Farbräume}
+
+Farbmodell = Wie man Farbe mit Zahlen beschreibt (z.B. 3 Kanäle wie Hue/Sättigung/Helligkeit, Luma + Chroma).
+
+Farbraum = welche konkreten Farben diese Zahlen tatsächlich bedeuten (z.B. sRGB, Display P3, Rec.709, Rec.2020).
+
+Beispiel: RGB ist ein Modell. sRGB ist ein Farbraum (eine konkrete Festlegung von Primärfarben + Weisspunkt + Übertragung/Gamma).
+
+\subsection{Zwei Arten von Farb-Modellen: \enquote{gerätetreu} vs. \enquote{mensch-nah}}
+
+Für Hardware-/Pipeline-orientiert (praktisch für Geräte)
+
+Ziel: gut für Erzeugung/Ausgabe/Übertragung.
 
 \begin{itemize}
-    \item Hardware-orientiert: RGB (Monitore), CMY/CMYK (Druck), YIQ,YUV (Tv/Video)
-    \item Intuitiv/benutzerorientiert: HSV, Munsell, CIELab
+    \item RGB (additiv): Displays, Kameras, Rendering
+    \item CMY/CMYK (subtraktiv): Druck
+    \item YUV / YCbCr (Luma/Chroma): TV/Video/Kompression
 \end{itemize}
 
-\textbf{RGB / sRGB (additiv)}
+Intuitiv / wahrnehmungs-orientiert (praktisch für Menschen/Aufgaben)
+
+Ziel: gut für Bedienung oder Farbvergleiche
 
 \begin{itemize}
-    \item Additives Modell: Farbe $C = (r, b, c)$ mit $r, g, b \in [0, 1]$.
-    \item sRGB als konkreter Standardfarbraum wird im Vergleich im CIE-Kontext gezeigt.
+    \item HSV/HSB: Farbauswahl in Tools (Picker)
+    \item Munserll: historisch/Design-orientiert, wahrnehmungsbezogene Ordnung
+    \item CIELab: Farbunterschiede und Farbstände \enquote{gleichmässiger} als RGB
 \end{itemize}
 
-\begin{figure}[H]
-    \img[width=0.5\textwidth]{figures/01/colorsforprinting.png}
-        {Geräte und Farben}
-    \label{fig:colorsforprinting}
-\end{figure}
+\subsubsection{RGB / sRGB (additiv)}
 
-\subsubsection{CMY(K) (subtraktiv, Druck)}
+Idee: Licht wird addiert (mehr Kanal = mehr Licht).
 
-Subtraktive Mischung mit Cyan, Magenta, Yellow (Komplementärfarben zu RGB). Zusammenhang zu RGB (idealisiert):
-$$
-(C, M, Y) = (1 - R, 1 - G, 1 - B)
-$$
+Wo benutzt?
+
+\begin{itemize}
+    \item Alles was leuchtet: Monitor, Handy, Projektor
+    \item Render-Pipelines, Texturen, Shader (fast überall intern RGB-like)
+\end{itemize}
+
+Warum gibt es sRGB?
+
+\begin{itemize}
+    \item Damit \enquote{r,g,b} auf unterschiedlichen Geräten ähnlich aussieht.
+    \item sRGB enthält auch eine nichtlineare Codierung (Gamma/Transfer), weil das besser zu Wahrnehmung + effizienter Speicherung passt.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item Geräteabhängig (RGB-Zahlen sind ohne Farbraum nicht eindeutig).
+    \item Super praktisch für Hardware, aber Farbstände sind nicht \enquote{menschlich gleichmässig} ein numerischer Schritt fühlt sich nicht überall gleich an.
+\end{itemize}
+
+\subsubsection{CMY/CMYK (subtraktiv, Druck)}
+
+Idee: Farbe entsteht durch Tinte/Pigmente, die Licht wegnehmen (absorbieren). Wo benutzt?
+
+\begin{itemize}
+    \item Drucker, Druckvorstufe, Plakate, Magazin
+\end{itemize}
+
+Warum CMYK statt nur CMY?
+
+\begin{itemize}
+    \item In der Praxis bekommst du mit realen Tinten kein perfektes \enquote{tiefer Schwarz} aus C+M+Y.
+    \item K (Key/Black) liefert kräftigeres Schwarz, spart Tinte und verbessert Schärfe/Text.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item RGB = \enquote{Licht anmachen}, CMYK = \enquote{Licht wegfiltern}.
+    \item Gamut und Resultat hängen stark von Papier + Tinte + Druckprofil ab.
+\end{itemize}
 
 \subsubsection{HSV/HSB (intuitiv)}
 
+Idee: Farbe so beschreiben, wie Menschen oft darüber reden:
+
 \begin{itemize}
-    \item Dimensionen: Hue (Farbton), Saturation (Sättigung), Value/Brightness (Intensität, Helligkeit)
-    \item Geometrische Interpretation: Kegel oder Zylinder, V entlang z (0 schwarz, 1 weiss), S als Radius, Hue als Winkel (z.B. rot $0°$, grün $120°$, blau $240°$),
+    \item Hue = \enquote{welche Farbe} (rot/grün/blau)
+    \item Saturation = \enquote{wie bunt} vs. grau
+    \item Value/Brightness = \enquote{wie hell}
 \end{itemize}
 
-\subsubsection{YUV / YCbCr (Video, Luma/Chroma-Trennung)}
+Wo benutzt?
 
 \begin{itemize}
-    \item Idee: Zerlegung in Luminanz (Y) und zwei Farbdifferenzsignale (U, V); kompatibel zu Schwarzweiss-TV.
-    \item Begründung für Praxis: U, V werden oft heruntergesampelt, weil das visuelle System empfindlicher auf Luminanzdetails als auf Farbdetails reagiert.
-    \item Formeln (RGB $\rightarrow$ YUV), u. a.:
-    \begin{itemize}
-        \item $Y = 0.299R + 0.587G + 0.114B$
-        \item alternative Schreibweisen für U,V und Rüktransformation zu RGB sind angegeben.
-    \end{itemize}
-    \item YCbCr wird als Beispiel erwähnt/illustriert.
+    \item Farbpicker in Photoshop/Blender/Unity etc.
+    \item Wenn wir es \enquote{mehr blau machen} oder \enquote{weniger sättigen} direkt steuern wollen.
+\end{itemize}
+
+Warum gebraucht, wenn es RGB schon gibt?
+
+\begin{itemize}
+    \item RGB ist technisch, aber schlecht zu steuern: \enquote{mehr Rot} ändert oft gleichzeitig Helligkeit/Sättigung unerwartet.
+    \item HSV trennt das besser für UI/Manipulation.
+\end{itemize}
+
+Wichtig: HSV ist nicht wirklich wahrnehmungs-linear (gleich grosse Änderungen fühlen sich nicht überall gleich an). Es ist vor allem bedienfreundlich, nicht \enquote{physikalisch} oder \enquote{perzeptuell perfekt}.
+
+\subsubsection{YUV/YCbCr (Video: Luma/Chroma-Trennung)}
+
+Einige Begriffe vorweg:
+
+\begin{itemize}
+    \item Luminanz: \enquote{wahrgenommene Helligkeit}, eng gekoppelt an das menschliche Helligkeitsempfinden.
+    \item Luma (Y): eine aus RGB abgeleitete Helligkeitskomponente (oft aus gamma-kodierten RGB), die für Video praktisch ist.
+    \item Chrominanz/Chroma: Farbinformation ohne Helligkeit (die \enquote{bunten} Anteile).
+\end{itemize}
+
+\clearpage
+Idee: Trenne Bild in:
+
+\begin{itemize}
+    \item Y (Luma) = Helligkeitsstruktur (Details/Kanten)
+    \item U/V bzw. Cb/Cr = Farbe (kann gröber gespeichert werden)
+\end{itemize}
+
+Wo benutzt?
+
+\begin{itemize}
+    \item Videoformate, TV, Streaming, Kameracodecs
+    \item YCbCr ist praktisch der Standard in digitalem Video.
+\end{itemize}
+
+Warum wird das gebraucht?
+
+\begin{itemize}
+    \item Das menschliche Sehen ist viel empfindlicher für Helligkeitsdetails als für Farbdetails.
+    \item Deshalb kann man Farbe runtersampeln (z.B. 4:2:2 oder 4:2:0) und spart massiv Datenrate - meist ohne dass es stark auffällt.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item RGB speichert alles gleichwertig, ineffizient für Video
+    \item YCbCr optimiert für Wahrnehmung + Kompression
 \end{itemize}
 
 \subsubsection{CIELab (wahrnehmungsnäher)}
 
-\begin{itemize}
-    \item Achsen: L (Helligkeit), a (rot $\rightleftarrows$ grün), b (gelb $\rightleftarrows$ blau).
-    \item Ziel/Interpretation: \enquote{gleiche Abstände} sollen gleich empfundene Farbunterschiede bedeuten
-\end{itemize}
-
-\subsubsection{Grauwerte aus RGB (Luma-Gewichtung)}
-
-Für die Umrechnung wird die Luma-Formel genutzt:
-$$
-Y = 0.299R + 0.587G + 0.114B
-$$
-
-\section{Dimensions of Visual Sensation (Qualitätsdimensionen von Bild/Video)}
+Idee: Ein Farbraum, in dem numerische Abstände eher den empfundenen Unterschieden entsprechen.
 
 \begin{itemize}
-    \item Auflösung (HD, 4K/UHD, \enquote{retina})
-    \item Frame Rate (z.B. 24Hz vs 48Hz)
-    \item Dynamic Range: sichtbar vs Display; HDR und Tone Mapping (linear vs nichtlinear).
-    \item Bit Depth / Quantisierung: Beispiele zeigen Artefakte bei wenigen Graustufen; auch \enquote{1 bit/pixel vs 8 bit/pixel}
-    \item Depth: stereo 3D, autostereo, holographic
+    \item L* = Helligkeit
+    \item a* = Achse rot $\leftrightarrow$ grün
+    \item b* = Achse gelb $\leftrightarrow$ blau
 \end{itemize}
 
-\textbf{HDR-Formate}
+Wo benutzt?
 
 \begin{itemize}
-    \item HDR10: Wide-gamut, 10-bit, Transfer Function, hoher Kontrast.
-    \item HDR10+: Metadata per frame
-    \item Dolby Vision: ähnlich, aber bis zu 12-bit Farbtiefe und 4K-Display erwähnt.
+    \item Farbmanagement, Qualitätskontrolle (Druck/Industrie)
+    \item Wenn du \enquote{wie ähnlich sind zwei Farben wirklich?} messen willst (Farbabstand)
 \end{itemize}
+
+\clearpage
+Warum gebraucht?
+
+\begin{itemize}
+    \item In RGB sind Abstände nicht \enquote{fair}: ein kleiner Zahlenunterschied kann sichtbar gross oder kaum sichtbar sein, je nach Bereich.
+    \item Lab ist für Vergleich, Korrektur, Matching viel sinnvoller.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item Weniger geräteabhängig (basiert auf CIE/Beobachtermodell)
+    \item Eher ein \enquote{Analyse-/Management}-Werkzeug als ein \enquote{Display-Speicherformat}
+\end{itemize}
+
+\subsection{Grauwert / \enquote{nur Helligkeit}}
+
+Ein Grauwertbild ist oft nicht \enquote{Mittelwert aus RGB}, sondern nutzt eine gewichtete Helligkeit (weil Grün, z. B. stärker zur wahrgenommenen Helligkeit beiträgt als Blau).
+
+Wofür wichtig?
+
+\begin{itemize}
+    \item Kanten/Strukturen analysieren
+    \item Luma in Video
+    \item Wahrnehmung: Helligkeit ist die \enquote{Detail-Schiene} des Sehsystems
+\end{itemize}
+
+\clearpage
+\section{Dimensions of Visual Sensation (Qualitätsdimensionen)}
+
+Das sind \enquote{Regler}, die bestimmen, wie gut Bild/Video wirkt:
+
+\begin{itemize}
+    \item Auflösung: wie viele Pixel
+    \item Frame Rate: zeitliche Auflösung (Bewegungsflüssigkeit)
+    \item Dynamic Range: Spanne von dunkel bis hell, die erfasst/angezeigt wird.
+    \begin{itemize}
+        \item HDR versucht mehr von dieser Spanne sichtbar zu machen
+    \end{itemize}
+    \item Bit Depth / Quantisierung: wie fein Abstufungen sind
+    \begin{itemize}
+        \item zu wenig, Banding (Streifen in Verläufen)
+    \end{itemize}
+    \item Color Gamut: wie \enquote{bunt} der darstellbare Bereich ist (z.B. Rec.709 vs Rec.2020)
+    \item Depth (3D): Stereo/Autostereo/Holografie
+\end{itemize}
+
+\subsection{HDR-Formate}
+
+\begin{itemize}
+    \item HDR10: Baselines HDR, 10-bit, breite Nutzung, statische Metadaten (typisch einmal pro Film/Stream)
+    \item HDR10+: wie HDR10, aber dynamische Metadaten (kann pro Szene/Frame angepasst werden)
+    \item Dolby Vision: ebenfalls dynamische Metadaten, oft \enquote{Premium}-Ökosystem, teils höhere mögliche Präzision/Workflows
+\end{itemize}
+
+\textbf{Warum Metadaten?}
+
+Weil Displays sehr unterschiedlich sind. Metadaten helfen, dass Tonemapping auf dem jeweiligen Display besser aussieht (z. B. nicht alles überstrahlt oder absäuft).
