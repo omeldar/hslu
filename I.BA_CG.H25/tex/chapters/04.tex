@@ -11,7 +11,7 @@ Ziel: \enquote{Welche Pixel gehören zum Objekt, und welche Werte (Farbe, Tiefe,
 
 \subsection{Warum Clipping überhaupt?}
 \textbf{Grundidee:} Die Szene ist kontinuierlich, aber das Bild besteht aus endlichen Pixeln.
-Clipping ist wie \enquote{alles außerhalb des Bildausschnitts sauber abschneiden}, bevor man unnötig viel Arbeit macht.
+Clipping ist wie \enquote{alles ausserhalb des Bildausschnitts sauber abschneiden}, bevor man unnötig viel Arbeit macht.
 
 \paragraph{Warum 3D-Clipping?}
 3D-Clipping passiert konzeptionell \textbf{in der 3D-Pipeline} (typisch im Clip Space), damit:
@@ -34,7 +34,7 @@ Clipping ist wie \enquote{alles außerhalb des Bildausschnitts sauber abschneide
 
 \paragraph{Scissoring (Scissor-Test)}
 \textbf{Konzept:} Ein rechteckiger \enquote{Ausschnitt} im Bildschirm.
-Alles außerhalb wird verworfen, egal welche Geometrie kommt.
+Alles ausserhalb wird verworfen, egal welche Geometrie kommt.
 \begin{itemize}
   \item \textbf{Pro:} Sehr schnell, ideal für UI und Teilfenster.
   \item \textbf{Contra:} Nur rechteckig, kein echtes geometrisches Zerschneiden von Dreiecken.
@@ -64,7 +64,7 @@ Dazu bekommt er einen \textbf{Outcode} (Bitmaske): links / rechts / oben / unten
 \begin{itemize}
   \item \textbf{Trivial Accept:} Beide Outcodes sind 0 $\Rightarrow$ Linie komplett drin.
   \item \textbf{Trivial Reject:} Bitweises UND der Outcodes ist nicht 0 $\Rightarrow$
-        beide Punkte liegen sicher auf derselben Außenseite $\Rightarrow$ Linie komplett draußen.
+        beide Punkte liegen sicher auf derselben Aussenseite $\Rightarrow$ Linie komplett draussen.
   \item \textbf{Sonst:} Linie schneidet den Rand $\Rightarrow$ Schnittpunkt mit passender Kante bestimmen,
         Endpunkt ersetzen und wiederholen.
 \end{itemize}
@@ -78,9 +78,9 @@ Bei Polygonen (z.\,B. Dreiecken) ist die Standardidee:
   \item Für jede Grenze baut man ein neues Polygon, indem man Kanten betrachtet:
   \begin{itemize}
     \item innen $\rightarrow$ innen: Endpunkt übernehmen
-    \item innen $\rightarrow$ außen: Schnittpunkt übernehmen, dann abbrechen
-    \item außen $\rightarrow$ innen: Schnittpunkt übernehmen, dann Endpunkt übernehmen
-    \item außen $\rightarrow$ außen: nichts übernehmen
+    \item innen $\rightarrow$ aussen: Schnittpunkt übernehmen, dann abbrechen
+    \item aussen $\rightarrow$ innen: Schnittpunkt übernehmen, dann Endpunkt übernehmen
+    \item aussen $\rightarrow$ aussen: nichts übernehmen
   \end{itemize}
 \end{itemize}
 
@@ -120,12 +120,12 @@ Die entscheidet pro Pixel, ob der nächste Pixel geradeaus oder diagonal ist.
 
 \begin{itemize}
   \item \textbf{Inside-Test:} Ein Punkt ist drin, wenn er als \enquote{gewichtete Mischung} der drei Ecken darstellbar ist,
-        ohne dass Gewichte \enquote{negativ außerhalb} laufen.
+        ohne dass Gewichte \enquote{negativ ausserhalb} laufen.
   \item \textbf{Interpolation:} Die gleichen Gewichte mischen Attribute:
         Farbe, Tiefe, Texturkoordinaten, \dots
 \end{itemize}
 
-\textbf{Merksatz:} Baryzentrik ist \enquote{Koordinaten im Dreieck} und perfekt für \enquote{drin/draußen + Werte mischen}.
+\textbf{Merksatz:} Baryzentrik ist \enquote{Koordinaten im Dreieck} und perfekt für \enquote{drin/draussen + Werte mischen}.
 
 \subsection{Füllen von Regionen}
 \textbf{Region Filling} bedeutet: nicht nur Kanten zeichnen, sondern Flächen füllen.
@@ -177,7 +177,7 @@ Ein Pixel entspricht dann einer länglichen Fläche in der Textur.
   \item \textbf{3D- vs. 2D-Clipping?}
     -- 3D: Sichtvolumen/Frustum in der 3D-Pipeline; 2D: Ausschnitte im Screen Space (UI, Viewport).
   \item \textbf{Was bringt der Outcode bei Linien-Clipping?}
-    -- Schnelles \enquote{drin/draußen} durch Bitmasken, oft trivial accept/reject.
+    -- Schnelles \enquote{drin/draussen} durch Bitmasken, oft trivial accept/reject.
   \item \textbf{Warum Dreiecke als Standard?}
     -- Planar, stabil, gut interpolierbar; alles lässt sich in Dreiecke zerlegen.
   \item \textbf{Warum baryzentrische Koordinaten?}
