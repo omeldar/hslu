@@ -1,0 +1,27 @@
+# LaTeX/tectonic build artefacts
+build/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.out
+*.run.xml
+*.toc
+*.lof
+*.lot
+*.lol
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Editors
+.vscode/
+.idea/
+.DS_Store
+
+# Nix Cache Folder
+$HOME/
+
+# Misc
+*.tmp

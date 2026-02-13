@@ -1,0 +1,64 @@
+% Figure paths
+\graphicspath{{figures/}}
+
+% Klickbar: kompletter Eintrag (Text + Seitenzahl)
+\hypersetup{linktoc=all}
+
+% Hierarchie mit Einrückungen
+\KOMAoptions{toc=graduated}
+
+% Dichtes Punktmuster für die Leader
+\makeatletter
+\renewcommand*\TOCLineLeaderFill{\leaders\hbox to .6em{\hss.\hss}\hfill}
+\makeatother
+
+% No indentation, space between paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
+\usepackage{csquotes}
+\setmainlanguage{german}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage{upquote}
+\usepackage{microtype}
+
+\usepackage{float}
+
+% --------------------
+% Fonts & Typografie
+% --------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+\usepackage{setspace}
+\setstretch{1}
+
+% Table that wraps over pages
+\usepackage{longtable}
+\usepackage{paracol}
+\usepackage{array}
+
+% table of contents
+
+\usepackage{tocloft}
+\renewcommand{\listfigurename}{Abbildungsverzeichnis}
+\renewcommand{\listtablename}{Tabellenverzeichnis}
+\renewcommand{\lstlistlistingname}{Quellcodeverzeichnis}
+
+\makeatletter
+\newcommand{\onlylof}{\@starttoc{lof}}
+\newcommand{\onlylot}{\@starttoc{lot}}
+\newcommand{\onlylol}{\@starttoc{lol}} % List of Listings (listings)
+\makeatother
+
+\usepackage{seqsplit}
+
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash\sloppy}p{#1}}
+\newcommand{\cw}[1]{\seqsplit{#1}} % code-wrap helper
+
+\usepackage{tabularx}
+\usepackage{pdfpages}
