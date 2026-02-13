@@ -1,0 +1,219 @@
+\section{AQP: Äquivalenztest für Polynome}
+
+\subsection{Warum ist das einfache vergleichen schwer?}
+
+Zwei Polynome können gleich sein, obwohl sie völlig anders geschrieben sind, z.B.
+$$
+(x + y)^{10} \quad \text{vs. ausmultiplizierte Summe mit vielen Termen}
+$$
+Wenn man \enquote{normalisiert} (alles ausmultiplizieren und sortieren), kann die Darstellung explodieren (sehr viele Terme). Also wird ein direkter Vergleich schnell unpraktisch. Genau deshalb macht man einen Äquivalenztest, ohne in Normalform zu gehen.
+
+\subsection{Grundidee: Ein zufälliger Testpunkt als Fingerabdruck}
+
+\begin{figure}[H]
+    \img[width=0.8\textwidth]{figures/aqp.png}
+    {AQP: Der Vergleich}
+    \label{fig:aqp}
+\end{figure}
+
+Man wählt zufällig Werte für die Variablen und wertet beide Polynome dort aus. Das Ergebnis ist der \enquote{Fingerabdruck} des Polynoms bei diesem Punkt.
+
+Wenn die Fingerabdrücke verschieden sind: Sicher ungleich. Wenn sie gleich sind: Wahrscheinlich gleich, aber ein Fehler ist möglich (zwei verschiedene Polynome können zufällig am Testpunkt denselben Wert haben).
+
+\section{Algorithmus AQP (vereinfacht)}
+
+Gegeben: Primzahl $p$, zwei Polynome $P_1, P_2$ über $\Z_p$ (Rechnen \enquote{$\bmod \text{ } p$}), maximaler Grad $d$, Anzahl Variablen $n$.
+
+AQP:
+
+\begin{enumerate}
+    \item Wähle zufällig $a = (a_1, \dots, a_n) \in (\Z_p)^n$.
+    \item Berechne $P_1(a) \mod p$ und $P_2(a) \mod p$.
+    \item Wenn gleich, gib \enquote{gleich} aus, sonst \enquote{ungleich}.
+\end{enumerate}
+
+Eigenschaft (einseitiger Fehler):
+
+\begin{itemize}
+    \item Falls $P_1 = P_2$: nie Fehler, denn dann ist $P_1(a) = P_2(a)$ für alle $a$.
+    \item Falls $P_1 \neq P_2$: Es kann passieren, das zufällig ein \enquote{schlechter} Punkt gewählt wird, an dem beide denselben Wert liefern.
+\end{itemize}
+
+\subsection{Mathe dahinter: Warum ist die Fehlerwahrscheinlichkeit klein?}
+
+\textbf{Schritt A: Unterschiedspolynom}
+
+Definiere:
+$$
+Q(X) = P_1(X) - P_2(X)
+$$
+Dann gilt:
+\begin{itemize}
+    \item $P_1 = P_2 \Leftrightarrow Q \equiv 0$: immer Null
+    \item $P_1 \neq P_2 \Leftrightarrow Q \equiv 0$: nicht das Nullpolynom
+\end{itemize}
+
+\textbf{Schritt B: \enquote{Ein Polynom vom Grad $d$ hat höchstens $d$ Nullstellen}}
+
+Wenn $Q(x)$ ein Polynom in einer Variablen ist, Grad $d$, dann:
+\begin{itemize}
+    \item Entweder $Q \equiv 0$
+    \item Oder $Q$ hat höchstens $d$ Nullstellen.
+\end{itemize}
+Intuition: Jede Nullstelle \enquote{verbraucht} (grob gesagt) einen Faktor $(x - a)$. Mehr als $d$ verschiedene Faktoren gehen bei Grad $d$ nicht.
+
+\textbf{Schritt C: Fehlerabschätzung}
+
+Wählst du $r$ gleichverteilt aus einer Menge $S$, dann ist:
+$$
+Pr[\text{Fehler}] = Pr[Q(r) = 0 \mid Q \equiv 0] \leq \frac{\text{\# Nullstellen}}{|S|} \leq \frac{d}{|S|}
+$$
+Grosse Auswahlmenge $S \rightarrow$ kleiner Fehler.
+
+\textbf{Schritt D: Mehrere Variablen}
+
+Für $n$ Variablen über $\Z_p$ zeigt das Buch: Ein nichttriviales Polynom $Q$ (max. Grad $d$ je Variable) hat höchstens:
+$$
+n \cdot d \cdot p^{n-1}
+$$
+Nullstellen in $(\Z_p)^n$.
+
+Da es insgesamt $p^n$ Punkte gibt, ist die Chance, keinen Zeugen (also eine Nullstelle) zu treffen, höchstens:
+$$
+\frac{ndp^{n-1}}{p^n} = \frac{nd}{p}
+$$
+Also ist die Chance, einen Zeugen zu treffen, mindestens $1 - \frac{nd}{p}$.  Für $p > 2nd$ ist das $> 1/2$.
+
+\section{Wahrscheinlichkeitsverstärkung \& Stichproben}
+
+\subsection{Verstärkung durch Wiederholung (Probability Amplification)}
+
+Wenn ein randomisierter Test in einem Lauf Fehlerwahrscheinlichkeit $\epsilon < 1$ hat und man ihn $k$-mal unabhängig wiederholt, dann ist \enquote{alle Läufe liegen falsch} höchstens:
+$$
+\epsilon^k
+$$
+Das fällt exponentiell mit $k$. Beispiel (klassisch): $\epsilon = \frac{1}{2}, k = 10 \Rightarrow (\frac{1}{2})^{10} \approx 0,001$.
+
+\subsection{Stichproblen-Idee (Sampling)}
+
+Stichproben heisst: Statt systematisch alles abzuarbeiten, zieht man zufällig ein Objekt aus einer grossen Menge, weil \enquote{gute Objekte} häufig genug vorkommen.
+
+\begin{itemize}
+    \item Bei AQP sind \enquote{gute Objekte} die Zeugenpunkte $a$ mit $P_1(a) \neq P_2(a)$.
+    \item Wenn viele Zeugen existieren (z.B. mindestens die Hälfte), findet man mit wenigen Zufallsziehungen sehr wahrscheinlich einen.
+\end{itemize}
+
+\section{MIN-CUT: minimale Kanten-Trennung in Graphen}
+
+\subsection{Was ist ein Cut und was ist MIN-CUT?}
+
+Ein Cut teilt die Knotenmenge $V$ in zwei nichtleere Teile $V_1, V_2$. Die Cut-Grösse ist die Anzahl der Kanten, die von $V_1$ nach $V_2$ gehen.
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/mincut.png}
+    {MIN-CUT}
+    \label{fig:mincut}
+\end{figure}
+
+\textbf{MIN-CUT}: Finde einen Cut mit minimaler Cut-Grösse (also \enquote{billigste Trennung}). Das modelliert z.B. Schwachstellen in Netzwerken.
+
+\section{KONTRAKTION: extrem einfache Randomisierung für MIN-CUT}
+
+\subsection{Algorithmus (Intuition und Schritte)}
+
+Idee: Man \enquote{quetscht} den Graphen zusammen, indem man zufällig Kanten auswählt und deren Endknoten zusammenzieht (kontrahiert). Wenn man dabei nie eine Kante aus einem echten Min-Cut kontrahiert, bleibt dieser Min-Cut bis zum Ende erhalten.
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/mincut-steps.png}
+    {MIN-CUT Schritte}
+    \label{fig:mincut-steps}
+\end{figure}
+
+\begin{enumerate}
+    \item Solange mehr als 2 Knoten:
+    \begin{itemize}
+        \item Wähle zufällig eine Kante $e = (u, v)$.
+        \item Verschmelze $u$ und $v$ zu einem Superknoten.
+        \item Selbstschleifen entfernen, parallele Kanten bleiben.
+    \end{itemize}
+    \item Am Ende gibt es 2 Superknoten - die Kanten zwischen ihnen bilden einen Cut.
+\end{enumerate}
+
+\subsection{Erfolgswahrscheinlichkeit}
+
+Sei $\lambda$ die Grösse eines globalen Min-Cuts.
+
+Wichtige Beobachtung: Jeder Knoten hat Grad mindestens $\lambda$.
+Begründung: Wenn ein Knoten Grad $< \lambda$ hätte, könnte man ihn allein abtrennen und hätte einen kleineren Cut.
+
+Damit hat der Graph mindestens:
+$$
+m \geq \frac{n \lambda}{2}
+$$
+Kanten (Summe der Grade ist $2m$).
+
+\clearpage
+Wahrscheinlichkeit, in einem Schritt eine Mit-Cut-Kante zu erwischen:
+Es gibt genau $\lambda$ Kanten im Min-Cut, also:
+$$
+Pr[\text{treffe Min-Cut-Kante}] \leq \frac{\lambda}{m} \leq \frac{\lambda}{n \lambda / 2} = \frac{2}{n}
+$$
+Also:
+$$
+Pr[\text{trage keinen Schaden davon}] \geq 1 - \frac{2}{n} = \frac{n-2}{n}
+$$
+Nach einer erfolgreichen Kontraktion bleiben (wenn man keinen Min-Cut beschädigt hat) die Min-Cuts im kontrahierten Graphen erhalten, nur die Knotenzahl sinkt. Wiederholt man das Argument für $n, n - 1, \dots, 3$, bekommt man:
+$$
+Pr[\text{Erfolg}] \geq \prod_{i=3}^{n} \left( 1 - \frac{2}{i} \right) = \prod_{i=3}^{n} \frac{i - 2}{i} = \frac{2}{n(n-1)} > \frac{2}{n^2}
+$$
+
+\section{Warum simples Wiederholen den Algorithmus nicht brauchbar macht}
+
+Weil die Erfolgswahrscheinlichkeit pro Lauf nur etwa $\Theta(1 / n^2)$ ist, braucht man grob $\Theta(n^2)$ unabhängige Läufe, um eine konstante Erfolgswahrscheinlichkeit zu bekommen (z.B. \enquote{wenigstens $1/2$}). Das ist klassische Verstärkung: wenn Erfolg $\approx c / n^2$, dann sind $O(n^2)$ Versuche nötig, um überhaupt \enquote{ordentlich} Treffer zu erwarten.
+
+Laufzeitproblem:
+\begin{itemize}
+    \item Ein Lauf von KONTRAKTION ist grob $O(n^2)$ (je nach Implementierung/Graphdichte).
+    \item $O(n^2)$ Läufe $\Rightarrow$ Gesamt $O(n^4)$
+\end{itemize}
+
+Das ist für grosse $n$ zu langsam und sogar schlechter als klassische determinstische Methoden (in der Vorlesungslogik: Randomisierung bringt hier \enquote{naiv} erst mal nichts, wenn man stumpf ganze Läufe wiederholt).
+
+\clearpage
+\section{Summary}
+\begin{enumerate}[label=(\alph*)]
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kenne ich den Algorithmus AQP für die Äquivalenz zweier Polynome und seine Eigenschaften?\newline
+        \textbf{Antwort}: AQP testet, ob zwei Polynome $P_1, P_2$ gleich sind, ohne sie auszumultiplizieren: Man wählt zufällig einen Punkt $a$ (z.B. aus $\Z^n_p$) berechnet $P_1(a)$ und $P_2(a) (\bmod \text{ } p)$ und vergleicht. Eigenschaften sind:
+        \begin{itemize}
+            \item Wenn $P_1 = P_2$: immer korrekt (kein Fehler)
+            \item Wenn $P_1 \neq P_2$: Fehler nur, wenn der Zufallspunkt eine Nullstelle von $Q = P_1 - P_2$ trifft. Diese Wahrscheinlichkeit ist klein (grob $\leq nd/p$ bei Grad $\leq d$, daher wählt man $p$ gross genug oder wiederholt).
+        \end{itemize}         
+
+    \end{enumerate}
+    \item Wahrscheinlichkeitsverstärkung und Stichproben:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?\newline
+        \textbf{Antwort}: Wenn ein randomisierter Test mit konstanter Wahrscheinlichkeit \enquote{einen Zeugen} findet (oder mit konstanter Wahrscheinlichkeit korrekt ist), dann macht man mehrere unabhängige Wiederholungen und entscheidet per \enquote{mindestens einmal Zeuge gefunden} (bzw. \enquote{alle Tests bestanden}). Dadurch fällt die Fehlerwahrscheinlichkeit exponentiell: bei Fehler $\leq \epsilon$ pro Lauf ist sie nach $k$ Läufen $\leq \epsilon^k$.
+        Stichproben = zufälliges Ziehen aus einer grossen Menge, weil \enquote{gute} Elemente (Zeugen) häufig genug sind.
+    \end{enumerate}
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das MIN-CUT Problem erklären?\newline
+        \textbf{Antwort}: Teile die Knotenmenge eines ungerichteten Graphen in zwei nichtleere Gruppen; die Cut-Grösse ist die Zahl der Kanten zwischen den Gruppen. MIN-CUT sucht einen Cut mit minimaler Grösse (schwächste Stelle des Graphen).
+
+        Weiter auf nächster Seite.
+
+        \newpage
+        \item Kenne ich den Algorithmus KONTRAKTION und seine Eigenschaften?\newline
+        \textbf{Antwort}: Wiederhole, bis nur 2 \enquote{Superknoten} übrig sind: Wähle zufällig eine Kante und kontrahiere ihre Endpunkte (verschmelzen), entferne Selsbtschleifen, parallele Kanten bleiben. Am Ende ist die Zahl der Kanten zwischen den zwei Superknoten ein Cut; dieser ist mit gewisser Wahrscheinlichkeit ein Min-Cut. Eigenschaften sind:
+        \begin{itemize}
+            \item Sehr einfach, läuft pro Durchlauf grob $O(n^2)$
+            \item Erfolgswahrscheinlichkeit pro Lauf ist klein: mindestens $2 / (n(n-1))$ (also etwa $O(1 / n^2)$).
+        \end{itemize}
+
+        \item Warum ist der Algorithmus KONTRAKTION auch durch simples Wiederholen nicht brauchbar?\newline
+        \textbf{Antwort}: Weil die Erfolgswahrscheinlichkeit pro Lauf nur $\Theta(1 / n^2)$ ist: Man braucht $\Theta(n^2)$ unabhängige Läufe, um eine konstante Trefferchance zu bekommen. Mit $\Theta(n^2)$ Läufen und $\approx O(n^2)$ Zeit pro Lauf landet man bei $\approx O(n^4)$ Gesamtzeit - zu langsam im Vergleich zu besseren Verfahren.
+    \end{enumerate}
+\end{enumerate}

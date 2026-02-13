@@ -30,6 +30,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{enumitem}
+\usepackage{multicol}
 
 \usepackage{pifont}
 \sisetup{locale=DE, detect-all}
@@ -87,10 +88,40 @@
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
-\chapter{Lerngerüst}
-\input{tex/chapters/01-lerngeruest}
-
 \chapter{Einleitung}
-\input{tex/chapters/02-einleitung}
+\input{tex/chapters/00-einleitung}
+
+\chapter{Vision Science}
+\input{tex/chapters/01-vision-science}
+
+\chapter{Projektive Geometrie}
+\input{tex/chapters/02-projective-geometry}
+
+\chapter{Viewing \& Graphics Pipeline}
+\input{tex/chapters/03}
+
+\chapter{Scan Conversion / Rasteralgorithmen \& Clipping}
+\input{tex/chapters/04}
+
+\chapter{Visible Surface / Hidden Surface Removal}
+\input{tex/chapters/05}
+
+\chapter{Beleuchtung, Shading, Materialien}
+\input{tex/chapters/06}
+
+\chapter{Kurven \& Flächen}
+\input{tex/chapters/07}
+
+\chapter{Raytracing}
+\input{tex/chapters/08}
+
+\chapter{Rendering Equation \& Global Illumination}
+\input{tex/chapters/09}
+
+\chapter{Praxis-Strang: WebGPU (Programmieren)}
+\input{tex/chapters/10}
+
+\chapter{Projekt}
+tbd.
 
 \end{document}

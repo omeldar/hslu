@@ -1,0 +1,373 @@
+\section{Die Idee \enquote{Zeugen}: Wie Zufall hilft, \enquote{Nicht-Prim} zu beweisen}
+
+\subsection{Was ist ein Zeuge / Zeugenkandidat?}
+
+Wir wollen ein Entscheidungsproblem lösen, hier: Ist $n$ prim?
+Die \enquote{Zeugen-Methode} dreht das Problem um:
+\begin{itemize}
+    \item Statt \enquote{Beweise, dass $n$ prim ist} (schwierig)
+    \item suchen wir einen Beweis dafür, dass $n$ zusammengesetzt ist (oft leichter).
+\end{itemize}
+
+Zeugenkandidat: Ein Objekt, das man leicht zufällig wählen kann (z.B. eine Zahl $a \in \{1, \dots, n-1\}$). Zeuge: Ein Kandidat, der tatsächlich zeigt, dass $n$ nicht prim ist.
+
+Damit Randomisierung funktioniert, braucht man (vereinfacht) drei Eigenschaften:
+
+\begin{enumerate}
+    \item Wenn ein Zeuge existiert, kann man mit ihm schnell verifizieren \enquote{$n$ ist nicht prim}.
+    \item Man kann schnell testen, ob ein Kandidat wirklich ein Zeuge ist.
+    \item Unter dem Kandidaten sind viele Zeugen (idealerweise ein konstanter Anteil), damit Zufall schnell einen trifft.
+\end{enumerate}
+
+\clearpage
+\section{Fermat-Test als erster Versuch}
+
+\subsection{Kleiner Satz von Fermat}
+
+
+Für eine Primzahl $p$ und jedes $a$ mit $1 \leq a \leq p - 1$ gilt:
+$$
+a^{p-1} \equiv 1 \quad (\bmod p)
+$$
+
+\textbf{Fermat-Zeuge (für \enquote{nicht prim})}
+
+Für eine zu prüfende Zahl $n$:
+Ein $a \in \{ 1, \dots, n-1\}$ ist ein Zeuge, wenn
+$$
+a^{n-1} \not\equiv 1 \quad (\bmod n)
+$$
+Dann ist $n$ sicher zusammengesetzt.
+
+\textbf{Warum ist das effizient?}
+
+Weil man $a^{n-1} \mod n$ schnell mit \enquote{Quadratieren und Multiplizieren} berechnet (Exponentiation by squaring), in Zeit grob polynomiell in $\log n$.
+
+\subsection{Lügner und Carmichael-Zahlen}
+
+Problem: Es gibt zusammengesetzte Zahlen $n$, die den Fermat-Test für viele oder sogar alle $a$ bestehen.
+
+\begin{itemize}
+    \item Lügner: ein $a$, das \enquote{prim} suggeriert, obwohl $n$ zusammengesetzt ist.
+    \item Carmichael-Zahlen: zusammengesetzte $n$, für die sogar:
+    $$
+    a^{n-1} \equiv 1 \quad (\bmod n) \quad \forall a \in \{ 1, \dots, n - 1 \}
+    $$
+    gilt. Dann findet Fermat gar keinen Zeugen.
+\end{itemize}
+
+Beispiel: $561 = 3 \cdot 11 \cdot 17$ ist die kleinste Carmichael-Zahl.
+
+\clearpage
+\section{Optimierung der Zeugen: Euler \& Miller-Rabin (stärkere Tests)}
+
+Die Grundintuition (sehr anfängerfreundlich):
+
+\begin{itemize}
+    \item Modulare Gleichungen können \enquote{mehr Lösungen als erwartet} haben, wenn $n$ zusammengesetzt ist.
+    \item Diese \enquote{ungewöhnlichen Lösungen} liefern starke Zeugen.
+\end{itemize}
+
+\subsection{Die Idee über \enquote{Quadratwurzeln von 1}}
+
+Betrachte:
+$$
+x^2 \equiv 1 \quad (\bmod n)
+$$
+
+Für eine Primzahl $p$ gibt es (unter $1, \dots, p-1$) genau zwei Lösungen:
+$$
+x \equiv 1 \quad (\bmod p) \quad \text{oder} \quad x \equiv -1 \quad (\bmod p) (= p - 1)
+$$
+
+Wenn man für $n$ plötzlich ein $x$ findet mit:
+$$
+x^2 \equiv 1 \quad (\mod n), \quad x \not\equiv \pm 1 \quad (\mod n)
+$$
+
+dann ist das ein sehr starkes Indiz: $n$ ist zusammengesetzt. Diese Idee steckt hinter Miller-Rabin (in \enquote{stärkerer} Form).
+
+\subsection{Euler-Kriterium (vereinfachte Sicht)}
+
+Für ungerade Primzahlen $p$ gilt (Euler-Kriterium):
+$$
+a^{(p-1 / 2)} \equiv \pm 1 \quad (\bmod p)
+$$
+
+Im Buch wird daraus eine Zeugen-Definition gebaut: Wenn für ungerades $n \geq 3$:
+$$
+a^{(n-1)/2} \not\equiv 1 \text{ und } \not\equiv -1 \quad (\bmod n)
+$$
+dann ist $a$ ein Zeuge dafür, dass $n$ nicht prim ist.
+
+Für viele $n$ (z. B. $n \equiv 3 (\bmod 4)$) kann man sogar zeigen, dass mindestens die Hälfte aller Kandidaten solche Zeugen sind. Das ist genau die \enquote{Häufigkeit}, die Randomisierung schnell macht.
+
+\subsection{Miller-Rabin-Test (Standard-Version, prüfungspraktisch)}
+
+Der Miller-Rabin-Test ist die in der Praxis wichtigste Variante, weil er Carmichael-Zahlen entlarvt und sehr gute Fehlergarantien hat.
+
+Setup: Sei $n > 2$ ungerade. Schreibe:
+$$
+n - 1 = 2^s \cdot d \quad \text{mit } d \text{ ungerade.}
+$$
+
+Ein Testlauf mit Basis $a$:
+
+\begin{enumerate}
+    \item Wähle $a \in \{ 2, \dots, n - 2\}$
+    \item Berechne $x \equiv a^d (\bmod n)$
+    \item Wenn $x \equiv 1$ oder $x \equiv -1 (\bmod n)$: bestanden (noch kein Beweis für prim, aber kein Zeuge gefunden).
+    \item Wiederhole $s - 1$-Mal:
+    \begin{itemize}
+        \item Setze $x \leftarrow x^2 \mod n$
+        \item Wenn $x \equiv -1 (\bmod n)$: bestanden.
+    \end{itemize}
+    \item Falls nie $-1$ auftaucht: Zeuge gefunden $\Rightarrow n$ zusammengesetzt. 
+\end{enumerate}
+
+\textbf{Warum das zur \enquote{Quadratwurzel-Idee} passt}
+
+Wenn beim Quadrieren irgendwann $x^2 \equiv 1 (\bmod n)$ auftaucht, aber $x \not\equiv \pm 1$, dann ist das genau diese \enquote{nicht-triviale Quadratwurzel von 1} $\Rightarrow$ zusammengesetzt. (Miller-Rabin sucht diese Situation systematisch).
+
+\textbf{Fehlerwahrscheinlichkeit}
+
+Wenn $n$ zusammengesetzt ist, dass ist (für Miller-Rabin) der Anteil der \enquote{Lügner-Basen} höchstens $1/4$. Also entdeckt ein zufälliges $a$ mit Wahrscheinlichkeit mindestens $3/4$ die Zusammengesetztheit. Das passt zu den Standardgarantien.
+
+\clearpage
+\section{Algorithmus PRIMZAHL (Randomisiert, mit Wiederholung)}
+
+Algorithmus PRIMZAHL (typisch):
+
+\begin{itemize}
+    \item Wiederhole $k$-mal:
+    \begin{enumerate}
+        \item Wähle zufällig $a \in \{ 2, \dots, n - 2\}$
+        \item Führe Miller-Rabin-Test mit Basis $a$ aus.
+        \item Wenn \enquote{Zeuge} $\Rightarrow$ gib \enquote{zusammengesetzt} aus (100\% sicher).
+    \end{enumerate}
+    \item Wenn nach $k$ Läufen kein Zeuge gefunden: gib \enquote{prim} aus (mit Restrisiko).
+\end{itemize}
+
+Eigenschaften:
+
+\begin{itemize}
+    \item Einseitiger Fehler
+    \begin{itemize}
+        \item Wenn der Algorithmus \enquote{zusammengesetzt} sagt, ist das immer korrekt.
+        \item Fehler kann nur sein: \enquote{prim} obwohl zusammengesetzt.
+    \end{itemize}
+    \item Fehlerabfall durch Wiederholung:\newline
+    Wenn pro Lauf höchstens $1/4$ der Basen lügen, dann ist nach $k$ unabhängigen Laufen:
+    $$
+    Pr[\text{Fehler}] \leq \left( \frac{1}{4} \right)^k
+    $$
+\end{itemize}
+
+\section{Vom Entscheiden zum Optimieren: ILP $ \rightarrow$ LP $\rightarrow$ (zufälliges) Runden}
+
+\subsection{Worum geht's?}
+
+Viele kombinatorische Optimierungsprobleme haben \enquote{$0/1$-Entscheidungen}:
+
+\begin{itemize}
+    \item Nimm Knoten $v$ in die Lösung? $x_v \in \{0, 1\}$
+    \item Pack Objekt $i$ ein? $x_i \in \{0, 1\}$
+\end{itemize}
+
+Das ergibt oft ein (0/1)-ILP (Integer Linear Program): lineare Zielfunktion, lineare Nebenbedingungen, aber Variablen müssen ganzzahlig / $0-1$ sein $\rightarrow$ oft NP-schwer.
+
+\clearpage
+\textbf{Trick: Relaxation}
+
+Ersetze:
+
+$$
+x_i \in \{0, 1\} \quad \text{durch} \quad 0 \leq x_i \leq 1
+$$
+
+Dann wird daraus ein LP (Linear Program), das man effizient lösen kann.
+
+\textbf{Dann kommt das Runden}
+
+Aus den \enquote{Bruchwerten} $x_i^{*} \in [0, 1]$ bauen wir wieder eine $0/1$-Lösung.
+
+\subsection{Beispiel 1: MIN-VCP (Minimum Vertex Cover)}
+
+\textbf{Problem}
+
+Gegeben Graph $G = (V, E)$. Finde möglichst wenige Knoten, so dass jede Kante mindestens einen Endknoten in der Menge hat.
+
+\textbf{(0/1)-ILP-Formulierung}
+
+Für jeden Knoten $v \in V$ Variable $x_v \in {0, 1}$. $x_v = 1$ bedeutet: $v$ ist im Cover.
+
+Ziel:
+$$
+\min \sum_{v \in V} x_v
+$$
+
+\textbf{Nebenbedingungen}: für jede Kante $(u, v) \in E$
+$$
+x_u + x_v \geq 1
+$$
+(damit ist jede Kante abgedeckt).
+
+\textbf{Relaxation (LP)}
+
+Ersetze $x_v \in \{0, 1\}$ durch $0 \leq x_v \leq 1$. Löse das LP $\rightarrow$ Optimum $x*$.
+
+\textbf{Einfaches Runden (deterministisch, sehr prüfungsrelevant)}
+
+Regel:
+\[
+\hat{x}_v := 
+\begin{cases}
+1 & \text{falls } x_v^{*} \ge \tfrac{1}{2},\\
+0 & \text{sonst}.
+\end{cases}
+\]
+
+\textbf{Warum ist das danach ein gültiges Vertex Cover?}
+
+Für jede Kante $(u, v)$: im LP gilt $x_u^{*} + x_v^{*} \geq 1$. Dann kannnicht beide kleiner als $1/2$ sein. Also ist mindestens einer $\geq 1/2$ und wird auf 1 gerundet $\rightarrow$ Kante ist abgedeckt.
+
+\textbf{Warum Approximationsfaktor 2?}
+
+Durch das Runden gilt grob $\hat{x}_v \leq 2x_v^{*}$. Summiert:
+$$
+\sum_{v} \hat{x}_v \leq 2 \sum_v x_v^{*}
+$$
+
+Und LP-Optimum ist eine Untergrenze für das echte ILP-Optimum (weil LP mehr Lösungen erlaubt). Daraus folgt die klassische 2-Approximation.
+
+\subsection{Beispiel 2: MAX-KP (Knapsack / Rucksackproblem)}
+
+\textbf{Problem}
+
+Es gibt Objekte $i = 1, \dots, n$ mit
+
+\begin{itemize}
+    \item Gewicht $w_i$
+    \item Gewinn $c_i$ \newline
+    Kapazität $K$. Wähle Objekte mit Gesamtgewicht $\leq K$, Gewinn maximal.
+\end{itemize}
+
+\textbf{(0/1)-ILP}
+
+Variablen $x_i \in \{0, 1\}$:
+$$
+\max \sum^{n}_{i = 1} c_ix_i
+$$ $$
+\text{s. t.} \sum^{n}_{i=1} w_i x_i \leq K
+$$
+
+Relaxation (LP)
+$$
+0 \leq x_i \leq 1
+$$
+
+Interpretation: \enquote{Objekt anteilig nehmen} (z.B. 0.7 von einem Goldbarren).
+
+\clearpage
+\textbf{Warum Runden hier kniffliger ist}
+
+Wenn wir einfach \enquote{ab $1/2$ aufrunden} machen, kann das Gewichtslimit verletzt werden: viele halbe Dinge werden zu ganzen Dingen.
+
+Typische Strategien (Grundidee):
+
+\begin{itemize}
+    \item Entweder man erlaubt eine kleine Verletzung (bi-criteria),
+    \item oder man nutzt raffinierte Rundungsverfahren,
+    \item oder man kombiniert Runden mit zusätzlicher Struktur (Sortieren nach Wert-Dichte etc., je nach Kursfokus)
+\end{itemize}
+
+Die Folien betonen genau dieses Problem: LP ist \enquote{flüssig}, aber \enquote{hartes} Einpacken kann die Kapazität sprengen.
+
+\section{MAX-SAT: Naiver Münzwurf vs. Randomized Rounding vs. Kombination}
+
+\subsection{MAX-SAT kurz}
+
+Gegeben KNF-Formel (UND von ODER-Klauseln). Ziel: maximiere Anzahl erfüllter Klauseln.
+
+\subsection{Algorithmus \enquote{Münzwurf} (naiv)}
+
+Setze jede Variable unabhängig:
+$$
+x_i = 1 \text{ mit } p = 1/2, \quad x_i = 0 \text{ sonst}
+$$
+
+Für eine Klausel mit $k$ Literalen ist sie nur dann falsch, wenn alle $k$ Literale falsch sind: Wahrscheinlichkeit $2^{-k}$. Also:
+$$
+Pr[\text{Klausel erfüllt}] = 1 - 2^{-k}
+$$
+
+Für $k = 3$ ist das $1 - 1/8 = 7/8 = 87.5\%$ (genau die bekannte Zahl).
+
+\subsection{LP lösen und danach \enquote{wahrscheinlichkeitsgesteuert} runden}
+
+Idee:
+
+\begin{enumerate}
+    \item Formuliere MAX-SAT als (0/1)-LP-ähnliches Modell
+    \item Relaxiere zu LP und löse $\rightarrow$ wir erhalten Werte $a(y_i) \in [0, 1]$ (wie \enquote{Tendenzen})
+    \item Runde zufällig:
+    $$
+    x_i = 1 \text{ mit Wahrscheinlichkeit} a(y_i), \quad 0 \text{ sonst.}
+    $$
+\end{enumerate}
+
+Das ist Randomized Rounding: LP-Wert wird zur Wahrscheinlichkeit.
+
+Vorteil: Wenn LP schon fast 0 oder 1 sagt, übernehmen wir diese Präferenz. \newline Nachteil: Wenn LP-Werte oft um 0.5 liegen, bringt es weniger.
+
+\subsection{KOMB: \enquote{Nimm das bessere von beiden}}
+
+Weil Münzwurf und RZR auf verschiedenen Formeln jeweils besser sein können (unvergleichbar), kombiniert man:
+
+\textbf{KOMB}
+
+\begin{enumerate}
+    \item berechne Lösung mit Münzwurf-Algorithmus (STICH),
+    \item berechne Lösung mit RZR,
+    \item gib die bessere der beiden Lösungen aus
+\end{enumerate}
+
+Garantie: erwartete Approximationsgüte $4/3$ (als robuste Kombination).
+
+
+\clearpage
+\section{Summary}
+\begin{enumerate}[label=(\alph*)]
+    \item Zeugenkandidaten:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was sind Zeugenkandidaten und welche Eigenschaften sollen sie haben?\newline
+        \textbf{Antwort}: Zeugenkandidat: Zufällig gewähltes $a$ (meist $2$ bis $n-2$), das man testet, um Nicht-Primzahl zu beweisen. Gute Kandidaten: leicht zufällig wählbar, schnell testbar, und bei zusammengesetztem $n$ gibt es viele echte Zeugen, damit Wiederholung schnell klappt.
+
+        \item Wie wird der Satz von Fermat für Zeugenkandidaten gebraucht?\newline
+        \textbf{Antwort}: Fermat liefert einen einfachen Test: Wenn $n$ prim wäre, müsste $a^{n-1}$ \enquote{typisch passen} ($\bmod n$). Wenn es nicht passt, ist $a$ ein Zeuge $\Rightarrow$ $n$ sicher zusammengesetzt. Schwäche: Es gibt Lügner und Carmichael-Zahlen, wo Fermat fast immer/allgemein \enquote{reinlegt}.
+
+        \item Wie werden die Zeugenkandidaten mit dem Satz von Euler bzw. dem Satz von Miller-Rabin optimiert?\newline
+        \textbf{Antwort}: Idee: Stärkere Regeln, die Primzahlen erfüllen, und die bei zusammengesetzten Zahlen viel öfter brechen. Euler: nutzt eine stärkere Potenz-Eigenschaft (statt nur $a^{n-1}$). Miller-Rabin: Standard in der Praxis; findet sehr zuverlässig Zeugen über eine Folge von Quadrier-Schritten. Ergebnis: Bei zusammengesetzten $n$ sind sehr viele Basen echte Zeugen $\Rightarrow$ Randomisierung funktioniert gut.
+
+        \item Kenne ich den Algorithmus PRIMZAHL und seine Eigenschaften?\newline
+        \textbf{Antwort}: PRIMZAHL = mehrfach zufällige Basen wählen + (Euler/Miller-Rabin) testen. Sobald ein Zeuge auftaucht: zusammengesetzt (immer korrekt). Wenn nach $k$ Tests kein Zeuge: \enquote{prim} mit sehr kleiner Rest-Fehlerwahrscheinlichkeit. Einseitiger Fehler: falsch kann nur \enquote{prim} sein, nie \enquote{zusammengesetzt}.
+
+        Weiter auf nächster Seite.
+    \end{enumerate}
+    \newpage
+    \item Zufälliges Runden:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?\newline
+        \textbf{Antwort}: 0/1-Optimierungsproblem (ILP) ist schwer $\Rightarrow$ man macht Relaxation: Variablen dürfen zwischen 0 und 1 liegen (LP, leicht lösbar). Danach macht man aus den Bruchteilen wieder 0/1 durch Runden (oft zufällig, passend zu den LP-Werten).
+
+        \item Wie können wir das MIN-VCP Problem in ein LP Problem übersetzen?\newline
+        \textbf{Antwort}: Variable pro Knoten: \enquote{nehme ich ihn ins Cover?} Ziel ist möglichst wenige Knoten zu nehmen. Nebenbedingungen: jede Kante muss von mindestens einem Endpunkt abgedeckt sein. LP entsteht durch \enquote{0/1 wird zu 0..1}.
+
+        \item Kann ich das MAX-KP Problem erklären?\newline
+        \textbf{Antwort}: Rucksack: Objekte mit Gewicht und Wert, Kapazität $K$. Ziel: maximiere Wert, ohne Kapazität zu überschreiten.
+
+        \item Wie können wir das MAX-KP Problem in ein LP Problem übersetzen?\newline
+        \textbf{Antwort}: Variable pro Objekt: \enquote{nehme ich es?} Nebenbedingungen: Summe der Gewichte $\leq K$. LP durch Erlauben von Bruchteilen (0..1). Wichtig: Runden ist hier heikler, weil man beim Aufrunden leicht die Kapazität sprengt.
+
+    \end{enumerate}
+\end{enumerate}

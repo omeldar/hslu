@@ -1,0 +1,190 @@
+\section{Gezielte Wiederholungen bei Min-Cut: Warum \enquote{alles neu starten} oft Verschwendung ist}
+
+\textbf{Problem (Min-Cut)}
+
+Gegeben ist ein (Multi-)Graph. Ein Schnitt trennt die Knotenmenge in zwei Teile; die Schnittgrösse ist die Summe der Kanten, die zwischen den Teilen verlaufen. Beim Min-Cut sucht man einen Schnitt mit minimaler Schnittgrösse.
+
+\textbf{Rückblick: Randomisierter Kontraktions-Algorithmus (KONTRAKTION)}
+
+Die Grundidee: ziehe wiederholt eine zufällige Kante und ziehe ihre Endknoten zusammen (Kontraktion). Dadurch wird der Graph kleiner. Am Ende bleiben nur noch wenige \enquote{Superknoten} übrig; daraus kann man einen Schnitt ablesen.
+
+\textbf{Warum ist das fehleranfällig?}
+
+Ein Fehler passiert, wenn man aus Versehen eine Kante kontrahiert, die zum optimalen Min-Cut gehört. Wichtiges Muster: Am Anfang ist das Risiko vergleichsweise klein, aber gegen Ende wird es gross (weil dann schon wenige \enquote{entscheidende} Kanten übrig sind).
+
+\textbf{Naive Idee (schlecht)}
+
+\enquote{Wenn es schiefgeht, starte einfach den ganzen Algorithmus neu.}
+Das ist ineffizient, weil man immer wieder die \enquote{sicheren} frühen Schritte wiederholt, obwohl die Fehler meistens erst spät passieren.
+
+\textbf{Gezielte Wiederholung (Probability Amplification an kritischen Stellen)}
+
+Statt alles zu wiederholen, investiert man zusätzliche Rechenzeit nur dort, wo das Fehlerrisiko am höchsten ist (typisch: die letzten Konstraktionen bzw. die letzten Rekursionsstufen).
+
+\section{Zwei Verbesserungen: DETRAN und WBAUM}
+
+\subsection{DETRAN: \enquote{Früh randomisiert schrumpfen, dann deterministisch fertig}}
+
+Idee:
+\begin{enumerate}
+    \item Führe Kontraktionen nur so lange aus, bis der Graph auf eine mittlere Grösse geschrumpft ist (z.B. $l(n)$ Knoten).
+    \item Löse den Min-Cut auf dem kleineren Graphen deterministisch (wenn er klein genug ist, geht das schnell).
+\end{enumerate}
+
+\textbf{Warum hilft das?}
+
+Weil man die sehr riskanten letzten Kontraktionen gar nicht mehr randomisiert macht, sondern deterministisch löst. Das verschiebt Rechenzeit weg von \enquote{unnötig oft den sicheren Anfang wiederholen} hin zu \enquote{Ende sauber absichern}.
+
+\textbf{Parameter $l(n)$}:
+\begin{itemize}
+    \item Kleines $l(n) \rightarrow$ deterministischer Teil billig, aber mehr riskante Kontraktionen vorher.
+    \item Grosses $l(n) \rightarrow$ weniger riskante Kontraktionen, aber deterministischer Teil teurer. Man wählt $l(n)$ so, dass das Gesamtpaket gut ist.
+\end{itemize}
+
+\subsection{WBAUM (Wiederholungsbaum): \enquote{Baum aus gespeicherten Zwischenständen}}
+
+Man baut eine rekursive Struktur:
+\begin{itemize}
+    \item Schrumpfe den Graphen randomisiert bis zu einer Schwelle.
+    \item Verzweige: mache von dort aus mehrere unabhängige Fortsetzungen.
+    \item Vergleiche am Ende die gefundenen Schnitte und nimm den besten.
+\end{itemize}
+
+\textbf{Warum ist das stark?}
+
+Man erzeugt mehrere Chancen genau in den kritischen Phasen, ohne immer wieder ganz von vorne zu beginnen. Das ist wie ein Spiel mit Speicherpunkten: Man \enquote{speichert} nach einem relativ sicheren Abschnitt und probiert den gefährlichen Abschnitt mehrfach.
+
+\subsection{3SAT: Warum auch \enquote{schneller exponentiell} sehr wertvoll ist}
+
+\textbf{3SAT-Problem}
+
+Eine boolesche Formel besteht aus vielen Klauseln, und jede Klausel hat genau 3 Literale (Variable oder negierte Variable), z.B.
+$$
+(x_1 \lor \neg x_2 \lor x_7) \land (\neg x_1 \lor x_4 \lor x_5) \land \dots
+$$
+Ziel: Gibt es eine Belegung der Variablen (wahr/falsch), die alle Klauseln wahr macht?
+
+\textbf{Warum sind exponentielle randomisierte Algorithmen trotzdem interessant?}
+
+Brute Force testet $2^n$ Belegungen (bei $n$ Variablen). Das ist extrem gross. Wenn man stattdessen ein Verfahren hat, das grob wie $(1,334)^n$ Schritte braucht, ist das immer noch exponentiell, aber in der Praxis oft ein riesiger Unterschied.
+
+\section{Algorithmus SCHÖNING für 3SAT: Random Walk / lokale Suche}
+
+Kernidee: Nicht \enquote{blind alle Belegungen durchprobieren}, sondern \enquote{herumlaufen} und Belegungen gezielt verbessern.
+
+Algorithmus (vereinfacht):
+
+\begin{enumerate}
+    \item Starte mit einer zufälligen Belegung aller Variablen
+    \item Solange die Formel nicht erfüllt ist:
+    \begin{itemize}
+        \item Nimm eine unerfüllte Klausel $C$.
+        \item Wähle zufällig eine der 3 Variablen in $C$ und flippe sie (wahr $\leftrightarrow$ falsch),
+    \end{itemize}
+    \item Wiederhole das nur eine begrenzte Anzahl Schritte (typisch $3n$); wenn kein Erfolg: starte neu.
+\end{enumerate}
+
+\clearpage
+\textbf{Warum kann das funktionieren?}
+
+Angenommen, es gibt eine (unbekannte) erfüllende Belegung $A*$. Wenn eine Klausel gerade falsch ist, dann sind alle ihre 3 Literale falsch. Das bedeutet: mindestens eines dieser Literale ist \enquote{im Vergleich zu $A*$ falsch gesetzt}.
+
+Wenn man nun zufällig eine der 3 Variablen flippt, trifft man mit Wahrscheinlichkeit mindestens $1/3$ eine Variable, die einen Schritt näher an $A*$ bringt (gemessen z.B. an der Anzahl Variablen, die mit $A*$ übereinstimmen).
+
+Mit Wahrscheinlichkeit höchstens $2/3$ macht man einen Schritt \enquote{weg}. Insgesamt entsteht aber ein Zufallsprozess, der häufig genug in Richtung Lösung driftet, wenn man ihn oft genug startet.
+
+\textbf{Wichtiger Merksatz}
+
+SCHÖNING ist ein Beispiel, dass Randomisierung bei NP-schweren Problemen oft nicht \enquote{polynomiell} zaubert, aber deutlich bessere exponentielle Basen erreichen kann als Brute Force.
+
+\section{Konzept der häufigen Zeugen}
+
+\textbf{Was ist ein Zeuge}
+
+Ein Zeuge ist ein \enquote{Beweisstück}, das eine Eigenschaft schnell überprüfbar macht. Typisches Schema bei Entscheidungsproblemen:
+
+\begin{itemize}
+    \item Man will entscheiden, ob eine Aussage stimmt (z.B. \enquote{$n$ ist nicht prim}).
+    \item Statt mühsam den Grund vollständig zu finden (z.B. einen echten Faktor), sucht man nach einem Objekt $w$, das man schnell testen kann und das die Aussage belegt.
+\end{itemize}
+
+\textbf{Häufige Zeugen = Jackpot für Randomisierung}
+
+Wenn Zeugen häufig vorkommen (also ein grosser Anteil der Kandidaten Zeugen sind), dann findet man durch zufälliges Probieren sehr schnell einen Zeugen. Beispiel: Wenn mindestens 50\% der Kandidaten Zeugen sind, dann ist die Chance, mit einem zufälligen Griff sofort einen Zeugen zu erwischen, mindestens $1/2$.
+
+\clearpage
+\section{Primzahltest}
+
+\textbf{Primzahltest}
+
+Eingabe: Zahl $n$. Frage: \enquote{Ist $n$ prim?}
+
+\textbf{Naiver Algorithmus (NAIV)}
+
+Teste ob $n$ durch eine Zahl $d$ teilbar ist. Verbesserte Standard-Idee:  Man muss nur bis $\sqrt{n}$ testen, denn wenn $n = ab$ zusammengesetzt ist, dann ist mindestens einer der Faktoren $\leq \sqrt{n}$.
+
+\textbf{Warum ist das trotzdem viel zu langsam?}
+
+Wichtig ist die Unterscheidung:
+
+\begin{itemize}
+    \item Wert von $n$ kann riesig sein (z.B. $10^{300}$).
+    \item Eingabelänge ist nur $log_2(n)$ Bits.
+\end{itemize}
+
+Die Laufzeit \enquote{bis $\sqrt{n}$ testen} ist ungefähr $\sqrt{n}$. Und $\sqrt{n} = 2^{(log_2 n) / 2}$ ist exponentiell in der Eingabelänge. Für Kryptographische-Grössenordnungen ist das praktisch unmöglich.
+
+\textbf{Ausblick, warum Randomisierung hier passt}
+
+Statt Faktoren zu suchen, sucht man oft nach Zeugen, die \enquote{$n$ ist zusammengesetzt} schnell bestätigen können. Wenn solche Zeugen häufig sind, ergibt das einen schnellen randomisierten Test.
+
+\clearpage
+\section{Summary}
+\begin{enumerate}[label=(\alph*)]
+    \item Gezielte Wiederholungen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Mit welcher Grundidee versuchen den Algorithmus KONTRAKTION zu verbessern?\newline
+        \textbf{Antwort}: Nicht immer den kompletten Algorithmus neu starten, sondern die Wiederholung dort konzentrieren, wo die Fehlerwahrscheinlichkeit am grössten ist. Typischerweise in den späten Phasen der Kontraktion. So verschwendet man weniger Zeit auf die \enquote{sicheren} frühen Schritte und investiert mehr Rechenzeit in die \enquote{gefährlichen} letzten Schritte.
+
+        \item Kenne ich die Algorithmen DETRAN und WBAUM und ihre Eigenschaften?\newline
+        \textbf{Antwort}: 
+        \begin{itemize}
+            \item \textbf{DETRAN}: Erst zufällig kontrahieren bis der Graph klein genug ist, dann das Restproblem deterministisch lösen. Idee: riskante Endphase wird abgesichert, weil man sie nicht mehr zuverlässig macht.
+            \item \textbf{WBAUM (Wiederholungsbaum)}: Man speichert Zwischenstände nach einer Schrumpfphase und verzweigt dann in mehrere unabhängige Fortsetzungen. Dadurch bekommt man viele Chancen in den kritischen Phasen, ohne den Anfang ständig zu wiederholen. Ergebnis: höhere Erfolgswahrscheinlichkeit bei ähnlicher/vertretbarer Zusatzzeit.
+        \end{itemize}
+
+    \end{enumerate}
+    \item Das 3SAT Problem:
+    \begin{enumerate}[label=(\roman*)]
+        \item Warum sind auch randomisierte Algorithmen mit exponentieller Laufzeit interessant?\newline
+        \textbf{Antwort}: Weil \enquote{exponentiell} nicht gleich \enquote{gleich schlecht} ist. Brute Force braucht $2^n$ Versuche. Wenn ein randomisierter Algorithmus die Basis deutlich senkt (z.B. grob $(1.33)^n$) statt $2^n$
+
+        \clearpage
+        \item Kenne ich den Algorithmus SCHÖNING für das 3SAT Problem und seine Eigenschaften?\newline
+        \textbf{Antwort}: 
+        \begin{itemize}
+            \item \textbf{Idee}: Starte mit zufälliger Belegung, suche lokal: Solange unerfüllt, nimm eine unerfüllte Klausel und flippe zufällig eine ihrer 3 Variablen. Nach begrenzten SChritten ggf. Neustart.
+            \item \textbf{Warum funktioniert das oft}: Wenn eine Klausel unerfüllt ist, muss mindestens eine ihrer Variablen im Vergleich zu einer echten Lösung \enquote{falsch} stehen; mit Wahrscheinlichkeit mindestens $1/3$ flippt man etwas, das einn näher an eine Lösung bringt. Durch mehrere Läufe steigt die Chance stark, eine Lösung zu treffen (falls sie existiert).
+            \item \textbf{Eigenschaft}: Randomisiert, lokal-suchend, schneller als Brute Force in der exponentiellen Basis.
+        \end{itemize}
+
+    \end{enumerate}
+    \item Häufige Zeugen:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich die Idee erklären?\newline
+        \textbf{Antwort}: Ein \enquote{Zeuge} ist ein leicht überprüfbares Objekt, das eine Aussage belegt (z.B. \enquote{$n$ ist zusammengesetzt}). Wenn es viele solche Zeugen gibt (sie sind \enquote{häufig}), findet man durch zufälliges Ausprobieren sehr schnell einen. Das macht Randomsiierung stark: statt etwas Schweres direkt zu konstruieren, sucht man etwas, das schnell prüfbar ist und oft vorkommt.
+
+    \end{enumerate}
+    \item Primzahl Test:
+    \begin{enumerate}[label=(\roman*)]
+        \item Was ist ein Primzahl Test?\newline
+        \textbf{Antwort}: Ein Algorithmus, der für eine gegebene Zahl $n$ entscheidet, ob $n$ eine Primzahl ist oder nicht.
+
+        \item Kenn ich den Algorithmus NAIV und verstehe ich, wann er unbrauchbar ist?\newline
+        \textbf{Antwort}:
+        \begin{itemize}
+            \item \textbf{NAIV}: Teste Teilbarkeit von $n$ durch Kandidaten $d$ (typisch bis $\sqrt{n}$). Wenn ein Teiler gefunden wird $\rightarrow$ nicht prim, sonst prim.
+            \item \textbf{Warum unbrauchbar}: Für grosse $n$ ist $\sqrt{n}$ riesig. Entscheidend: Die Eingabelänge ist nur etwa $\log_2(n)$ BIts, aber $\sqrt{n}$ wächst wie $2^{(\log_2 n) / 2}$, also exponentiell in der Eingabelänge. Für kryptographische Grössen ist das praktisch viel zu langsam.
+        \end{itemize}
+    \end{enumerate}
+\end{enumerate}

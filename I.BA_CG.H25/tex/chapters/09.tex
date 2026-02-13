@@ -1,0 +1,179 @@
+\section{Motivation: Warum braucht man Global Illumination?}
+Klassische Echtzeit-Beleuchtung (z.\,B. Ambient + Diffus + Specular) betrachtet oft nur: \enquote{Lampe trifft direkt auf Oberfläche}.
+In der Realität passiert aber viel mehr:
+\begin{itemize}
+  \item Licht \textbf{springt mehrfach} zwischen Oberflächen hin und her (indirektes Licht).
+  \item Schatten werden dadurch \textbf{weicher}, dunkle Bereiche bekommen \textbf{Aufhellung}.
+  \item Farben \textbf{bluten} ab (Color Bleeding): eine rote Wand färbt benachbarte Flächen leicht rot.
+\end{itemize}
+\textbf{Global Illumination (GI)} ist der Sammelbegriff für Methoden, die diese Mehrfachwechselwirkung mitmodellieren.
+
+\textbf{Merksatz:} GI ist \enquote{Licht transportiert sich durch die ganze Szene}, nicht nur direkt von der Lampe.
+
+\section{Begriffe: Reflectance, Radiance, und die Rendering Equation (Kajiya-Kontext)}
+\subsection*{Radiance (Strahldichte) als Konzept}
+\textbf{Radiance} ist die zentrale Grösse in der realistischen Beleuchtung.
+Konzeptionell bedeutet sie:
+\enquote{Wie viel Licht kommt aus einer bestimmten Richtung an einem Punkt an (oder geht in eine Richtung weg)?}
+
+Wichtig für die mündliche Prüfung:
+\begin{itemize}
+  \item Radiance ist richtungsabhängig: aus welcher Richtung Licht kommt, ist entscheidend.
+  \item Sie ist das, was eine Kamera letztlich \enquote{sieht} (Richtung zur Kamera).
+\end{itemize}
+
+\subsection*{Reflectance und BRDF (Einordnung)}
+\textbf{Reflectance} beschreibt, wie ein Material eingehendes Licht in ausgehendes Licht umwandelt.
+Das wird meist als \textbf{BRDF} modelliert:
+\enquote{Welche Anteile aus Einfallsrichtungen werden in eine Ausfallsrichtung reflektiert?}
+
+\subsection*{Rendering Equation (Kajiya): Was sie aussagt, ohne Mathe}
+Die \textbf{Rendering Equation} (Kajiya) ist eine konzeptionelle \enquote{Bilanzgleichung}:
+\begin{quote}
+\enquote{Das Licht, das du in Richtung Kamera siehst, besteht aus selbst emittiertem Licht plus reflektiertem Licht aus allen Richtungen.}
+\end{quote}
+
+\textbf{Warum ist das schwierig?}
+\begin{itemize}
+  \item \enquote{Aus allen Richtungen} bedeutet: theoretisch unendlich viele Richtungen.
+  \item Indirektes Licht bedeutet: Licht, das von anderen Punkten kommt, die selbst wieder von anderen Punkten beleuchtet werden.
+  \item Das ist ein gekoppeltes Problem über die ganze Szene.
+\end{itemize}
+
+\textbf{Merksatz:} Die Rendering Equation ist \enquote{Lichtbilanz am Punkt} und erklärt, warum GI teuer ist.
+
+\section{Direkte vs. indirekte Beleuchtung}
+\subsection*{Direkte Beleuchtung}
+\textbf{Direkt} heisst: Licht kommt ohne Zwischenreflexion von der Lichtquelle zum Punkt.
+Konzeptionell:
+\begin{itemize}
+  \item Schatten entstehen hier durch \enquote{Lichtquelle sichtbar oder verdeckt}.
+  \item Viele Raster- und einfache Ray-Tracing-Ansätze starten mit direktem Licht.
+\end{itemize}
+
+\clearpage
+\subsection*{Indirekte Beleuchtung}
+\textbf{Indirekt} heisst: Licht erreicht den Punkt erst nach einer oder mehreren Reflexionen an anderen Oberflächen.
+Typische Effekte:
+\begin{itemize}
+  \item Aufhellung in Schattenbereichen
+  \item Color Bleeding
+  \item weichere, plausiblere Raumwirkung
+\end{itemize}
+
+\textbf{Merksatz:} Direkt ist \enquote{Lampe $\rightarrow$ Punkt}, indirekt ist \enquote{Lampe $\rightarrow$ andere Fläche(n) $\rightarrow$ Punkt}.
+
+\section{Radiosity: Grundidee}
+\textbf{Radiosity} ist eine GI-Methode, die besonders gut für \textbf{diffuse} (matte) Szenen passt.
+Sie denkt nicht in einzelnen Strahlen, sondern in \textbf{Energieaustausch zwischen Flächen}.
+
+\subsection*{Konzept}
+\begin{itemize}
+  \item Man teilt die Szene in Flächenstücke (Patches).
+  \item Jedes Patch tauscht Lichtenergie mit anderen Patches aus.
+  \item Das Ergebnis ist eine \enquote{stationäre} Verteilung von diffusem Licht (wie hell ist jedes Patch insgesamt).
+\end{itemize}
+
+\textbf{Warum ist das attraktiv?}
+\begin{itemize}
+  \item Sehr gut für Innenräume mit diffusem Licht.
+  \item Liefert weiche Schatten und Color Bleeding auf natürliche Weise.
+\end{itemize}
+
+\textbf{Einschränkung:} Klassische Radiosity ist primär für diffuse Reflexion gedacht, nicht für spiegelnde Materialien.
+
+\clearpage
+\section{Formfaktoren (konzeptionell)}
+\textbf{Formfaktoren} sind das Herz von Radiosity.
+Sie sagen konzeptionell:
+\enquote{Welcher Anteil des Lichtes von Fläche A erreicht Fläche B, nur aufgrund der Geometrie?}
+
+Dabei spielen Dinge eine Rolle wie:
+\begin{itemize}
+  \item Abstand zwischen Flächen
+  \item Ausrichtung (Winkel) der Flächen
+  \item Sichtbarkeit (wenn etwas dazwischen liegt, ist der Anteil kleiner oder null)
+\end{itemize}
+
+\textbf{Merksatz:} Formfaktor = \enquote{Geometrischer Kopplungsgrad} zwischen zwei Flächen.
+
+\section{Iterative Verfahren: progressive und hierarchical Radiosity}
+Radiosity führt auf ein grosses gekoppeltes Gleichungssystem (viele Patches).
+In der Praxis löst man das oft iterativ.
+
+\subsection*{Progressive Radiosity (Grundidee)}
+\begin{itemize}
+  \item Statt alles auf einmal zu lösen, verteilt man Energie schrittweise.
+  \item Man nimmt typischerweise das Patch mit der meisten \enquote{noch zu verteilenden} Energie und \enquote{schiesst} diese auf andere Patches.
+  \item Vorteil: Man bekommt schnell ein brauchbares Zwischenbild und verbessert es laufend.
+\end{itemize}
+\textbf{Konzept:} \enquote{Erst das wichtigste Licht verteilen, dann verfeinern.}
+
+\subsection*{Hierarchical Radiosity (Grundidee)}
+\begin{itemize}
+  \item Nicht alle Patch-Paare brauchen die gleiche Detailtiefe.
+  \item Man arbeitet mit einer Hierarchie (grob $\rightarrow$ fein) und verfeinert nur dort, wo es nötig ist.
+  \item Vorteil: Skalierbarer bei grossen Szenen.
+\end{itemize}
+\textbf{Konzept:} \enquote{Detail nur dort, wo es einen sichtbaren Unterschied macht.}
+
+\section{Weitere Lösungsansätze: Photon Mapping, Monte-Carlo Ray Tracing}
+\subsection*{Photon Mapping (Einordnung)}
+Photon Mapping ist eine zweistufige, \enquote{energiegetriebene} Methode:
+\begin{itemize}
+  \item \textbf{Phase 1:} Man schickt viele \enquote{Photonen} von Lichtquellen in die Szene und speichert, wo sie auftreffen (Photon Map).
+  \item \textbf{Phase 2:} Beim Rendern schätzt man indirektes Licht, indem man in der Umgebung eines Punktes in der Photon Map nach gespeicherter Energie sucht.
+\end{itemize}
+
+\textbf{Wofür ist das gut?}
+\begin{itemize}
+  \item Indirektes Licht effizient abschätzen
+  \item Caustics (Lichtbündelungen durch Glas/Wasser) deutlich besser als viele einfache Verfahren
+\end{itemize}
+
+\textbf{Trade-off:} Qualität hängt von Anzahl Photonen und Suchradius ab; kann zu \enquote{Flecken} oder Glättung führen.
+
+\subsection*{Monte-Carlo Ray Tracing (Einordnung)}
+Monte-Carlo Methoden lösen die Rendering Equation durch \textbf{stochastisches Sampling}:
+\begin{itemize}
+  \item Statt \enquote{alle Richtungen} exakt zu integrieren, nimmt man zufällig verteilte Richtungs-Samples.
+  \item Mit genug Samples nähert man die richtige Lösung an.
+\end{itemize}
+
+\textbf{Warum ist das der moderne Standard für Realismus?}
+\begin{itemize}
+  \item Sehr allgemein: funktioniert für diffuse, glossy, spiegelnde Materialien
+  \item Kann indirektes Licht beliebiger Bounce-Tiefe modellieren (Path Tracing als bekanntes Beispiel)
+\end{itemize}
+
+\textbf{Hauptproblem:} Rauschen.
+Wenige Samples $\rightarrow$ sichtbares Noise, viele Samples $\rightarrow$ teuer.
+Deshalb nutzt man oft \textbf{Denoising} und \textbf{gute Sampling-Strategien}.
+
+\textbf{Merksatz:} Monte-Carlo Ray Tracing ist \enquote{Rendering Equation durch Zufallssamples} -- flexibel, aber noisy.
+
+\section{Einordnung zu WebGPU (als Referenz-Kontext)}
+WebGPU ist eine Raster-First API, aber viele GI-Konzepte lassen sich einordnen:
+\begin{itemize}
+  \item \textbf{Monte-Carlo/Path Tracing} kann man als Compute-Shader implementieren (Rays pro Pixel, Akkumulation in Texturen).
+  \item \textbf{Hybrid-Rendering} ist typisch: Rasterisierung für das Grundbild, stochastische Effekte (GI, Reflexionen) als Zusatz.
+  \item \textbf{Radiosity- oder Photon-Ideen} kann man als Precompute oder als approximative Screen-/Probe-Techniken umsetzen.
+\end{itemize}
+
+\section{Typische konzeptionelle Prüfungsfragen (Kernantworten)}
+\begin{itemize}
+  \item \textbf{Was ist die Rendering Equation in einem Satz (Kajiya)?}
+    -- Licht in Blickrichtung = Emission + reflektiertes Licht aus allen Richtungen, gewichtet durch Materialverhalten.
+  \item \textbf{Direkte vs. indirekte Beleuchtung?}
+    -- Direkt: Lichtquelle trifft direkt; indirekt: Licht kommt erst nach Reflexionen von anderen Flächen.
+  \item \textbf{Wofür steht Radiance konzeptionell?}
+    -- Wie viel Licht aus einer Richtung an einem Punkt ankommt bzw. in eine Richtung ausgeht; das ist, was die Kamera \enquote{sieht}.
+  \item \textbf{Was macht Radiosity besonders?}
+    -- Energieaustausch zwischen Flächen, besonders für diffuse Szenen, liefert weiche Schatten und Color Bleeding.
+  \item \textbf{Was ist ein Formfaktor?}
+    -- Geometrischer Anteil: wie viel Energie von Fläche A Fläche B erreicht (Abstand, Winkel, Sichtbarkeit).
+  \item \textbf{Progressive vs. hierarchical Radiosity?}
+    -- Progressive verteilt Licht schrittweise (früh brauchbar); hierarchical verfeinert adaptiv nur wo nötig.
+  \item \textbf{Photon Mapping vs. Monte-Carlo Ray Tracing?}
+    -- Photon Mapping speichert Lichtenergie-Treffer und schätzt später; Monte-Carlo sampelt Richtungen direkt und nähert die Rendering Equation an (mit Noise).
+\end{itemize}

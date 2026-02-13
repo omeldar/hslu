@@ -1,0 +1,138 @@
+\section{Worum geht's?}
+Wenn mehrere Objekte im Bild liegen, überdecken sie sich gegenseitig. Die zentrale Frage ist:
+\enquote{Welches Objekt ist an jedem Pixel wirklich sichtbar?}
+
+Ohne Hidden-Surface-Removal passiert typischerweise eines von zwei Problemen:
+\begin{itemize}
+  \item \textbf{Verdeckte Flächen werden trotzdem gezeichnet} (falsches Bild).
+  \item \textbf{Reihenfolgeabhängigkeit:} Das Ergebnis hängt davon ab, in welcher Reihenfolge du Objekte zeichnest.
+\end{itemize}
+
+In modernen Echtzeit-Pipelines (z.\,B. WebGPU) wird das meist mit einem \textbf{Depth Buffer (Z-Buffer)} gelöst,
+aber es gibt mehrere Konzepte, die man in Prüfungen häufig einordnen muss.
+
+\section{Problem: \enquote{verdeckte Flächen / Linien}}
+In 3D ist Sichtbarkeit nicht trivial, weil Projektion 3D auf 2D abbildet:
+Zwei Dreiecke können sich in der Projektion überlappen, obwohl sie räumlich getrennt sind.
+Dann muss entschieden werden, welches vorne liegt.
+
+Wichtig: Hidden-Surface-Removal ist nicht nur \enquote{Objekt A vor Objekt B},
+sondern auf Pixelebene: Ein Teil von A kann vor B liegen, ein anderer Teil hinter B.
+
+\clearpage
+\section{Backface Culling}
+\textbf{Idee:} Viele Dreiecke sind \enquote{Rückseiten} und können aus einer geschlossenen Oberfläche gar nicht sichtbar sein.
+Wenn ein Dreieck von der Kamera weg zeigt, wird es weggelassen.
+
+\begin{itemize}
+  \item \textbf{Warum funktioniert das?} Bei geschlossenen, korrekt orientierten Meshes sieht man nie gleichzeitig Vorder- und Rückseite derselben Fläche.
+  \item \textbf{Wie erkennt man das konzeptionell?} Über die \textbf{Orientierung} (Winding Order) im Screen Space:
+        Dreiecke, die im Uhrzeigersinn statt gegen den Uhrzeigersinn erscheinen (oder umgekehrt, je nach Konvention),
+        gelten als Backfaces.
+  \item \textbf{Nutzen:} Spart Rasterisierung und Shader-Arbeit, oft fast die Hälfte der Dreiecke.
+\end{itemize}
+
+\textbf{Wichtig für die Prüfung:}
+Backface Culling löst \emph{nicht} das Hidden-Surface-Problem vollständig.
+Es entfernt nur Flächen, die garantiert nicht sichtbar sind. Überdeckungen zwischen sichtbaren Vorderseiten bleiben.
+
+\section{Painter's Algorithm (Tiefensortierung)}
+\textbf{Idee:} Wie beim Malen: Erst den Hintergrund, dann Schritt für Schritt nach vorne.
+Man sortiert Primitive nach Tiefe und zeichnet von \enquote{hinten nach vorne}.
+
+\begin{itemize}
+  \item \textbf{Pro:} Einfaches Konzept, funktioniert gut für manche Szenen.
+  \item \textbf{Typischer Einsatz:} Transparenz (weil man oft ohnehin \enquote{back-to-front} für alpha blending braucht).
+  \item \textbf{Contra:} Problematisch bei Zyklen und Überschneidungen:
+        Wenn A vor B ist, B vor C und C vor A (oder wenn sich Dreiecke gegenseitig schneiden),
+        gibt es keine reine Sortierreihenfolge, die überall korrekt ist.
+  \item \textbf{Weitere Schwäche:} Sortieren pro Frame kann teuer werden bei vielen Objekten.
+\end{itemize}
+
+\textbf{Merksatz:} Painter ist \enquote{Reihenfolge lösen Sichtbarkeit} -- klappt, bis Geometrie kompliziert überlappt.
+
+\section{Z-Buffer / Depth Buffer}
+\subsection{Prinzip}
+\textbf{Idee:} Man speichert pro Pixel die bisher kleinste Tiefe (also das, was gerade am nächsten zur Kamera ist).
+Wenn ein neues Fragment kommt:
+\begin{itemize}
+  \item ist es \textbf{näher} als der gespeicherte Wert $\rightarrow$ es ist sichtbar, wird gezeichnet und Depth wird aktualisiert
+  \item ist es \textbf{weiter weg} $\rightarrow$ es wird verworfen
+\end{itemize}
+
+\textbf{Wichtig:} Das passiert auf \textbf{Fragment-/Pixelebene} während der Rasterisierung.
+Man muss also nicht die ganze Szene sortieren.
+
+\subsection{Stärken}
+\begin{itemize}
+  \item \textbf{Sehr robust und allgemein:} Funktioniert mit beliebiger Geometrie, auch bei komplexen Überdeckungen.
+  \item \textbf{Ordnung unabhängig:} Du kannst Primitive in (fast) beliebiger Reihenfolge zeichnen.
+  \item \textbf{GPU-Standard:} Sehr gut hardwareunterstützt, ideal für Echtzeit (WebGPU, Vulkan, Direct3D).
+\end{itemize}
+
+\subsection{Schwächen / typische Fallstricke}
+\begin{itemize}
+  \item \textbf{Begrenzte Präzision:} Depth ist quantisiert. Schlechte Near/Far-Wahl kann zu \enquote{Z-Fighting} führen
+        (zwei Flächen flimmern, weil sie in der Tiefe kaum unterscheidbar sind).
+  \item \textbf{Transparenz:} Ein einfacher Z-Buffer löst Transparenz nicht automatisch korrekt.
+        Oft braucht man trotzdem Sortierung (oder komplexere Techniken wie OIT).
+  \item \textbf{Speicherbandbreite:} Depth-Reads/Writes kosten Bandbreite, ist aber in der Praxis gut optimiert.
+\end{itemize}
+
+\textbf{Prüfungs-Merksatz:} Z-Buffer ist der Standard, aber Präzision (Near/Far) und Transparenz sind die Klassiker-Probleme.
+
+\section{Warnock-Algorithmus (Einordnung)}
+\textbf{Idee:} \enquote{Teile-und-herrsche} im Bildraum.
+Man nimmt einen Bildschirmbereich (ein Rechteck) und prüft:
+\begin{itemize}
+  \item Ist der Bereich eindeutig (z.\,B. nur ein Polygon oder eindeutig vorne)?
+  \item Wenn nicht, teile den Bereich in kleinere Rechtecke und wiederhole.
+\end{itemize}
+
+\textbf{Einordnung:}
+\begin{itemize}
+  \item Das ist ein historisch wichtiges Konzept, weil es zeigt, wie man Sichtbarkeit über Bildraum-Subdivision lösen kann.
+  \item Praktisch ist es weniger der Standard für heutige Echtzeit-GPUs,
+        aber die Idee \enquote{spatial subdivision} taucht später wieder auf (z.\,B. in Acceleration Structures).
+\end{itemize}
+
+\section{Raycasting / Raytracing (Alternativen und Kontext)}
+\subsection{Raycasting}
+\textbf{Idee:} Für jedes Pixel schiesst man einen Strahl von der Kamera in die Szene und fragt:
+\enquote{Was ist das erste Objekt, das der Strahl trifft?}
+Das erste Trefferobjekt ist sichtbar.
+
+\begin{itemize}
+  \item \textbf{Pro:} Sichtbarkeit ist direkt im Modell enthalten (nächster Treffer gewinnt).
+  \item \textbf{Contra:} Ohne Beschleunigungsstrukturen extrem teuer, weil viele Schnitt-Tests.
+\end{itemize}
+
+\subsection{Raytracing}
+Raytracing baut auf Raycasting auf, geht aber weiter:
+Zusätzliche Strahlen für Spiegelungen, Schatten, indirektes Licht usw.
+
+\begin{itemize}
+  \item \textbf{Einordnung:} Sichtbarkeit ist der Grundschritt, Beleuchtungseffekte kommen oben drauf.
+  \item \textbf{Warum relevant in Echtzeit?} Heute teils hardwarebeschleunigt, aber immer noch teurer als klassische Rasterisierung
+        für sehr hohe Bildraten (je nach Szene und Qualität).
+  \item \textbf{Wichtiges Konzept:} Man braucht fast immer Beschleunigungsstrukturen (BVH, Grids), sonst skaliert es schlecht.
+\end{itemize}
+
+\textbf{Merksatz:} Rasterisierung (mit Z-Buffer) entscheidet Sichtbarkeit \enquote{von Geometrie zu Pixel}.
+Raycasting/Raytracing entscheidet Sichtbarkeit \enquote{vom Pixel in die Szene}.
+
+\section{Typische konzeptionelle Prüfungsfragen (Kernantworten)}
+\begin{itemize}
+  \item \textbf{Was ist das Hidden-Surface-Problem?}
+    -- Bei Überdeckungen muss pro Pixel entschieden werden, welches Fragment wirklich sichtbar ist.
+  \item \textbf{Was macht Backface Culling, und was nicht?}
+    -- Entfernt garantiert unsichtbare Rückseiten; löst aber keine Überdeckung zwischen Vorderseiten.
+  \item \textbf{Warum ist Painter nicht immer korrekt?}
+    -- Weil es keine globale Sortierreihenfolge geben kann, wenn sich Primitive schneiden oder zyklisch überdecken.
+  \item \textbf{Warum ist Z-Buffer der Standard?}
+    -- Er ist ordnungsunabhängig, robust und hardwareeffizient; pro Pixel gewinnt das nächstliegende Fragment.
+  \item \textbf{Was sind typische Z-Buffer-Probleme?}
+    -- Depth-Präzision (Z-Fighting) und Transparenz (braucht oft Sortierung oder Spezialtechniken).
+  \item \textbf{Wie unterscheiden sich Warnock und Raytracing konzeptionell?}
+    -- Warnock teilt den Bildraum rekursiv; Raytracing schiesst Strahlen pro Pixel und nimmt den ersten Treffer.
+\end{itemize}

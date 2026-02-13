@@ -1,0 +1,135 @@
+\section{Pipeline-Überblick: Welche Stufen machen aus 3D ein 2D-Bild}
+
+Eine typische (projektive) Grafikpipeline verarbeitet Geometrie in mehreren Stufen:
+
+\begin{enumerate}
+    \item Modell-/Objekttransformation: Lokale Objektkoordinaten werden in Szene/Modell- bzw. Weltkoordinaten überführt (Position/Orientierung/Skalierung des Objekts).
+    \item Viewing-/Kameratransformation (View Transform): Welt/Modellkoordinaten werden in ein Koordinatensystem der Kamera (Augpunkt-/View-Space) transformiert: Position, Blickrichtung und \enquote{oben}-Orientierung des Beobachters werden berücksichtigt.
+    \item Projektion (orthographisch oder perspektivisch): Kamera-Koordinaten werden so abgebildet, dass ein Sichtvolumen auf ein kanonisches Volumen normiert wird (Grundlage für Clipping \& Rasterung).
+    \item Clipping: Alles ausserhalb des Sichtvolumens wird verworfen bzw. geschnitten (spart Rasterisierung und vermeidet numerische Probleme).
+    \item Viewport-Transformation / Screen Mapping: NDC werden in Pixelkoordinaten im Fenster umgerechnet (wo genau im Fenster gezeichnet wird, regelt der Viewport).
+\end{enumerate}
+
+\subsection{Worum geht's?}
+Eine GPU zeichnet kein \enquote{3D-Bild}, sondern projiziert 3D-Geometrie auf ein 2D-Bild (dein Canvas).
+Dafür wird jeder Vertex durch eine feste Abfolge von Koordinatenräumen geschoben:
+\[
+\text{Objekt (local)} \rightarrow \text{Welt} \rightarrow \text{Kamera (View)} \rightarrow \text{Clip Space} \rightarrow \text{NDC} \rightarrow \text{Viewport/Pixel}.
+\]
+In WebGPU passiert das hauptsächlich im Vertex-Shader (bis Clip Space) und danach automatisch in der Rasterisierung.
+
+\subsection{Modell-/Objekttransformation (Model)}
+\textbf{Idee:} Ein Modell wird in einem eigenen lokalen Koordinatensystem gebaut (z.\,B. ein Würfel um den Ursprung).
+Die \textbf{Model-Transformation} sagt: \emph{Wo steht das Objekt in der Szene und wie ist es ausgerichtet?}
+
+\begin{itemize}
+  \item \textbf{Translation:} verschiebt das Objekt an seine Position in der Welt.
+  \item \textbf{Rotation:} dreht das Objekt in die gewünschte Orientierung.
+  \item \textbf{Skalierung:} macht es grösser/kleiner (Achtung: ungleichmässige Skalierung kann Normalen/Beleuchtung beeinflussen).
+\end{itemize}
+
+\textbf{Merksatz für die Prüfung:} \emph{Model} bewegt das \emph{Objekt} in die \emph{Welt}.
+
+\subsection{Viewing-/Kameratransformation (View)}
+\textbf{Ziel:} Die Kamera soll so wirken, als ob sie im Ursprung sitzt und in eine definierte Richtung schaut.
+Statt die Kamera wirklich zu \enquote{bewegen}, macht man es umgekehrt:
+Man transformiert die \textbf{gesamte Welt so}, dass die Kamera im Ursprung landet.
+
+\begin{itemize}
+  \item \textbf{Kameraposition (eye):} Wo ist die Kamera?
+  \item \textbf{Blickrichtung/Target (center):} Wohin schaut sie?
+  \item \textbf{Up-Vektor:} Was ist \enquote{ oben}? (Damit das Bild nicht verdreht ist.)
+\end{itemize}
+
+\textbf{Merksatz:} \emph{View} bewegt die \emph{Welt} relativ zur \emph{Kamera}.
+
+\subsection{Frustum: das Sichtvolumen der Kamera}
+Die Kamera sieht nicht unendlich viel, sondern nur ein \textbf{Sichtvolumen}:
+bei Perspektive ist das ein \textbf{Pyramidenstumpf} (Frustum).
+
+\begin{itemize}
+  \item \textbf{Near-Plane:} vordere Schnittebene (alles näher ist unsichtbar).
+  \item \textbf{Far-Plane:} hintere Schnittebene (alles weiter weg ist unsichtbar).
+  \item \textbf{FOV (field of view):} wie weitwinklig die Kamera ist (grosses FOV $\rightarrow$ Weitwinkel-Look).
+  \item \textbf{Aspect Ratio:} Breite/Höhe des Bildes (verhindert Stauchung).
+\end{itemize}
+
+\textbf{Warum Near/Far wichtig sind (konzeptionell!):}
+\begin{itemize}
+  \item Sie definieren, \emph{was überhaupt gerendert werden kann}.
+  \item Sie beeinflussen massiv die \textbf{Tiefenpräzision} (Depth Buffer):
+        Ein extrem kleines Near oder riesiges Far verschlechtert die Auflösung in der Tiefe (mehr Z-Fighting).
+  \item Near ist praktisch nie 0, weil die Perspektivprojektion sonst numerisch/konzeptionell problematisch wird.
+\end{itemize}
+
+\subsection{Perspektivmatrix: was sie konzeptionell macht}
+\textbf{Keine Mathe-Formeln merken müssen} --- aber die Wirkung verstehen:
+
+\begin{itemize}
+  \item Sie nimmt das Kamera-Sichtvolumen (Frustum) und \textbf{normiert} es auf einen standardisierten Bereich
+        (damit die GPU überall gleich weiterarbeiten kann).
+  \item Sie erzeugt den \textbf{Perspektiveffekt}: weiter weg $\rightarrow$ erscheint kleiner.
+  \item Sie bereitet auch die Tiefenwerte so auf, dass später Depth-Tests funktionieren.
+\end{itemize}
+
+\textbf{WebGPU-spezifisch:} Die Perspektivmatrix muss zur WebGPU-Definition von NDC passen (siehe unten),
+weil sich insbesondere der \textbf{z-Bereich} von manchen anderen APIs unterscheidet.
+
+\subsection{Clip Space in WebGPU: der Standardraum nach dem Vertex Shader}
+Im Vertex-Shader gibst du pro Vertex eine Position in \textbf{Clip Space} aus:
+\[
+\texttt{@builtin(position)} = (x, y, z, w).
+\]
+\textbf{Was Clip Space konzeptionell ist:}
+\begin{itemize}
+  \item Ein \enquote{ Vertrag} zwischen deinem Vertex-Shader und der GPU:
+        \emph{Ab hier weiss die GPU, was sichtbar ist und wie sie zu Pixeln kommt.}
+  \item In Clip Space wird \textbf{geclippt}: Dreiecke, die teilweise ausserhalb liegen, werden passend abgeschnitten.
+\end{itemize}
+
+\subsection{NDC (Normalized Device Coordinates): nach der \enquote{ perspektivischen Division}}
+Nach dem Vertex-Shader macht die GPU automatisch die Umrechnung von Clip Space nach \textbf{NDC}.
+NDC sind \textbf{normierte Koordinaten}, unabhängig von der Fenstergrösse.
+
+\textbf{Wichtiger WebGPU-Punkt:}
+\begin{itemize}
+  \item $x$ und $y$ in NDC liegen in $[-1, +1]$ (links/rechts und unten/oben).
+  \item $z$ in NDC liegt in $[0, 1]$ (near $\rightarrow$ 0, far $\rightarrow$ 1 ist die übliche Konvention).
+\end{itemize}
+
+\textbf{Warum ist NDC nützlich?}
+\begin{itemize}
+  \item Es ist ein standardisierter \enquote{ Zwischenraum}, in dem die GPU rasterisieren kann,
+        ohne deine echte Pixelauflösung zu kennen.
+  \item Alles ausserhalb des NDC-Bereichs ist effektiv \textbf{nicht sichtbar} (wird geclippt/wegfällt).
+\end{itemize}
+
+\subsection{Viewport-Transformation: von NDC zu Pixeln}
+Jetzt kommt die eigentliche \textbf{2D-Abbildung auf dein Fenster}:
+\begin{itemize}
+  \item Der \textbf{Viewport} sagt der GPU, in welchen Bereich des Render-Targets (Canvas/Texture)
+        gezeichnet wird (Grösse, Offset).
+  \item Die GPU mappt NDC $[-1,+1]$ in \textbf{Pixelkoordinaten} dieses Viewports.
+\end{itemize}
+
+\textbf{Konzeptionell:}
+\begin{quote}
+NDC ist \enquote{ überall gleich gross}. Der Viewport entscheidet, wie gross das auf deinem Bildschirm erscheint.
+\end{quote}
+
+\clearpage
+\section{Einige Beispiele für konzeptionelle Prüfungsfragen (und Kernantworten)}
+\begin{itemize}
+  \item \textbf{Warum gibt es Model und View getrennt?}
+    -- Model positioniert Objekte; View positioniert die Kamera (bzw. transformiert die Welt zur Kamera).
+  \item \textbf{Was ist das Frustum?}
+    -- Das Sichtvolumen der Kamera, begrenzt durch Near/Far und FOV/Aspect.
+  \item \textbf{Warum Clip Space / NDC überhaupt?}
+    -- Standardisierung: die GPU braucht einen einheitlichen Raum für Clipping und Rasterisierung.
+  \item \textbf{Was macht der Viewport?}
+    -- Skaliert/verschiebt von NDC auf echte Pixel im Render-Target.
+  \item \textbf{Warum beeinflussen Near/Far die Bildqualität?}
+    -- Sie bestimmen die Verteilung der Depth-Buffer-Präzision; schlechte Wahl $\rightarrow$ Z-Fighting.
+  \item \textbf{Was ist WebGPU-spezifisch wichtig?}
+    -- NDC-$z$ ist in WebGPU $[0,1]$; Projektionen müssen dazu passen (nicht blind WebGL/OpenGL-Matrizen übernehmen).
+\end{itemize}

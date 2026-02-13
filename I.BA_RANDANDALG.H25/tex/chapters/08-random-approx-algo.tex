@@ -1,0 +1,58 @@
+In diesem Kapitel wurden die Fragen des Lerngerüsts direkt im Kapitel beantwortet. Somit gibt es kein Summary.
+
+Auch gilt für dieses Kapitel:
+
+\begin{itemize}
+    \item $X$ die Approximationsgüte (oder allgemein irgendeine nichtnegative Zufallsgrösse, die aussagt \enquote{wie schlecht} der Lauf war.)
+    \item $E[X] \leq \delta$: Im Erwartungswert ist die Güte höchstens $\delta$. Wenn wir den Algorithmus sehr oft laufen lassen und die Güte mitteln, wäre sie im Durchschnitt $\leq \delta$.
+    \item $P(X \geq 2 \delta) \leq \frac{E[X]}{2 \delta} \leq \frac{\delta}{2 \delta} = \frac{1}{2}$: Bedeutet, dass in mindestens 50\% der Läufe die Güte höchstens $2 \delta$ ist. Deshalb sagt man: \enquote{Aus einem randomisierten $E[\delta]$- Approximationsalgorithmus wird ein randomisierter $\delta^{*}$-Approximationsalgorithmus mit $\delta^{*} = 2 \delta$}.
+\end{itemize}
+
+\section{Wie muss $\delta$ angepasst werden, damit aus $E[\delta]$ ein $\delta^{*}$-Algorithmus wird?}
+
+Wenn ein randomisierter Algorithmus nur eine Erwartungswert-Garantie hat (also $E[\text{Güte}] \leq \delta$), wollen wir oft eine \enquote{Trefferquote}-Garantie: mit Wahrscheinlichkeit $\geq 1/2$ ist die Güte wirklich gut. Das erreichen wir, indem wir den Faktor verdoppeln:
+$$
+\delta^{*} = 2 \delta
+$$
+Dann gilt: Mit Wahrscheinlichkeit mindestens $1/2$ ist die Güte $\leq 2 \delta$ (also \enquote{nicht zu schlecht}). Das ist genau der Trick \enquote{von links nach rechts} (Erwartung $\rightarrow$ Wahrscheinlichkeit).
+
+\clearpage
+\section{Was sagt die Markov-Ungleichung?}
+
+Für eine nicht-negative Zufallsvariable $X \geq 0$ gilt für jedes $t > 0$:
+$$
+P(X \geq t) \leq \frac{E[X]}{t}
+$$
+Bedeutung: Wenn der Durchschnitt $E[X]$ klein ist, dann kann $x$ nicht oft sehr gross sein. Genau damit begründet man oben die Verdopplung: Setze $t = 2 \delta$ und nutze $E[X] \leq \delta$, dann ist $P(X \geq 2\delta) \leq 1/2$ also: $P(X \leq 2\delta) \geq 1/2$.
+
+\section{Welche Approximationseigenschaften hat STICH für MAX-Ek-SAT?}
+
+Problem (MAX-Ek-SAT): Wir haben eine KNF-Formel mit $m$ Klauseln, jede Klausel hat genau $k$ Literale. Ziel: Maximiere die Anzahl erfüllter Klauseln.
+
+Algorithmus STICH: Setze jede Variable unabhängig zufällig: mit Wahrscheinlichkeit $1/2$ auf wahr, sonst falsch (fairer Münzwurf).
+
+Analyse einer Klausel: Eine Klausel ist nur dann falsch, wenn alle $k$ Literale falsch werden. Das passiert mit Wahrscheinlichkeit $(1/2)^k = 2^{-k}$. Also ist die Klausel mit Wahrscheinlichkeit
+$$
+P(\text{Klausel wahr}) = 1 - 2^{-k}
+$$
+Interpretation: Im Schnitt erfüllt STICH den Anteil $(1 - 2^{-k})$ aller Klauseln.
+
+Approximationsgarantie (als $E[\delta]$-Approximation): Das Optimum ist höchstens $m$ (mehr als alle Klauseln geht nicht). Daher ist die erwartete Approximationsgüte (für ein Maximumproblem) höchstens:
+$$
+\delta = \frac{m}{m(1-2^{-k})} = \frac{1}{1 - 2^{-k}} = \frac{2^k}{2^k-1}
+$$
+Beispiel: $k = 1 \Rightarrow \delta \leq 2, \quad k = 2 \Rightarrow \delta \leq 4/3, \quad k= 3 \Rightarrow \delta \leq 8/7$.
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/markov.png}
+    {Markov Summary}
+    \label{fig:markovsummary}
+\end{figure}
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/STICH.png}
+    {STICH Summary}
+    \label{fig:stichsummary}
+\end{figure}
+
+Wobei $m$ die Anzahl Klauseln in der Formel ist. $m \cdot (1 - 2^{-k})$ ist somit die erwartete Anzahl erfüllter Klauseln.

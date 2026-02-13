@@ -1,0 +1,213 @@
+\section{Euklidische Grundlagen}
+
+\subsection{Skalare, Vektoren, kartesisches Koordinatensystem}
+
+\begin{itemize}
+    \item Skalar: einzelne Zahl (z.B. Temperatur). Vektor: Betrag + Richtung (z.B. Geschwindigkeit).
+    \item In kartesischen Koordinaten sind die Basisvektoren orthonormal (senkrecht, Länge 1). Dann kann man Vektoren einfach komponentenweise rechnen.
+    \item Addition / Skalarmultiplikation (komponentenweise):
+    $$
+    a + b = \begin{bmatrix}
+        a_1 + b_1 \\
+        a_2 + b_2
+    \end{bmatrix}, \quad \lambda a = \begin{bmatrix}
+        \lambda a_1 \\ \lambda a_2
+    \end{bmatrix}
+    $$
+\end{itemize}
+
+\subsection{Skalarprodukt, Länge/Normierung, Orthogonalität}
+\begin{itemize}
+    \item Skalarprodukt:
+    $$
+    a \cdot b = |a| \text{ } |b| \cos \phi
+    $$
+    und in kartesischen Koordinaten:
+    $$
+    a \cdot b = a_1 b_1 + a_2 b_2 (+ a_3 b_3)
+    $$
+    \item Länge (Norm):
+    $$
+    |a| = \sqrt{a \cdot a}
+    $$
+    \item Normieren (Einheitsvektor): $\hat{a} = a / |a|$
+    \item Orthogonalität: $a \perp b \Leftrightarrow a \cdot b = 0$.
+    \item Projektion eines Vektors $b$ auf Richtung $a$:
+    $$
+    \text{proj}_a (b) = \frac{a \cdot b}{|a|^2}a
+    $$
+\end{itemize}
+
+\subsection{Geraden/Ebenen-Darstellungen, Hessesche Normalform (HNF)}
+
+\begin{itemize}
+    \item Gerade (Vektorformen):
+    \begin{itemize}
+        \item Punkt-Richtung: $r = r_0 + tv$
+        \item Punkt-Punkt: $r = r_0 + t(r_1 - r_0)$
+    \end{itemize}
+    \item Hessesche Normalform (Gerade): mit normierten Normalenvektor $|n| = 1$:
+    $$
+    n \cdot (x - x_0) = 0 \Leftrightarrow n_xx + n_yy - d = 0
+    $$
+    wobei $d = n \cdot x_0$ der vorzeichenbehaftete Abstand vom Ursprung ist.
+    \item Von Koordinatenform zur HNF (Gerade): $ax + by + c = 0$
+    \[
+      \mathbf{n} = \frac{1}{\sqrt{a^2+b^2}}
+      \begin{pmatrix} a \\ b \end{pmatrix},
+      \qquad
+      d = -\frac{c}{\sqrt{a^2+b^2}}.
+    \]
+  
+    \item HNF (Ebene): $ax + by + cz + d = 0$ wird zu $n_xx + n_yy + n_zz - D = 0$ mit
+    \[
+      \mathbf{n} = \frac{1}{\sqrt{a^2+b^2+c^2}}
+      \begin{pmatrix} a \\ b \\ c \end{pmatrix},
+      \qquad
+      D = -\frac{d}{\sqrt{a^2+b^2+c^2}}.
+    \]
+\end{itemize}
+
+\subsection{Vektorprodukt}
+
+\begin{itemize}
+    \item Das Kreuzprodukt: $a \times b$ ist ein Vektor, der
+    \begin{enumerate}
+        \item senkrecht auf $a$ und $b$ steht,
+        \item Betrag = Fläche des aufgespannten Parallelogramms,
+        \item Richtung nach der Rechte-Hand-Regel
+    \end{enumerate}
+    \item Komponentenform (3D, kartesisch):
+    $$
+    a \times b = \begin{bmatrix}
+        a_2 b_3 - a_3 b_2 \\
+        a_3 b_1 - a_1 b_3 \\
+        a_1 b_2 - a_2 b_1 \\
+    \end{bmatrix}
+    $$
+    \item Anwendungen: Normalenvektor einer Ebene aus zwei Richtungsvektoren in der Ebene: $n = a \times b$.
+    \item Merker: $a \times b = 0$. Vektoren sind kollinear.
+    \item Rechenregeln: anti-kommutativ, distributiv, skalarfaktoren-ziehbar.
+\end{itemize}
+
+\subsection{Spatprodukt}
+
+\begin{itemize}
+    \item Spatprodukt Definition:
+    $$
+    \begin{bmatrix}
+        a,b,c
+    \end{bmatrix} = a \cdot (b \times c)
+    $$
+    \item Geometrie: $|\begin{bmatrix}
+        a,b,c
+    \end{bmatrix}| =$ Volumen des Parallelepipeds (Spat).
+    \item Entspricht einer Determinante:
+    $$
+    \begin{bmatrix}
+        a,b,c
+    \end{bmatrix} = \text{det} \begin{bmatrix}
+        a_1 & a_2 & a_3 \\
+        b_1 & b_2 & b_3 \\
+        c_1 & c_2 & c_3 \\
+    \end{bmatrix}
+    $$
+    \item Wichtig: $\begin{bmatrix}
+        a,b,c
+    \end{bmatrix} = 0 \Leftrightarrow a,b,c$ komplanar (linear abhängig). 
+\end{itemize}
+
+\section{Transformationen}
+
+\subsection{2D: Translation, Skalierung, Rotation, ohne homogene Koordinaten}
+
+\begin{itemize}
+    \item Translation: $x' = x + t$
+    \item Skalierung:
+    $$
+    \begin{bmatrix}
+        x' \\ y'
+    \end{bmatrix} = \begin{bmatrix}
+        s_x & 0 \\ 0 & s_y
+    \end{bmatrix} = \begin{bmatrix}
+        x \\ y
+    \end{bmatrix}
+    $$
+    \item Rotation um Ursprung (2D):
+    $$
+    \begin{bmatrix}
+        x' \\ y'
+    \end{bmatrix} = \begin{bmatrix}
+        \cos \phi & - \sin \phi \\ \sin \phi & \cos \phi
+    \end{bmatrix} \begin{bmatrix}
+        x \\ y
+    \end{bmatrix}, \quad R^{-1} = R^T
+    $$
+    \item Komposition: Skalierung/Rotation sind Matrix-multiplikativ kombinierbar; Translation \enquote{stört} das in 2D ohne Homogenisierung.
+\end{itemize}
+
+\subsection{Homogene Koordinaten / (3x3 in 2D, 4x4 in 3D)}
+
+Grundidee: Punkt $(x, y)$ wird zu $(x, y, 1)$ (2D) bzw. $(x,y,z,1)$ (3D). Damit wird auch Translation zur Matrixmultiplikation.
+
+\begin{itemize}
+    \item 2D-Translation als 3x3 Matrix:
+    $$
+    \begin{bmatrix}
+        x' \\ y' \\ 1
+    \end{bmatrix} = \begin{bmatrix}
+        1 & 0 & t_x \\ 0 & 1 & t_y \\ 0 & 0 & 1
+    \end{bmatrix} \begin{bmatrix}
+        x \\ y \\ 1
+    \end{bmatrix}
+    $$
+    \item Rotation um einen Punkt $A(t_x, t_y)$ als Komposition:
+    $$
+    R_A = T^{-1} R_0T
+    $$ (erst nach Ursprung verschieben, rotieren, zurück verschieben).
+    \item Kompositionsregel: Wenn erst $H_1$, dann $H_2$, dann $H = H_2H_1$. Die zuerst ausgeführte Transformation steht rechts.
+    \item 3D (4x4-Matrizen): In einer Grafik-Pipeline werden Modell-, View- und Projektions-Transformationen als 4x4-homogen formuliert.
+\end{itemize}
+
+Klassifikation: Euklidisch (starr, erhält Abstände \& Winkel), Ähnlichkeit (erhält Winkel und Abstandsverhältnisse), Affin: erhält Parallelität und Flächenverhältnisse, Projektiv: Geraden bleiben Geraden.
+
+\section{Projektionen}
+
+\subsection{Parallele vs. perspektivische Projektion}
+
+\subsubsection{Orthogonal / Parallel}
+
+\begin{itemize}
+    \item Orthographisch: Projektionsrichtung senkrecht zur Ebene: in homogener Matrixform (typisch: auf $z = 0$ fallsen lassen).
+    \item Axonometrisch: orthographisch, aber Objekt/Koordinatensystem gedreht; Spezialfall isometrisch (Normalvektor z.B. (1,1,1)).
+    \item Beispiele Parallelprojektionen: Kavalier (45°) und Kabinett (63,4°, Tiefenhalbierung).
+\end{itemize}
+
+\subsubsection{Perspektivisch}
+
+\begin{itemize}
+    \item Simuliert Kamera/Auge: definiert durch Projektionszentrum + Projektionsebene.
+    \item Eigenschaften:
+    \begin{itemize}
+        \item Geraden bleiben Geraden,
+        \item Parallelen schneiden sich in Fluchtpunkten,
+        \item Objektgrösse nimmt mit Abstand zum Projektionszentrum ab,
+        \item 1-3 Fluchtpunkte je nach Ausrichtung.
+    \end{itemize}
+    \item Mathematisch (Pinhole-Idee): häufig Projektionsebe bei $z = d$ oder $z = 0$, per homogener Projektionsmatrix.
+\end{itemize}
+
+\subsubsection{Ähnlichkeit/Skalierung im Projektionskontex}
+
+\begin{itemize}
+    \item Ähnlichkeit (Streckung/Skalierung): gleiche Form, nur Grösse skaliert, homogene Form $S = \begin{bmatrix}
+        kM & t \\ 0^T & 1
+    \end{bmatrix}$ mit $M$ orthogonal, $k > 0$.
+    \item In 3D ist Skalierung oft diagonal in 4x4:
+    $$
+    S(s) = \begin{bmatrix}
+        s_x & 0 & 0 & 0 \\ 0 & s_y & 0 & 0 \\ 0 & 0 & s_z & 0 \\ 0 & 0 & 0 & 1
+    \end{bmatrix}
+    $$
+\end{itemize}
+

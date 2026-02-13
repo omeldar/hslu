@@ -1,0 +1,214 @@
+\section{Was ist MAX-SAT}
+
+Wir haben boolesche Variablen $x_1, \dots, x_n$ jede ist wahr (1) oder falsch (0). Eine Klausel ist ein Oder-Ausdruck aus Literalen z.B.
+$$
+x_1 \lor \neg x_2 \lor x_3
+$$
+Ein Literal ist entweder $x_i$ oder $\neg x_i$. Eine Formel in CNF/KNF ist ein Und aus Klauseln:
+$$
+\Phi = C_1 \land C_2 \land \dots \land C_m
+$$
+
+Ziel (MAX-SAT): Finde eine Belegung der Variablen, die möglichst viele Klauseln erfüllt. Wichtig: MAX-SAT ist NP-schwer $\rightarrow$ wir suchen effiziente Approximation.
+
+\section{Schritt 1: Übersetzung von MAX-SAT in ein ILP / 0-1-LP}
+
+Die Idee: Wir bauen ein lineares Optimierungsproblem, das \enquote{zählt}, wie viele Klauseln erfüllt sind.
+
+\textbf{Variablen}
+
+\begin{itemize}
+    \item Für jede boolesche Variable $x_i$: \newline
+    $x_i \in \{0, 1\}$ (0 = falsch, 1 = wahr)
+    \item Für jede Klausel $C_j$:
+    $y_j \in \{0, 1\}$ (1 = Klausel erfüllt, 0 = nicht erfüllt)
+\end{itemize}
+
+\textbf{Wie modelliert man Literale als Zahlen?}
+
+\begin{itemize}
+    \item Positives Literal $x_i$ entspricht einfach $x_i$.
+    \item Negiertes Literal $\neg x_i$ entspricht $1 - x_i$.\newline
+    (Denn wenn $x_i = 0$, dann ist $\neg x_i$ wahr $\rightarrow$ 1 - 0 = 1)
+\end{itemize}
+
+\clearpage
+\textbf{Nebenbedingungen pro Klausel}
+
+Für jede Klausel $C_j$:
+$$
+(\text{Summe der Literal-Werte in } C_j) \geq y_j
+$$
+
+Warum klappt das?
+
+\begin{itemize}
+    \item Wenn alle Literale 0 sind, ist die Summe 0 $\rightarrow$ dann muss $y_j = 0$ sein.
+    \item Wenn mindestens ein Literal 1 ist, ist die Summe $\geq 1 \rightarrow$ dann darf $y_j = 1$ werden.\newline
+    Da wir gleich $y_j$ maximieren, wird es bei erfüllbaren Klauseln \enquote{hochgezogen}.
+\end{itemize}
+
+\textbf{Zielfunktion}
+$$
+\max \sum^{m}_{j = 1} y_j
+$$
+
+Das maximiert die Anzahl erfüllter Klauseln.
+
+\section{Schritt 2: Relaxation}
+
+Das 0-1-LP ist (wie MAX-SAT) schwer, weil $x_i, y_j \in \{0, 1\}$ gefordert ist.
+
+Relaxation: Ersetze $\{0, 1\}$ durch das Intervall $[0, 1]$:
+$$
+0 \leq x_i \leq 1, \quad 0 \leq y_j \leq 1
+$$
+Jetzt dürfen z.B. $x_i = 0.7$ sein. Das ist nicht \enquote{wahr/falsch}, aber mathematisch super, weil:
+\begin{itemize}
+    \item LP (lineare Programmierung) kann effizient (polynomiell) gelöst werden.
+    \item Die optimale LP-Lösung ist eine Art \enquote{beste fraktionale Schätzung}
+\end{itemize}
+
+\clearpage
+\section{Algorithmus RZR}
+
+Ziel: Aus der fraktionalen LP-Lösung wieder eine echte Belegung $x_i \in \{0, 1\}$ machen.
+
+\textbf{RZR Schritt-für-Schritt}
+
+\begin{enumerate}
+    \item Baue das LP (wie oben) und löse es.\newline
+    Ergebnis: optimale Werte $x_i^{*} \in [0, 1]$ und $y_j^{*} \in [0, 1]$.
+    \item Runde zufällig: für jede Variable $x_i$
+    \begin{itemize}
+        \item setze $x_i = 1$ mit Wahrscheinlichkeit $x_i^{*}$
+        \item setze $x_i = 0$ mit Wahrscheinlichkeit $1 - x_i^{*}$
+    \end{itemize}
+\end{enumerate}
+
+Interpretation: $x_i^{*}$ ist wie eine \enquote{gezinkte Münze} für $x_i$.
+
+\section{Analyse von RZR}
+
+Betrachten wir eine Klausel mit $k$ Literalen (z.B. $x_1 \lor x_2 \lor \dots \lor x_k$). Nach dem Runden sind die Variablen unabhängig gesetzt.
+
+Die Wahrscheinlichkeit, dass die Klausel NICHT erfüllt ist: Sie ist genau dann nicht erfüllt, wenn alle $k$ Literale 0 werden:
+$$
+Pr[\text{Klausel nicht erfüllt}] = \prod_{i=1}^{k} (1 - x_i^{*})
+$$
+Also:
+$$
+Pr[\text{Klausel erfüllt}] = 1 - \prod_{i=1}^{k}(1- x_i^{*})
+$$
+
+Jetzt kommt der entscheidende \enquote{Worst-Case}-Trick:
+
+\begin{itemize}
+    \item Aus dem LP weiss man grob: Summe der Literal-Werte ist mindestens $y_j^{*}$ (genau das steht in der Klausel-Nebenbedingung).
+    \item Die Klausel ist am \enquote{schwierigsten} zu erfüllen, wenn die Wahrscheinlichkeiten gleichmässig verteilt sind (Intuition: viele kleine Chancen statt einer grossen).
+    \item Dann gilt (Worst-Case):
+\end{itemize}
+$$
+Pr[\text{Klausel erfüllt}] \geq 1 - \left( 1 - \frac{y_j^{*}}{k}\right)^k
+$$
+Wenn man (zur Intuition) $y_j^{*} = 1$ setzt, wird daraus:
+$$
+Pr[\text{erfüllt}] \geq 1 - \left( 1 - \frac{1}{k} \right)^k
+$$
+Und für grosse $k$ gilt der bekannte Grenzwert:
+$$
+\left( 1 - \frac{1}{k} \right)^k \rightarrow \frac{1}{e} \quad \Rightarrow \quad Pr[\text{erfüllt}] \gtrsim 1 - \frac{1}{e} \approx 0.632
+$$
+
+\begin{multicols}{2}
+    Das heisst: Im Erwartungswert erfüllt RZR mindestens ca. 63.2\% der optimal möglichen Klauselzahl.
+
+    \begin{figure}[H]
+        \img[width=0.45\textwidth]{figures/rzr-prob.png}
+        {RZR}
+        \label{fig:rzr}
+    \end{figure}
+\end{multicols}
+
+\textbf{Eigenschaft}
+
+\begin{itemize}
+    \item Laufzeit: polynomiell (LP lösen dominiert, Runden ist linear).
+    \item Erwartete Approximationsgarantie: mindestens $1 - \frac{1}{e}$ vom Optimum (also Approximationsfaktor $\leq \frac{e}{e - 1} \approx 1.582$).
+\end{itemize}
+
+\subsection{Schwachstelle von RZR (warum reicht RZR allein nicht immer?)}
+
+Bei sehr kurzen Klauseln (insbesondere Länge 1) kann RZR \enquote{zu vorsichtig} sein:
+
+Beispiel: Klausel $C = (x_1)$. Wenn das LP $x_1^{*} = 0.1$ liefert, dann setzt RZR $x_1 = 1$ nur mit 10\% $\rightarrow$ diese Klausel geht oft verloren.
+
+Hier ist eine simple 50/50-Zufallsbelegung manchmal besser, weil sie kurze Klauseln viel öfter trifft.
+
+\clearpage
+\section{Algorithmus KOMB - Kombination aus \enquote{Simple Random} und RZR}
+
+\textbf{Simple Random (wie STICH / naive Zufallsbelegung)}
+
+\begin{itemize}
+    \item Setze jede Variable unabhängig mit Wahrscheinlichkeit $1/2$ auf $1$.
+\end{itemize}
+
+Dann gilt für eine Klausel mit $k$ Literalen:
+\begin{itemize}
+    \item Sie ist nur dann falsch, wenn alle $k$ Literale falsch sind $\rightarrow$ Wahrscheinlichkeit $2^{-k}$.
+    \item Also:\newline
+    $$
+    Pr[\text{Klausel erfüllt}] = 1 - 2^{-k}
+    $$
+\end{itemize}
+
+KOMB-Idee: Nutze das Beste aus beiden Welten. Es gibt zwei gleichwertige Sichtweisen (beide sind korrekt):
+
+\begin{enumerate}
+    \item Führe beide aus (Simple Random und RZR) und nimm die bessere Belegung (mehr erfüllte Klauseln).
+    \item Wähle zufällig (z.B. Münzwurf), ob Simple Random oder RZR benutzt wird. Dann ist die erwartete Leistung der Durchschnitt beider Garantien.
+\end{enumerate}
+
+\subsection{Warum garantiert KOMB mindestens $3/4$}
+
+Für Klausellänge $k$ haben wir zwei (untere) Schranken:
+
+\begin{itemize}
+    \item Simple Random: $1 - 2^{-k}$
+    \item RZR: $1 - (1 - \frac{1}{k})^k$ (bzw. die passende Version mit $y_j^{*}$)
+\end{itemize}
+
+Wenn man im Mittel beide Strategien kombiniert (oder beide laufen lässt und das bessere nimmt), bekommt man mindestens:
+$$
+\frac{(1-2^{k}) + (1 - (1 - \frac{1}{k})^k)}{2}
+$$
+
+Und diese Grässe ist für jedes $k \geq 1$ mindestens $\frac{3}{4}$.
+
+\clearpage
+Intuition:
+
+\begin{itemize}
+    \item Bei $k = 1$: Simple Random ist $0.5$, RZR kann schlecht sein $\rightarrow$ Mittelwert $\geq 0.75$ (weil RZR bei $k = 1$ im LP-Setup effektiv \enquote{stark} wirken kann, und in der Kombi zählt die sichere Untergrenze über alle $k$).
+    \item Bei $k = 2$: Simple Random ist $0.75 \rightarrow$ schon top.
+    \item Bei grossen $k$: RZR nähert sich $0.632$, Simple Random nähert sich $1 \rightarrow$ Mittelwert bleibt $\geq 0.755$.
+\end{itemize}
+
+Ergebnis: KOMB erfüllt im Erwartungswert mindestens 75\% der optimal erfüllbaren Klauseln. Das entspricht Approximationsfaktor $\leq 4/3 \approx 1.333$.
+
+\clearpage
+\section{Summary}
+\begin{enumerate}[label=(\alph*)]
+    \item Beispiel:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das MAX-SAT Problem in ein LP Problem übersetzen?\newline
+        \textbf{Antwort}: Definiere $x_i \in \{0, 1\}$ (Variablen) und $y_j \in \{0, 1\}$ (Klausel erfüllt). Für jede Klausel $C_j$: $\sum$ (Literale in $C_j$) $\geq y_j$, wobei $\neg x_i$ als $1 - x_i$ modelliert wird. Ziel: $\max \sum_j y_j$. Dann relaxieren zu $x_i, y_j \in [0, 1] \rightarrow$ LP.
+        \item Kenne ich die zwei Algorithmen RZR und KOMB und ihre Eigenschaften?\newline
+        \textbf{Antwort}:
+        \begin{itemize}
+            \item RZR: Löse das LP, setze jedes $x_i = 1$ mit Wahrscheinlichkeit $x_i^{*}$. Erwartete Garantie für MAX-SAT: mindestens $1 - \frac{1}{e} \approx 0.632$ vom Optimum.
+            \item KOMB: Kombiniert RZR mit Simple Random (jedes $x_i$ mit $1/2$). Erwartete Garantie: mindestens $3/4 = 0.75$ vom Optimum.
+        \end{itemize}
+    \end{enumerate}
+\end{enumerate}

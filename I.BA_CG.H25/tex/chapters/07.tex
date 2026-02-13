@@ -1,0 +1,161 @@
+\section{Kurven \& Flächen: Warum geometrisches Modellieren?}
+In der Praxis will man nicht nur mit Dreiecken modellieren, sondern auch mit \enquote{glatten} Formen:
+Autokarosserien, Schrift, Charakteroberflächen, technische Bauteile.
+
+\textbf{Kernidee:} Kurven und Flächen sind \emph{mathematische Beschreibungen} von Geometrie, die sich:
+\begin{itemize}
+  \item \textbf{glatt} darstellen lassen,
+  \item \textbf{gut bearbeiten} lassen (Design/Animation),
+  \item \textbf{beliebig fein} in Dreiecke umwandeln lassen (Tessellation) für die Rasterisierung.
+\end{itemize}
+
+\section{Interpolation: \enquote{durch alle Punkte durch}}
+\textbf{Interpolation} bedeutet: Gegeben sind Stutzpunkte, und die Kurve soll \textbf{exakt} durch alle gehen.
+
+\subsection*{Was ist die Idee hinter Lagrange/Newton?}
+Beides sind \enquote{Konstruktionsmethoden} für ein Polynom, das alle Punkte trifft:
+\begin{itemize}
+  \item \textbf{Lagrange:} baut die Kurve als Summe von Basisfunktionen, die jeweils an genau einem Stützpunkt den Wert 1 haben und an allen anderen 0.
+  \item \textbf{Newton:} baut das Polynom schrittweise auf (praktisch gut, wenn neue Punkte dazukommen).
+\end{itemize}
+
+\subsection*{\enquote{Methode der unbestimmten Koeffizienten} (konzeptionell)}
+Das ist die Denkweise: \enquote{Ich nehme eine allgemeine Polynomform mit unbekannten Koeffizienten und bestimme sie so, dass alle Bedingungen passen.}
+\begin{itemize}
+  \item Man setzt eine Form an (z.\,B. Grad $n$) und löst ein Gleichungssystem, damit die Kurve durch die Punkte geht.
+  \item \textbf{Einordnung:} Das ist die \enquote{Grundlogik} hinter vielen Interpolationsverfahren.
+\end{itemize}
+
+\subsection*{Wichtiger Praxis-Hinweis: Warum Interpolation oft problematisch ist}
+\begin{itemize}
+  \item Viele Punkte $\rightarrow$ hoher Polynomgrad $\rightarrow$ Kurve kann anfangen zu schwingen (\enquote{Overshoot}).
+  \item Kleine Aenderung an einem Punkt kann die ganze Kurve stark verändern (schlechte \enquote{lokale Kontrolle}).
+\end{itemize}
+
+\textbf{Merksatz:} Interpolation ist exakt, aber oft instabil und schlecht kontrollierbar bei vielen Punkten.
+
+\section{Approximation: \enquote{nahe dran} statt exakt}
+\textbf{Approximation} bedeutet: Die Kurve soll die Punkte \textbf{gut annähren}, aber nicht zwingend durch jeden Punkt gehen.
+
+\begin{itemize}
+  \item \textbf{Warum macht man das?} Rauschen in Daten (Messpunkte), oder man will eine \enquote{glattere} Kurve.
+  \item \textbf{Vorteil:} Bessere Stabilität, weniger Schwingen, oft bessere Formkontrolle.
+  \item \textbf{Einordnung:} Viele Modellierwerkzeuge nutzen Approximation, weil Design oft \enquote{Form} statt \enquote{exakte Treffpunkte} will.
+\end{itemize}
+
+\textbf{Merksatz:} Approximation ist robuster und glatter, Interpolation ist exakter.
+
+\section{Bezier-Kurven: Kontrolle über Kontrollpunkte}
+\textbf{Bezier-Kurven} sind der Klassiker in Design und Vektorgrafik.
+Sie werden nicht durch viele Stützpunkte definiert, sondern durch \textbf{Kontrollpunkte}, die die Form \enquote{ziehen}.
+
+\subsection*{Konzeptuell: Was macht eine Bezier-Kurve besonders?}
+\begin{itemize}
+  \item \textbf{Endpunkte werden getroffen:} Die Kurve startet am ersten Kontrollpunkt und endet am letzten.
+  \item \textbf{Tangentensteuerung:} Die Richtung der Kurve am Start/Ende wird durch die nächsten Kontrollpunkte bestimmt.
+  \item \textbf{Konvexe Hülle:} Die Kurve liegt innerhalb der konvexen Hülle der Kontrollpunkte (gut für Vorhersagbarkeit).
+  \item \textbf{Globale Kontrolle:} Jeder Kontrollpunkt beeinflusst \emph{die ganze} Kurve (bei hohem Grad kann das unpraktisch sein).
+\end{itemize}
+
+\subsection*{De Casteljau als Denkbild (ohne Mathe)}
+Bezier kann man geometrisch konstruieren:
+\enquote{Man interpoliert zwischen Kontrollpunkten, dann wieder zwischen diesen Zwischenpunkten, usw.}
+Das ist stabil und anschaulich (und erklärt, warum Bezier so gut für Animation/Interpolation ist).
+
+\textbf{Merksatz:} Bezier ist intuitiv, aber bei vielen Punkten wird \enquote{ein grosser Bezier} schnell unhandlich.
+
+\clearpage
+\section{B-Splines: Bezier-Idee, aber mit lokaler Kontrolle}
+\textbf{B-Splines} lösen das Hauptproblem von grossen Bezier-Kurven:
+Sie bestehen aus vielen \enquote{kleinen} Polynomsegmenten, die glatt zusammengesetzt werden.
+
+\subsection*{Knotenvektor: das zentrale Steuerelement}
+Der \textbf{Knotenvektor} ist eine nicht-abnehmende Liste von Parameterwerten, die festlegt:
+\begin{itemize}
+  \item wo Segmentgrenzen liegen,
+  \item wie sich Einflussbereiche der Kontrollpunkte verteilen,
+  \item wie schnell/langsam die Kurve in bestimmten Bereichen \enquote{läuft}.
+\end{itemize}
+
+\subsection*{Uniform vs. nicht-uniform}
+\begin{itemize}
+  \item \textbf{Uniform:} Knoten sind gleichmässig verteilt.
+    \newline \enquote{Einfach, regelmässig, gleichmässige Parametrisierung.}
+  \item \textbf{Nicht-uniform:} Knoten haben ungleiche Abstände.
+    \newline \enquote{Mehr Kontrolle: Kurve kann in manchen Bereichen mehr Detail haben oder sich anders verhalten.}
+\end{itemize}
+
+\subsection*{Offen vs. eingespannt (clamped)}
+\begin{itemize}
+  \item \textbf{Offen (open):} Oft meint man damit einen offenen Knotenvektor, der eine Kurve ohne \enquote{geschlossene Schleife} erzeugt.
+  \item \textbf{Eingespannt (clamped):} Die ersten und letzten Knoten sind mehrfach wiederholt.
+    \newline \textbf{Effekt:} Die Kurve geht durch die ersten und letzten Kontrollpunkte (wie bei Bezier),
+    und die Endtangenten sind besser kontrollierbar.
+\end{itemize}
+
+\clearpage
+\subsection*{Warum B-Splines so wichtig sind}
+\begin{itemize}
+  \item \textbf{Lokale Kontrolle:} Ein Kontrollpunkt beeinflusst nur einen Teil der Kurve (nicht alles).
+  \item \textbf{Glatte Zusammensetzung:} Segmente können mit vorgegebener Glattheit zusammenhängen.
+  \item \textbf{Skalierbar:} Viele Kontrollpunkte sind problemlos, ohne hohe globale Polynomialgrade.
+\end{itemize}
+
+\textbf{Merksatz:} B-Splines sind \enquote{Bezier in handhabbar}: lokal, glatt, segmentiert.
+
+\section{NURBS: B-Splines mit Gewichten (rational) und warum das wichtig ist}
+\textbf{NURBS} steht für \enquote{Non-Uniform Rational B-Splines}.
+Sie erweitern B-Splines um zwei entscheidende Dinge:
+\begin{itemize}
+  \item \textbf{Non-Uniform:} Knotenvektor darf ungleichmässig sein (mehr Flexibilität).
+  \item \textbf{Rational:} Kontrollpunkte haben \textbf{Gewichte}.
+\end{itemize}
+
+\subsection*{Was bedeuten Gewichte konzeptionell?}
+Ein Gewicht sagt vereinfacht: \enquote{Wie stark zieht dieser Kontrollpunkt an der Kurve?}
+\begin{itemize}
+  \item Grösseres Gewicht $\rightarrow$ Kurve wird stärker in Richtung dieses Punktes gezogen.
+  \item Kleineres Gewicht $\rightarrow$ weniger Einfluss.
+\end{itemize}
+
+\subsection*{Warum rational? (entscheidender Vorteil)}
+Mit reinen Polynomen sind manche Formen schwer oder gar nicht darstellbar.
+Durch Rationalität (Quotient von Polynomen) können NURBS wichtige Geometrien \textbf{exakt} darstellen:
+\begin{itemize}
+  \item Kreise und Kreisbogen
+  \item Ellipsen
+  \item viele technische CAD-Formen
+\end{itemize}
+
+\clearpage
+\subsection*{Zusammenhang zu homogenen Koordinaten}
+Gewichte passen perfekt zu der Idee \textbf{homogener Koordinaten}:
+\begin{itemize}
+  \item In homogenen Koordinaten arbeitet man sowieso mit einer zusätzlichen Komponente.
+  \item Ein Gewicht lässt sich als Teil dieser Darstellung interpretieren:
+        \enquote{Punkt mal Gewicht} in einem erweiterten Raum, danach \enquote{zurückprojizieren}.
+\end{itemize}
+Das ist konzeptionell die gleiche \enquote{Trickkiste} wie bei Perspektive:
+Erst in einem grösseren Raum rechnen, dann durch eine Komponente normieren, um den gewünschten Effekt zu bekommen.
+
+\textbf{Merksatz:} NURBS = B-Splines + nicht-uniforme Knoten + Gewichte \enquote{für CAD-taugliche Exaktheit}.
+
+\section{Typische konzeptionelle Prüfungsfragen (Kernantworten)}
+\begin{itemize}
+  \item \textbf{Interpolation vs. Approximation?}
+    -- Interpolation trifft alle Punkte exakt; Approximation ist nähert an und ist oft glatter/stabiler.
+  \item \textbf{Warum sind hohe Interpolationspolynome problematisch?}
+    -- Schwingen/Overshoot und schlechte lokale Kontrolle.
+  \item \textbf{Warum Bezier so verbreitet?}
+    -- Intuitive Kontrollpunkte, Endpunkte und Tangenten gut steürbar, Kurve bleibt in konvexer Hülle.
+  \item \textbf{Was ist der Hauptvorteil von B-Splines gegenüber einer grossen Bezier?}
+    -- Lokale Kontrolle und viele Segmente ohne global hohen Grad.
+  \item \textbf{Wozu dient der Knotenvektor?}
+    -- Steürt Segmentierung und Einflussbereiche; uniform vs. nicht-uniform bestimmt die Parametrisierung.
+  \item \textbf{Was bedeutet eingespannt (clamped)?}
+    -- Enden sind so geknotet, dass die Kurve die ersten/letzten Kontrollpunkte trifft und Endrichtung kontrollierbar ist.
+  \item \textbf{Was machen NURBS zusätzlich?}
+    -- Gewichte (rational) und nicht-uniforme Knoten; damit kann man Kreise/Kreisbogen exakt darstellen.
+  \item \textbf{Wie hängen NURBS und homogene Koordinaten zusammen?}
+    -- Gewichte passen zur homogenen Darstellung: erst in erweitertem Raum rechnen, dann durch Normierung zurück.
+\end{itemize}

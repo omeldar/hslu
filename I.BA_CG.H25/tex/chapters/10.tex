@@ -1,0 +1,155 @@
+\section{WebGPU in der Praxis: Worum geht es beim Programmieren?}
+WebGPU ist eine moderne Browser-API für GPU-Programmierung. Konzeptionell ist es:
+\enquote{Du baust eine feste Rendering-Pipeline und fütterst sie mit Daten.}
+
+Der typische Ablauf in WebGPU sieht so aus:
+\begin{itemize}
+  \item \textbf{GPU-Ressourcen erstellen:} Buffers, Texturen, Sampler
+  \item \textbf{Pipeline beschreiben:} RenderPipeline (Shader, Vertex-Layout, Rasterizer- und Depth-States)
+  \item \textbf{BindGroups definieren:} welche Ressourcen sind in welchen Shader-Slots gebunden
+  \item \textbf{Command Encoding:} RenderPass aufzeichnen (Draw Calls, State ist in der Pipeline)
+  \item \textbf{Submit:} Commands an die GPU schicken
+\end{itemize}
+
+\textbf{Merksatz:} WebGPU ist \enquote{Pipeline + Ressourcen + Commands}.
+
+\clearpage
+\section{Rendering-Konzept: Buffers, Primitives und warum WebGPU anders ist als WebGL}
+\subsection*{Konzeptuell: WebGPU ist pipeline-basiert}
+Bei WebGL setzt man viele Zustände Schritt für Schritt (State Machine).
+Bei WebGPU ist vieles in einem Pipeline-Objekt fest verdrahtet:
+\begin{itemize}
+  \item Welche Shader laufen?
+  \item Welche Vertex-Daten kommen rein?
+  \item Wie wird gerastert (Culling, Topology)?
+  \item Gibt es Depth-Test und wie?
+\end{itemize}
+Dadurch ist WebGPU oft klarer: \enquote{Wenn die Pipeline steht, ist der Draw Call sehr direkt.}
+
+\subsection*{Buffers: die Datenquelle der Geometrie}
+Ein \textbf{GPUBuffer} speichert Daten auf der GPU. Typische Buffers:
+\begin{itemize}
+  \item \textbf{Vertex Buffer:} Positionen, Normalen, Farben, UVs
+  \item \textbf{Index Buffer:} beschreibt, welche Vertices zusammen ein Dreieck bilden
+  \item \textbf{Uniform Buffer:} kleine, häufig benutzte Parameter (z.\,B. Transformationsmatrizen, Lichtparameter)
+  \item \textbf{Storage Buffer:} grössere, flexiblere Daten (z.\,B. viele Objekte, Skelette, Partikel)
+\end{itemize}
+
+\textbf{Warum Indizes?}
+Indizes erlauben Wiederverwendung von Vertices, sparen Speicher und sorgen für saubere Kanten.
+
+\clearpage
+\subsection*{Primitives: was wird gezeichnet?}
+WebGPU rasterisiert \textbf{Primitive}, meist:
+\begin{itemize}
+  \item \textbf{triangle-list} (Standard für 3D)
+  \item seltener: Linien oder Punkte
+\end{itemize}
+Dreiecke sind das Grundprimitive, weil sie stabil, planar und gut interpolierbar sind.
+
+\section{Shader-Pipeline in WebGPU: Vertex und Fragment (was berechnet wo?)}
+In WebGPU schreibt man Shader typischerweise in \textbf{WGSL}.
+Das Kernkonzept ist identisch zu dem, was man aus WebGL-Übungen kennt, aber klarer strukturiert.
+
+\subsection*{Vertex Shader: pro Vertex}
+Der Vertex Shader:
+\begin{itemize}
+  \item nimmt Vertex-Attribute (Position, Normale, UV, \dots)
+  \item berechnet \textbf{Clip-Space Position} (Ausgabe ist \texttt{@builtin(position)})
+  \item gibt zusätzliche Werte weiter, die später pro Pixel interpoliert werden (Varyings)
+\end{itemize}
+
+\textbf{Merksatz:} Vertex Shader = \enquote{Geometrie platzieren und Daten vorbereiten}.
+
+\subsection*{Fragment Shader: pro Fragment (Pixel-Kandidat)}
+Der Fragment Shader:
+\begin{itemize}
+  \item bekommt interpolierte Werte (z.\,B. Normale, UV, Farbe)
+  \item berechnet die finale \textbf{Pixel-Farbe}
+  \item kann Texturen samplen, Beleuchtung rechnen, Materialeffekte machen
+\end{itemize}
+
+\textbf{Merksatz:} Fragment Shader = \enquote{Material und Aussehen}.
+
+\subsection*{Interpolation: warum man pro Vertex Daten angibt und pro Pixel bekommt}
+Zwischen Vertex und Fragment macht die GPU Rasterisierung:
+\begin{itemize}
+  \item Dreieck wird in Fragmente zerlegt
+  \item Vertex-Ausgaben werden \textbf{über die Dreiecksfläche interpoliert}
+\end{itemize}
+Das ist die Grundlage für \enquote{smooth} Farben, Texturen und Beleuchtung.
+
+\section{Von 2D-Übungen zu 3D-Übungen in WebGPU}
+Viele Übungsserien gehen von 2D zu 3D. In WebGPU bedeutet das vor allem: neue Pipeline-States und neue Daten.
+
+\subsection*{Transformationen: Model, View, Projection}
+In 2D zeichnet man oft direkt \enquote{auf den Bildschirm}.
+In 3D macht man fast immer:
+\begin{itemize}
+  \item \textbf{Model:} Objekt in die Welt setzen (verschieben, drehen, skalieren)
+  \item \textbf{View:} Kamera definieren (wo steht sie, wohin schaut sie?)
+  \item \textbf{Projection:} Perspektive definieren (FOV, Near/Far, Aspect)
+\end{itemize}
+In WebGPU liegen diese Parameter typischerweise in einem \textbf{Uniform Buffer} und werden im Vertex Shader benutzt.
+
+\subsection*{Kamera: was muss man konzeptionell sagen können?}
+\begin{itemize}
+  \item Kamera ist ein Koordinatensystem fürs Sehen.
+  \item View-Transformation ist \enquote{Welt so verschieben, dass die Kamera im Ursprung ist}.
+  \item Projection legt fest, wie 3D auf 2D abgebildet wird (und bestimmt auch den Depth-Bereich).
+\end{itemize}
+
+\subsection*{Depth-Test: ohne Depth kein korrektes 3D}
+In 3D überdecken sich Flächen kompliziert. WebGPU löst das standardmässig mit einem \textbf{Depth Buffer}:
+\begin{itemize}
+  \item Man rendert in eine Depth-Texture (z.\,B. Format \texttt{depth24plus}).
+  \item In der Pipeline wird ein Depth-Compare eingestellt (typisch: \texttt{less}).
+  \item Pro Pixel gewinnt das Fragment, das näher an der Kamera ist.
+\end{itemize}
+\textbf{Merksatz:} Depth-Test ist \enquote{Hidden Surface Removal als Hardware-Standard}.
+
+\subsection*{Backface Culling: weniger Arbeit, weniger Artefakte}
+In WebGPU ist Culling ein Pipeline-State:
+\begin{itemize}
+  \item \textbf{cullMode:} none / front / back
+  \item \textbf{frontFace:} cw oder ccw (welche Dreiecksorientierung gilt als Vorderseite)
+\end{itemize}
+Konzeptionell: Rückseiten geschlossener Objekte sind unsichtbar, also kann man sie weglassen.
+
+\section{Beleuchtung im Shader: Lambert und Phong als typische Übungsziele}
+In WebGPU-Übungen wird Beleuchtung oft im Fragment Shader umgesetzt, weil es pro Pixel schöner aussieht.
+
+\subsection*{Lambert (diffus): der Grundlook}
+\begin{itemize}
+  \item matte Oberflächen
+  \item Helligkeit hängt davon ab, wie direkt Licht auf die Oberfläche trifft
+  \item blickrichtungsunabhängig (im Gegensatz zu Glanz)
+\end{itemize}
+
+\subsection*{Phong (specular): Glanzlicht}
+\begin{itemize}
+  \item Highlights hängen von der Blickrichtung ab
+  \item ein \enquote{Shininess}-Parameter steuert: scharf (glatt) vs. breit (rau)
+\end{itemize}
+
+\subsection*{Normalen: der wichtigste Input}
+\begin{itemize}
+  \item Ohne Normalen keine sinnvolle Beleuchtung
+  \item In 3D-Übungen lernt man oft: Normalen pro Vertex, Interpolation, und korrekt in den passenden Raum bringen
+  \item Optional: Normal Mapping für Details ohne mehr Geometrie
+\end{itemize}
+
+\textbf{Merksatz:} Beleuchtung ist \enquote{Licht + Material + Normale}; Lambert für Form, Phong für Glanz.
+
+\section{Praktische Einordnung: Wie übersetzt man typische WebGL-Folien nach WebGPU?}
+Wenn Folien/Übungen WebGL erklären, kann man die Konzepte direkt auf WebGPU abbilden:
+
+\begin{itemize}
+  \item \textbf{WebGL Buffer} $\rightarrow$ \textbf{WebGPU GPUBuffer}
+  \item \textbf{Attributes/Varyings} $\rightarrow$ \textbf{Vertex Inputs / Vertex Outputs (WGSL) + Interpolation}
+  \item \textbf{Uniforms} $\rightarrow$ \textbf{Uniform Buffers + BindGroups}
+  \item \textbf{State (Depth, Culling)} $\rightarrow$ \textbf{Pipeline States} (fix in RenderPipeline)
+  \item \textbf{Draw Call} $\rightarrow$ \textbf{RenderPassEncoder.draw / drawIndexed}
+\end{itemize}
+
+\textbf{Prüfungs-Merksatz:} Der WebGL-Übungsstoff bleibt gültig, WebGPU macht ihn strukturierter: weniger \enquote{globaler State}, mehr \enquote{Pipeline-Beschreibung}.

@@ -1,0 +1,416 @@
+\section{Farbe \& Licht}
+
+Farbe kann man alltagssprachlich entlang von drei Dimensionen beschreiben:
+
+\begin{itemize}
+    \item Farbton (Hue)
+    \item Sättigung/Farbstich (Saturation)
+    \item Hellighekit (Brightness/Value)
+\end{itemize}
+
+\textbf{Licht als physikalische Grundlage (elektromagnetische Strahlung)}
+
+Sichtbares Licht ist ein Ausschnitt des elektromagnetischen Spektrums. Unterschiedliche Lichtquellen (z.B. Sonne, Glühlampe, LED) haben unterschiedliche Spektren (spektrale Leistungsverteilung). Diese Unterschiede beeinflussen direkt, wie \enquote{dieselbe} Oberfläche unter verschiedenen Lichtquellen aussieht.
+
+\textbf{Wie entsteht die Farbe einer Oberfläche (Reflexion/Absorption)?}
+
+Eine Oerfläche \enquote{hat} keine Farbe an sich. Sie modifiziert das einfallende Licht: bestimmte Wellenlängen werden absorbiert, andere reflektiert. Das Auge empfängt dann das reflektierte Spektrum (Lichtquelle $\times$ Oberflächenreflexion), und daraus entsteht die wahrgenommene Farbe.
+
+\clearpage
+\section{Auge \& Wahrnehmung}
+
+\begin{figure}[H]
+    \img[width=0.55\textwidth]{figures/01/eye.png}
+        {Menschliches Auge}
+    \label{fig:eye}
+\end{figure}
+
+Auge als Kamera (vereinfachtes Modell):
+
+\begin{itemize}
+    \item Iris: Ring mit Muskeln, steuert die Öffnung um die grösse der Pupille zu beinflussen. Dies steuer wie viel Licht das Auge trifft (die \enquote{exposure}).
+    \item Pupille: Öffnung, durch Iris geregelt (Lichtmenge)
+    \item Linse: Fokussiert (Scharfstellen). Im Zusammenspiel mit der \enquote{Cornea} biegen sie das Licht so, dass es an den richtigen Ort gelangt.
+    \item Retina: Hier werden die Licht-Photonen in \enquote{Elektrizität} umgewandelt. Es gibt Millionen von Photorezeptoren die dies aufnehmen.
+    \item Photorezeptoren: Lichtaufnahme/Sensorik
+\end{itemize}
+
+Auf der Retina sitzen zwei Haupttypen von Photorezeptoren:
+
+\begin{itemize}
+    \item Stäbchen (rods): hauptsächlich Intensität/Helligkeit, sehr lichtempfindlich. Sie können ein einzelnes Photon erkennen. Stäbchen sehen aber kein Licht. Stäbchen sind vorallem Nachts aktiv, wenn wir wenig Umgebungslicht haben. Dadurch sehen wir im Dunkeln hauptsächlich in gray-scale.
+    \item Zapfen (cones): Farbsehen. Wir haben viel weniger von denen (ca. 6 Millionen).
+\end{itemize}
+
+Wenn die Sonne untergeht geht die Farbe nicht weg. Unser System wechselt einfach von cones auf rods, damit wir überhaupt noch etwas sehen. Dadurch wird aber unser Farbsehen stark beeinträchtigt.
+
+\subsection{Macula}
+
+Das ist ein kleiner Ort wo die farb-wahrnehmenden cones sehr konzentriert sind (eng aufeinander). Das ist der einzige Ort im Auge der eine \enquote{hohe Auflösung} hat. Wenn wir herumschauen werden die Objekte auf die wir uns fokussieren möchten durch diesen Punkt \enquote{durchgescannt}. Alles andere rund um diesen Punkt in unserer Sicht nimmt das Auge nur sehr verschwommen und praktisch Farbenblind wahr. 
+
+Dies fühlt sich nicht so an, da unser Hirn sich merkt was da vorher war (oder denkt sich dazu, was da sein müsste) und ergänzt es im Bild unserer Sicht.
+
+\subsection{Optic disk}
+
+An diesem Ort sind wir Menschen blind. Wir Menschen haben einen Blind-Spot. Wir sehen kein Loch in unserer Sicht, da das Hirn auch wieder das herumliegende als Basis nimmt, um diese Lücke zu füllen. (Vorstellbar wie ein AI die ein Loch in einem Bild füllt).
+
+\subsection{Wie sehen wir Farbe? S/M/L-Zapfen}
+
+\begin{figure}[H]
+    \img[width=0.75\textwidth]{figures/01/cone-arten.png}
+        {Wie sehen wir Farben}
+    \label{fig:cone_farben}
+\end{figure}
+
+Wir Menschen sind drei-farb-sehend. Wir haben:
+
+\begin{itemize}
+    \item S-cones (440nm): Für kurzwelliges Licht (blaue Farbe).
+    \item M-cones (530nm): Für mittelwelliges Licht (grüne Farbe).
+    \item L-cones (560nm): Für langwelliges Licht (rote Farbe).
+\end{itemize}
+
+Es gibt unendlich viele Farben zwischen 400nm und 700nm. Wir sehen allerdings nur Farben an 3 Stellen (Blau, Grün, Rot). Unser Hirn komprimiert die Realität in 3 Farben, und versucht anhand einer Mischung dieser 3 Farben alle anderen Farben darzustellen.
+
+Wieso hilft uns diese Limitierung der drei Farben im technischen Bereich?
+
+Ein Monitor produziert nicht \enquote{gelbe Pixel}. Ein gelbes Pixel entsteht für uns im Hirn nur, wenn ein grünes und ein rotes sub-pixel nebeneinander leuchten. Wenn wir also das Cone Mosaic in Abbildung 2.2 ganz klein machen würden, würde unser Hirn dies als gelb sehen.
+
+Monitore nutzen also einen \enquote{Bug} in unserer Biologie um die meisten Farben darzustellen.
+
+\subsection{Helligkeitswahrnehmung: scotopic vs photopic}
+
+Die Empfindlichkeit unterscheidet sich je nachdem, ob primär Stäbchen (scotopic vision) oder Zapfen (photopic vision) dominieren (z.B. Nacht vs Tag).
+
+\subsection{Kontrastwahrnehmung \& Weber's Law}
+
+Die Wahrnehmung von Kontrast hängt von der Grundhelligkeit ab (nicht nur vom absoluten Unterschied). Weber's Law wird hier als ungefähr konstantes Verhältnis formukliert:
+$$
+\Delta I / I = c
+$$
+und auch als log-Form (Differenz von log-Helligkeiten) notiert. Zusätzlich wird Kontrastempfindlichkeit ber Ortsfrequenzen (cycles/degree) und sogar Richtungsabhängigkeit dargestellt: Das visuelle System ist für bestimmte Muster-Frequenzen und Orientierungen empfindlicher als für andere.
+
+\subsection{Mach Banding (Kanten-/Kontrastillusion)}
+
+Bei stufenförmigen Helligkeitsverläufen sieht man oft scheinbare Über- und Unterbetonungen an den Grenzen (Mach Bands). Das ist wichtig in CG, weil Quantisierung oder schlecht gewählte Tonemaps solche Effekte sichtbar machen können.
+
+\clearpage
+\section{Farbräume \& Farbmodelle}
+
+Licht ist physikalisch gesehen elektromagnetische Strahlung (Energie) in Form von Wellen. 
+
+\begin{figure}[H]
+    \img[width=0.5\textwidth]{figures/01/color_spectrum.png}
+        {Farb-Spektrum}
+    \label{fig:colorspec}
+\end{figure}
+
+Das ganze Licht-(Farben-)Spektrum beinhaltet auf einer Seite Gamma-Rays, X-Rays, Ultraviolet, was alles nicht sichtbar für uns (teilweise auch gefährlich für uns) ist mit extrem kurzen Wellenlängen.
+
+Auf der anderen Seite des Spektrums haben wir z.B. Radio-Waves, die extrem lang sind, teilweise kilometer-lang.
+
+Wir können nur einen kleinen Teil des Spektrums sehen (ca. $~400nm \text{ bis } ~700nm$). Der einzige physikalische Unterschied von Farben (in Echt) ist die Wellenlänge des Lichts. Unser \enquote{Rot und Blau} unterscheiden sich physikalisch rein in den Wellenlängen des Lichts, das ein Material in unser Auge reflektiert.
+
+In der Realität sehen wir auch nie \enquote{nur eine Farbe des Licht-Spektrums}. Wir sehen immer einen Mix von allen Farben. Wir können aber mehr oder weniger einiger Wellenlänge sehen, was dann die Farbe beeinflusst.
+
+\clearpage
+\subsection{Spektrum von verschiedenen Lichtquellen}
+
+\begin{multicols}{2}
+    \begin{figure}[H]
+        \img[width=0.54\textwidth]{figures/01/light_energy_spectrum.png}
+            {Spektrum von verschiedenen Lichtquellen}
+        \label{fig:light_energy_spectrum}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \img[width=0.46\textwidth]{figures/01/color_spec_examples.png}
+            {Spektrum von verschiedenen Lichtquellen - Beispiele}
+        \label{fig:colorspec_examples}
+    \end{figure}
+\end{multicols}
+
+Wenn wir uns die gelbe Linie \enquote{Daytime Sunlight} anschauen, sehen wir, dass die Wellenlängen des Lichts \enquote{relativ} gleichmässig verteilt sind über das ganze Spektrum hinweg. Da dadurch all unsere Farb-Rezeptoren (für alle 3 Farben) gleichzeitig \enquote{getriggered} werden, sehen wir \enquote{Daylight} als weisses Licht.
+
+Eine Tungston Light-Bulb ist gelblich/rötlich, da die Wellenlängen die sie ausstrahlt in diesem Bereich am prominentesten sind.
+
+Wenn wir uns den \enquote{Ruby Laser} anschauen sehen wir, dass es nur ein sehr kleines Spektrum an Licht bei leicht unter $700\text{nm}$ ausstrahlt. In der Natur haben wir nie etwas, was so klar eine Farbe zugeordnet werde kann.
+
+LEDs hingegen sind recht speziell. Bei der weissen LED sehen wir eine Kurve, die bei Blau stark zunimmt, bei grün schwächer ist, und bei gelb/rot wieder zunimmt. Diese Kurve entsteht auch ein wenig durch die Art wie das LEDs hergestellt werden. Eine weisse LED ist eigentlich eine blaue LED die in einem weissen Phosphor-Mantel bedeckt ist, welcher einiges der Energie absorbiert. Das weisse Licht das wir auf Monitoren sehen, ist eigentlich ein blau-gelbes licht, dass unser Hirn als \enquote{weiss} aufnimmt.
+
+\clearpage
+\subsection{Interaktion von Licht und Material}
+
+\begin{multicols}{2}
+    \begin{figure}[H]
+        \img[width=0.54\textwidth]{figures/01/wie_entsteht_farbe.png}
+            {Interaktion: Licht und Objekte}
+        \label{fig:wie_entsteht_farbe}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \img[width=0.46\textwidth]{figures/01/color_signal.png}
+            {Farbe eines Objekts}
+        \label{fig:color_signal}
+    \end{figure}
+\end{multicols}
+
+Objekte selbst können wir nur sehen, da Licht in unser Auge (oder digital Kamera) trifft.
+
+Wenn wir en Objekt mit einer Farbe sehen, hat nicht dieses Objekt direkt diese Farbe. Das Objekt hat Eigenschaften, die dazu beitragen, das gewisse Wellenlängen stärker oder schwächer absorbiert/reflektiert werden. Durch diese Eigenschaften (und die Eigenschaften der Lichtquelle) entsteht ein \enquote{Color signal}, dass wir dann sehen.
+
+Eine Erdbeere ist für uns rot. Physikalisch ist die Oberfläche einer Erdbeere eine Art chemischer Filter für kurzwellige elektromagnetische Strahlung. Wenn blaues Licht auf die Erdbeere trifft, wird diese Energie stark absorbiert. Dieses blaue Licht wird durch das Absorbieren in Hitze umgewandelt. Das gleiche passiert bei \enquote{grünem Licht}. Wenn rotes Licht die Erdbeere trifft, \enquote{sagt} die Erdbeere: \enquote{Ich brauche dieses Licht nicht} und reflektiert es. Dadurch sehen wir die Erdbeere als rot. 
+
+Das \enquote{Color Signal}, dass wir sehen, wird bestimmt durch $\text{Illumination} \cdot \text{Reflectance} = \text{Color Signal}$
+
+Wenn wir also z.B. eine Erdbeere in einen Raum stellen, der nur durch ein klar blaues Laser-Licht beleuchtet wird, wird die Erdbeere all das blaue Licht absorbieren und wirkt auf uns schwarz. Die Erdbeere würde schwarz aussehen. Ohne die roten (hohen) Wellenlängen hat die Erdbeere kein rotes Licht zu reflektieren, dadurch kann sie auf uns nicht rot wirken.
+
+\clearpage
+\subsection{CIE Normalfarbtafel}
+
+\begin{multicols}{2}
+    \begin{figure}[H]
+        \img[width=0.50\textwidth]{figures/01/farben.png}
+            {CIE Normalfarbtafel}
+        \label{fig:farben}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \img[width=0.40\textwidth]{figures/01/cie_flach.png}
+            {CIE Flach}
+        \label{fig:cie_flach}
+    \end{figure}
+\end{multicols}
+
+Diese Normalfarbtafel stellt alle Farben dar, die ein durchschnittlicher Mensch sehen kann. Alle Farben ausserhalb dieser Grafik ist nicht sichtbar für Menschen.
+
+Die Oberseite dieser Farbtafel (Blau zu Grün zu Rot) an der Kante entlang, zeigt die Spektralfarben (Farben des Regenbogens in der höchsten Sättigung). Hier sind die \enquote{reinen Grundfarben} die wir aufnehmen können (Blau, Grün, Rot).
+
+Wenn wir uns von aussen nach innen bewegen in dieser Farbtafel, werden die Farben \enquote{gemischt mit Weiss}. Sie verlieren an Sättigung, da die anderen Grundfarben dazukommen, was die Hauptfarbe \enquote{verweisslicht}. Ganz im inneren sehen wir den weissen Punkt.
+
+Ganz unten in dieser Farbtafel sehen wir eine gerade Linie (die Purpurlinie). Wir sehen in einem Regenbogen nie Magenta oder Hotpink. Diese Farben existieren im sichtbaren Spektrum gar nicht. Es gibt keine Wellenlängen im sichtbaren Farbspektrum, dass diese Farben erzeugt. Diese Farben entstehen rein, da unser Hirn verwirrt wird.
+
+Der untere Rand der CIE-Farbtafel ist nicht gekrümmt, sondern eine gerade Linie, die das reine Blau links mit dem reinen Rot rechts verbindet: die Purpurlinie (line of purples). Denk an einen Regenbogen: Wir sehen Violett, Blau, Grün, Gelb, Rot. Aber wir sehen kein Magenta, kein Pink im Regenbogen. Das liegt daran, dass Purpur (wirklich gesättigtes Magenta) im Spektrum nicht als einzelne Wellenlänge existiert. Es entsteht im Gehirn (sozusagen aus Verwirrung).
+
+Wenn wir blaues Licht sehen (kurze Wellenlängen, die S-Zapfen feuern) und rotes Licht (lange Wellenlängen, die L-Zapfen feuern), dann feuern normalerweise auch die Grünrezeptoren (M-Zapfen), wenn wir etwas \enquote{dazwischen} sehen. Wenn die Grünrezeptoren aber still bleiben, dann registriert das Gehirn zwei Enden des Spektrums gleichzeitig, aber nichts in der Mitte. Das Gehirn \enquote{denkt}: Rot und Blau liegen auf gegenüberliegenden Seiten der Realität... das sollte so nicht passieren, ich muss eine Brücke für diese Lücke erfinden. 
+
+Darum existiert diese gerade Linie (Purpurlinie) nur in unserem Kopf: Sie überbrückt diese mathematische Lücke zwischen Rot und Blau. Es ist eine wunderschöne Halluzination.
+
+
+\section{Überblick Farbmodelle vs. Farbräume}
+
+Farbmodell = Wie man Farbe mit Zahlen beschreibt (z.B. 3 Kanäle wie Hue/Sättigung/Helligkeit, Luma + Chroma).
+
+Farbraum = welche konkreten Farben diese Zahlen tatsächlich bedeuten (z.B. sRGB, Display P3, Rec.709, Rec.2020).
+
+Beispiel: RGB ist ein Modell. sRGB ist ein Farbraum (eine konkrete Festlegung von Primärfarben + Weisspunkt + Übertragung/Gamma).
+
+\subsection{Zwei Arten von Farb-Modellen: \enquote{gerätetreu} vs. \enquote{mensch-nah}}
+
+Für Hardware-/Pipeline-orientiert (praktisch für Geräte)
+
+Ziel: gut für Erzeugung/Ausgabe/Übertragung.
+
+\begin{itemize}
+    \item RGB (additiv): Displays, Kameras, Rendering
+    \item CMY/CMYK (subtraktiv): Druck
+    \item YUV / YCbCr (Luma/Chroma): TV/Video/Kompression
+\end{itemize}
+
+Intuitiv / wahrnehmungs-orientiert (praktisch für Menschen/Aufgaben)
+
+Ziel: gut für Bedienung oder Farbvergleiche
+
+\begin{itemize}
+    \item HSV/HSB: Farbauswahl in Tools (Picker)
+    \item Munserll: historisch/Design-orientiert, wahrnehmungsbezogene Ordnung
+    \item CIELab: Farbunterschiede und Farbstände \enquote{gleichmässiger} als RGB
+\end{itemize}
+
+\subsubsection{RGB / sRGB (additiv)}
+
+Idee: Licht wird addiert (mehr Kanal = mehr Licht).
+
+Wo benutzt?
+
+\begin{itemize}
+    \item Alles was leuchtet: Monitor, Handy, Projektor
+    \item Render-Pipelines, Texturen, Shader (fast überall intern RGB-like)
+\end{itemize}
+
+Warum gibt es sRGB?
+
+\begin{itemize}
+    \item Damit \enquote{r,g,b} auf unterschiedlichen Geräten ähnlich aussieht.
+    \item sRGB enthält auch eine nichtlineare Codierung (Gamma/Transfer), weil das besser zu Wahrnehmung + effizienter Speicherung passt.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item Geräteabhängig (RGB-Zahlen sind ohne Farbraum nicht eindeutig).
+    \item Super praktisch für Hardware, aber Farbstände sind nicht \enquote{menschlich gleichmässig} ein numerischer Schritt fühlt sich nicht überall gleich an.
+\end{itemize}
+
+\subsubsection{CMY/CMYK (subtraktiv, Druck)}
+
+Idee: Farbe entsteht durch Tinte/Pigmente, die Licht wegnehmen (absorbieren). Wo benutzt?
+
+\begin{itemize}
+    \item Drucker, Druckvorstufe, Plakate, Magazin
+\end{itemize}
+
+Warum CMYK statt nur CMY?
+
+\begin{itemize}
+    \item In der Praxis bekommst du mit realen Tinten kein perfektes \enquote{tiefer Schwarz} aus C+M+Y.
+    \item K (Key/Black) liefert kräftigeres Schwarz, spart Tinte und verbessert Schärfe/Text.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item RGB = \enquote{Licht anmachen}, CMYK = \enquote{Licht wegfiltern}.
+    \item Gamut und Resultat hängen stark von Papier + Tinte + Druckprofil ab.
+\end{itemize}
+
+\subsubsection{HSV/HSB (intuitiv)}
+
+Idee: Farbe so beschreiben, wie Menschen oft darüber reden:
+
+\begin{itemize}
+    \item Hue = \enquote{welche Farbe} (rot/grün/blau)
+    \item Saturation = \enquote{wie bunt} vs. grau
+    \item Value/Brightness = \enquote{wie hell}
+\end{itemize}
+
+Wo benutzt?
+
+\begin{itemize}
+    \item Farbpicker in Photoshop/Blender/Unity etc.
+    \item Wenn wir es \enquote{mehr blau machen} oder \enquote{weniger sättigen} direkt steuern wollen.
+\end{itemize}
+
+Warum gebraucht, wenn es RGB schon gibt?
+
+\begin{itemize}
+    \item RGB ist technisch, aber schlecht zu steuern: \enquote{mehr Rot} ändert oft gleichzeitig Helligkeit/Sättigung unerwartet.
+    \item HSV trennt das besser für UI/Manipulation.
+\end{itemize}
+
+Wichtig: HSV ist nicht wirklich wahrnehmungs-linear (gleich grosse Änderungen fühlen sich nicht überall gleich an). Es ist vor allem bedienfreundlich, nicht \enquote{physikalisch} oder \enquote{perzeptuell perfekt}.
+
+\subsubsection{YUV/YCbCr (Video: Luma/Chroma-Trennung)}
+
+Einige Begriffe vorweg:
+
+\begin{itemize}
+    \item Luminanz: \enquote{wahrgenommene Helligkeit}, eng gekoppelt an das menschliche Helligkeitsempfinden.
+    \item Luma (Y): eine aus RGB abgeleitete Helligkeitskomponente (oft aus gamma-kodierten RGB), die für Video praktisch ist.
+    \item Chrominanz/Chroma: Farbinformation ohne Helligkeit (die \enquote{bunten} Anteile).
+\end{itemize}
+
+\clearpage
+Idee: Trenne Bild in:
+
+\begin{itemize}
+    \item Y (Luma) = Helligkeitsstruktur (Details/Kanten)
+    \item U/V bzw. Cb/Cr = Farbe (kann gröber gespeichert werden)
+\end{itemize}
+
+Wo benutzt?
+
+\begin{itemize}
+    \item Videoformate, TV, Streaming, Kameracodecs
+    \item YCbCr ist praktisch der Standard in digitalem Video.
+\end{itemize}
+
+Warum wird das gebraucht?
+
+\begin{itemize}
+    \item Das menschliche Sehen ist viel empfindlicher für Helligkeitsdetails als für Farbdetails.
+    \item Deshalb kann man Farbe runtersampeln (z.B. 4:2:2 oder 4:2:0) und spart massiv Datenrate - meist ohne dass es stark auffällt.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item RGB speichert alles gleichwertig, ineffizient für Video
+    \item YCbCr optimiert für Wahrnehmung + Kompression
+\end{itemize}
+
+\subsubsection{CIELab (wahrnehmungsnäher)}
+
+Idee: Ein Farbraum, in dem numerische Abstände eher den empfundenen Unterschieden entsprechen.
+
+\begin{itemize}
+    \item L* = Helligkeit
+    \item a* = Achse rot $\leftrightarrow$ grün
+    \item b* = Achse gelb $\leftrightarrow$ blau
+\end{itemize}
+
+Wo benutzt?
+
+\begin{itemize}
+    \item Farbmanagement, Qualitätskontrolle (Druck/Industrie)
+    \item Wenn du \enquote{wie ähnlich sind zwei Farben wirklich?} messen willst (Farbabstand)
+\end{itemize}
+
+\clearpage
+Warum gebraucht?
+
+\begin{itemize}
+    \item In RGB sind Abstände nicht \enquote{fair}: ein kleiner Zahlenunterschied kann sichtbar gross oder kaum sichtbar sein, je nach Bereich.
+    \item Lab ist für Vergleich, Korrektur, Matching viel sinnvoller.
+\end{itemize}
+
+Wodurch unterscheidet es sich?
+
+\begin{itemize}
+    \item Weniger geräteabhängig (basiert auf CIE/Beobachtermodell)
+    \item Eher ein \enquote{Analyse-/Management}-Werkzeug als ein \enquote{Display-Speicherformat}
+\end{itemize}
+
+\subsection{Grauwert / \enquote{nur Helligkeit}}
+
+Ein Grauwertbild ist oft nicht \enquote{Mittelwert aus RGB}, sondern nutzt eine gewichtete Helligkeit (weil Grün, z. B. stärker zur wahrgenommenen Helligkeit beiträgt als Blau).
+
+Wofür wichtig?
+
+\begin{itemize}
+    \item Kanten/Strukturen analysieren
+    \item Luma in Video
+    \item Wahrnehmung: Helligkeit ist die \enquote{Detail-Schiene} des Sehsystems
+\end{itemize}
+
+\clearpage
+\section{Dimensions of Visual Sensation (Qualitätsdimensionen)}
+
+Das sind \enquote{Regler}, die bestimmen, wie gut Bild/Video wirkt:
+
+\begin{itemize}
+    \item Auflösung: wie viele Pixel
+    \item Frame Rate: zeitliche Auflösung (Bewegungsflüssigkeit)
+    \item Dynamic Range: Spanne von dunkel bis hell, die erfasst/angezeigt wird.
+    \begin{itemize}
+        \item HDR versucht mehr von dieser Spanne sichtbar zu machen
+    \end{itemize}
+    \item Bit Depth / Quantisierung: wie fein Abstufungen sind
+    \begin{itemize}
+        \item zu wenig, Banding (Streifen in Verläufen)
+    \end{itemize}
+    \item Color Gamut: wie \enquote{bunt} der darstellbare Bereich ist (z.B. Rec.709 vs Rec.2020)
+    \item Depth (3D): Stereo/Autostereo/Holografie
+\end{itemize}
+
+\subsection{HDR-Formate}
+
+\begin{itemize}
+    \item HDR10: Baselines HDR, 10-bit, breite Nutzung, statische Metadaten (typisch einmal pro Film/Stream)
+    \item HDR10+: wie HDR10, aber dynamische Metadaten (kann pro Szene/Frame angepasst werden)
+    \item Dolby Vision: ebenfalls dynamische Metadaten, oft \enquote{Premium}-Ökosystem, teils höhere mögliche Präzision/Workflows
+\end{itemize}
+
+\textbf{Warum Metadaten?}
+
+Weil Displays sehr unterschiedlich sind. Metadaten helfen, dass Tonemapping auf dem jeweiligen Display besser aussieht (z. B. nicht alles überstrahlt oder absäuft).

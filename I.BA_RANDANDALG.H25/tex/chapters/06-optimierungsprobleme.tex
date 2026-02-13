@@ -1,0 +1,258 @@
+\section{Das 6-Tupel eines Optimierungsproblems}
+
+Wie wird ein Optimierungsproblem allgemein beschrieben?
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/05/optimierungsproblem.png}
+    {Optimierungsproblem}
+    \label{fig:optimierungsproblem}
+\end{figure}
+
+Ein Optimierungsproblem $U$ ist ein 6-Tupel: 
+$$
+U = (\Sigma_I, \Sigma_O, L, M, \text{cost}, \text{goal})
+$$
+Dabei trennt man sauber (1) wie Instanzen/Lösungen dargestellt werden von (2) was als zulässige Lösung gilt und (3) was \enquote{gut} heisst.
+
+\begin{itemize}
+    \item $\Sigma_I$: (Input-)Alphabet, aus dem die Zeichen bestehen, mit denen Eingaben kodiert werden (z.B. $\{0,1\}$ oder ein ASCII-Alphabet). Instanzen sind dann Wörter aus $\Sigma_I^{*}$.
+    \item $\Sigma_O$: (Output-)Alphabet, zur Kodierung von Ausgaben (also von Lösungen). Lösungen werden als Wörter aus $\Sigma_O$ dargestellt.
+    \item $L \subseteq \Sigma_I^{*}$: Sprache der zulässigen Eingaben. Menge aller sinnvollen Eingaben/Instanzen. Ein $x \in L$ heisst Problemfall/Instanz. Wichtig: Man betrachtet hier bewusst das Optimierungsproblem und nimmt an, dass Eingaben ausserhalb von $L$ nicht vorkommen.
+    \item $M$: Menge zulässiger Lösungen. Funktion; $M: L \rightarrow \mathcal{P}(\Sigma_O^{*})$. Für jede Instanz $x$ ist $M(x)$ die Menge aller zulässigen Lösungen (die alle Constraints von $x$ erfüllen).
+    \item $\text{cost}$: Kostenfunktion. Bewertet eine zulässige Lösung $\alpha \in M(x)$ für die Instanz $x$ durch einen nichtnegativen rationalen Wert (typisch: \enquote{Länge}, \enquote{Gewicht}, \enquote{Anzahl}, \enquote{Zeit}).
+    \item $\text{goal} \in \{\text{Minimum, Maximum}\}$: Optimierungsziel. Legt fest, ob die kleinsten oder grössten Kosten gesucht werden (Minimierungs- vs. Maximierungsproblem).
+\end{itemize}
+
+Damit ist eine Lösung $\alpha \in M(x)$ optimal, wenn sie das Ziel erreicht:
+$$
+\text{cost}(\alpha, x) = \text{Opt}_U(x) = \text{goal} \{ \text{cost}(\beta, x) \mid \beta \in M(x) \}
+$$
+Ein Algorithmus \enquote{löst} $U$, wenn er für jedes $x \in L$ eine zulässige Lösung aus $M(x)$ ausgibt und diese optimal ist.
+
+\section{Zulässige Lösungen und das Optimum}
+
+\begin{multicols}{2}
+    \raggedcolumns
+    \subsection{Zulässigkeit (Validity)}
+    Ein Algorithmus $A$ ist nur dann zulässig für $U$, wenn für jede Eingabe $x \in L$ die Ausgabe $A(x)$ ein Element von $M(x)$ ist.
+
+    Das bedeutet: Die Lösung muss alle Constraints (Einschränkungen) erfüllen.
+    \vspace{0.5cm}
+    $\phantom{a}$
+    \columnbreak
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/filter.png}
+        {Filter der Zulässigkeit}
+        \label{fig:filter}
+    \end{figure}
+\end{multicols}
+
+\vspace{0.25cm}
+
+\begin{multicols}{2}
+    \raggedcolumns
+    \subsection{Optimalität (Optimality)}
+    Eine zulässige Lösung $\alpha \in M(x)$ heisst optimal, wenn ihre Kosten den extremsten Wert annehmen.
+    $$
+    \text{cost}(\alpha, x) = \text{Opt}_U(x)
+    $$ $$ 
+    = \text{goal}\{\text{cost}(\beta, x) \mid \beta \in M(x)\}
+    $$
+    \vspace{0.5cm}
+    $\phantom{a}$
+    \columnbreak
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/optimal.png}
+        {Optimalität der Lösung}
+        \label{fig:optimal}
+    \end{figure}
+\end{multicols}
+
+\section{Randomisierung mit Wiederholung}
+
+\begin{figure}[H]
+    \img[width=1\textwidth]{figures/05/randomisierung.png}
+    {Randomisierung durch Wiederholung}
+    \label{fig:randomisierung}
+\end{figure}
+
+Man lässt $A(x)$ mehrmals unabhängig auf derselben Instanz $x$ laufen, bekommt Lösungen $y_1, \dots, y_k$, berechnet jeweils ihren Kostenwert $\text{cost}(y_i, x)$ und gibt am Ende einfach die beste Lösung gemäss $\text{goal}$ (Minimum/Maximum) aus.
+
+Voraussetzung ist, dass $A$ ein zulässiger Algorithmus ist, d. h. jede Ausgabe eine zulässige Lösung: $A(x) \in M(x)$ für alle $x \in L$. Dann bleibt auch das Endergebnis zulässig, weil wir nur unter zulässigen Kandidaten den besten auswählen.
+
+Was bringt die Wiederholung? Wenn ein einzelner Lauf die optimale Lösung mit Wahrscheinlichkeit $p$ findet, dann ist die Wahrscheinlichkeit, dass nach $k$ unabhängigen Läufen mindestens einmal eine optimale Lösung dabei ist:
+$$
+1 - (1 - p)^k
+$$
+Das ist genau die Idee der Wahrscheinlichkeitsverstärkung durch Wiederholungen: Die Erfolgswahrscheinlichkeit steigt schnell, während die Laufzeit nur um den Faktor $k$ (linear) wächst.
+
+\clearpage
+\section{Wahrscheinlichkeit der optimalen Lösung}
+
+Angenommen, ein randomisierter Algorithmus $A$ findet in einem Lauf auf einer Instanz $x$ eine optimale Lösung nur mit Wahrscheinlichekit
+$$
+p = \frac{1}{|x|} \quad (\text{mit } |x| = \text{ Eingabelänge})
+$$
+Dann ist die Wahrscheinlichkeit, das Optimum in einem Lauf nicht zu finden:
+$$
+1 - p = 1 - \frac{1}{|x|}
+$$
+Bei $k$ unabhängigen Wiederholungen ist die Wahrscheinlichkeit, das Optimum nie zu finden:
+$$
+(1-p)^k = \left( 1 - \frac{1}{|x|} \right)^k
+$$
+Wählt man $k = |x|$, so gilt:
+$$
+\left(1 - \frac{1}{|x|}\right)^{|x|} \leq e^{-1} = \frac{1}{e}
+$$
+denn allgemein folgt aus $ln(1-z) \leq -z$ (für $0 < z < 1$) die Schranke $(1 - z)^m \leq e^{-zm}$. Damit ist die Erfolgswahrscheinlichkeit, das Optimum mindestens einmal zu treffen:
+$$
+1- \left(1 - \frac{1}{|x|}\right)^{|x|} \geq 1 - \frac{1}{e} \approx 0,6321
+$$
+Also: 63,21\%.
+
+\begin{multicols}{2}
+    Allgemeiner bei $k = c|x|$ Wiederholungen erhält man:
+    $$
+    Pr[\text{mind. ein Treffer}] \geq 1 - e^{-c}
+    $$
+    also steigt die Erfolgswahrscheinlichkeit durch lineare Wiederholung schnell gegen 1 (bei nur linearem Laufzeitfaktor).
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/wachstum.png}
+        {Erfolgswahrscheinlichkeit}
+        \label{fig:wachstum}
+    \end{figure}
+\end{multicols}
+
+\section{Anwendungsbeispiele}
+
+\subsection{Traveling Salesman Problem (TSP)}
+
+Gegeben sind Städte und Distanzen. Gesucht ist eine Rundreise, die jede Stadt genau einmal besucht und zum Start zurückkehrt, mit minimaler Gesamtlänge. Grob löst man es durch \enquote{Suche im Raum aller Touren} (exponentiell viele), daher nutzt man in der Praxis Heuristiken/Approximationen wie Nearest Neighbor, Local Search oder (bei metrischen TSP) Christofides.
+
+\begin{multicols}{2}
+    
+    \textbf{Eingabe}:\newline
+    Ein gewichteter, vollständiger Graph $(G, c)$. $G = (V, E)$, Kostenfunktion $c: E \rightarrow \N$.
+    
+    \textbf{Einschränkungen}:\newline
+    $M(G,c)$: Die Menge aller Hamiltonschen Kreise (Permutation aller Knoten, jeder genau einmal besucht).
+    
+    \textbf{Kosten}:\newline
+    Summe der Gewichte aller Kanten im Kreis.
+    
+    \textbf{Ziel}: Minimum
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/tsp.png}
+        {Traveling Salesman Problem}
+        \label{fig:tsp}
+    \end{figure}
+
+\end{multicols}
+
+\subsection{MIN-VCP (Vertex Cover)}
+
+Gegeben ist ein Graph. Gesucht ist eine kleinste Menge von Knoten, sodass jede Kante an mindestens einem ausgewählten Knoten \enquote{hängt}. Ein klassischer grober Ansatz ist die 2-Approximation über ein maximales Matching: Nimm zu jeder gewählten Matching-Kante beide endpunkte ins Cover. Dies garantiert hächstens Faktor 2 vom Optimum.
+
+\begin{multicols}{2}
+    
+    \textbf{Eingabe}: Ein ungerichteter Graph $G = (V, E)$\newline
+    \textbf{Einschränkungen}:\newline
+    $M(G)$. Eine Teilmenge von Knoten $U \subseteq V$, sodass jede Kante in $E$ mit mindestens einem Knoten aus $U$ verbunden ist.
+    \textit{In der Abbildung gibt es eine Kante die keinen blauen Knoten berührt (ganz links, Abbildung 6.7)}\newline
+    \textbf{Kosten}: Die Anzahl der Knoten in $U (|U|)$.\newline
+    \textbf{Ziel}: Minimum
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/vertexcover.png}
+        {MIN-VCP - Vertex Cover}
+        \label{fig:min-vcp}
+    \end{figure}
+
+\end{multicols}
+
+\clearpage
+\subsection{MAX-SAT (Maximale Erfüllbarkeit)}
+
+Gegeben ist eine CNF-Formel (UND von Klauseln). Gesucht ist eine Begelung der Variablen, die möglichst viele Klauseln erfüllt. Grob funktioniert ein randomisierter Ansatz so: Wähle eine zufällige Belegung und verbessere sie ggf. durch lokale Suche/Random Walks oder Greedy-Schritte.
+
+\begin{multicols}{2}
+    
+    \textbf{Eingabe}:\newline
+    Eine Formel $\Phi$ in Konunktiver Normalform (KNF).
+    
+    \textbf{Einschränkungen}:\newline
+    $M(\Phi)$. Jede mögliche Belegung der Variablen mit Wahrheitswerten ${0, 1}$.
+    
+    \textbf{Kosten}:\newline
+    Anzahl der erfüllten (wahren) Klauseln.
+    
+    \textbf{Ziel}: Maximum. Unterschied zum SAT: WIr suchen die beste Belegung, auch wenn nicht alle Klauseln erfüllbar sind.
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/maxsat.png}
+        {MAX-SAT}
+        \label{fig:max-sat}
+    \end{figure}
+
+\end{multicols}
+
+\subsection{ILP (Integer Linear Programming)}
+
+Gesucht sind ganzzahlige Variablenwerte, die lineare Nebenbedingungen erfüllen und eine lineare Zielfunktion minimieren/maximieren. Grob löst man ILPs typischerweise mit Branch-and-Bound/Branch-and-Cut: Man löst erst die LP-Relaxation, verzweigt bei nicht-ganzzahligen Lösungen und schneidet mit zusätzlichen Ungleichungen (Cuts) den Suchraum ein.
+
+\begin{multicols}{2}
+    
+    \textbf{Eingabe}:\newline
+    Matrix $A (m \times n)$, Vektoren $b$ und $c$. Werte sind ganze Zahlen.
+    
+    \textbf{Einschränkungen}:\newline
+    $M(A, b, c)$. Alle Vektoren $x \in \N^n$, die das Gleichungssystem $Ax = b$ (oder $Ax \leq b$) erfüllen. Wichtig: Lösungen müssen ganzzahlig sein.
+    
+    \textbf{Kosten}:\newline
+    Lineare Funktion $c^Tx$.
+    
+    \textbf{Ziel}: Minimum (oder auch Maximum).
+
+    \begin{figure}[H]
+        \img[width=0.4\textwidth]{figures/05/ilp.png}
+        {ILP (Integer Linear Programming)}
+        \label{fig:ilp}
+    \end{figure}
+
+\end{multicols}
+
+\clearpage  
+\begin{enumerate}[label=(\alph*)]
+    \item Optimierungsprobleme:
+    \begin{enumerate}[label=(\roman*)]
+        \item Wie wird ein randomisierter Algorithmus für ein Optimierungsproblem durch Wiederholungen eingesetzt?\newline
+        \textbf{Antwort}: Man führt den randomisierten Algorithmus mehrmals unabhängig auf derselben Instanz aus und behält am Ende die beste gefundene zulässige Lösung (bei Minimum: kleinster Wert, bei Maximum: grösster Wert).
+
+        \item Was können wir über die Wahrscheinlichkeit für die optimale Lösung sagen?\newline
+        \textbf{Antwort}: Wenn ein einzelner Lauf das Optimum mit Wahrscheinlichkeit mindestens $p$ findet, dann ist nach $t$ unabhängigdn Läufen die Erfolgswahrscheinlichkeit $1 - (1-p)^t$. Falls: $p \geq \frac{1}{|x|}$, dann liefern $|x|$ Wiederholungen schon konstante Erfolgswahrscheinlichkeit (mind. $1 - 1 / e$), und mit $|x| \log |x|$ geht sie sehr nahe zu 1 (100\%).
+
+        \item Welche Eigenschaft soll eine zulässige Lösung haben?\newline
+        \textbf{Antwort}: Sie muss alle Nebenbedingungen/Constraints der Instanz erfüllen, also wirklich eine erlaubte Lösung des Problemfalls sein.
+
+        \item Wie wird ein Optimierungsproblem allgemein beschrieben?\newline
+        \textbf{Antwort}: Ein Optimierungsproblem wird durch (1) Menge zulässiger Eingaben, (2) Menge zulässiger Lösungen pro Eingabe, (3) Kosten-/Bewertungsfunktion und (4) Zielrichtung (Minimum oder Maximum) beschrieben.
+    \end{enumerate}
+    \item Beispiele:
+    \begin{enumerate}[label=(\roman*)]
+        \item Kann ich das TSP-Problem erklären?\newline
+        \textbf{Antwort}: Eingabe: gewichteter Graph. Z.B. Städte mit Distanzen. Zulässige Lösungen: Rundreisen, die jede Stadt genau einmal besuchen (Hamiltonkreis). Ziel: Gesamtlänge minimieren.
+
+        \item Kann ich das MIN-VCP-Problem erklären?\newline
+        \textbf{Antwort}: Eingabe: Graph. Gesucht ist eine möglichst kleine Knotenmenge $U \subseteq V$, sodass jede Kante in $E$ an mindestens einem Endpunkt in $U$ liegt. Ziel: $U$ minimieren.
+
+        \item Kann ich das MAX-SAT-Problem erklären?\newline
+        \textbf{Antwort}: Eingabe: Formel in KNF (UND von Klauseln). Lösung: Wahrheitsbelegung der Variablen. Ziel: Anzahl erfüllter Klauseln maximieren.
+
+        \item Kann ich erklären, was IPL-Probleme sind?\newline
+        \textbf{Antwort}: Man hat lineare Nebenbedingungen (Gleichungen/Ungleichungen) und eine lineare Zielfunktion. Gesucht ist eine optimale Lösung, bei der die Variablen ganzzahlig (z.B. in $\Z$ oder $\N$) sein müssen. Ziel: Zielfunktion minimieren oder maximieren.
+
+    \end{enumerate}
+\end{enumerate}

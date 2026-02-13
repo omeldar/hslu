@@ -1,0 +1,187 @@
+\section{Worum geht's?}
+Nachdem Geometrie (z.\,B. in WebGPU) bis in den Clip Space gebracht wurde, muss die GPU daraus \emph{Pixel} machen.
+Dazu passieren zwei Kernschritte:
+\begin{itemize}
+  \item \textbf{Clipping:} Unsichtbare Teile werden weggeschnitten, damit nur Relevantes weiterverarbeitet wird.
+  \item \textbf{Rasterisierung / Scan Conversion:} Kontinuierliche Geometrie (Linien, Dreiecke) wird auf ein Pixelraster abgebildet.
+\end{itemize}
+Ziel: \enquote{Welche Pixel gehören zum Objekt, und welche Werte (Farbe, Tiefe, Textur) bekommen sie?}
+
+\section{Clipping}
+
+\subsection{Warum Clipping überhaupt?}
+\textbf{Grundidee:} Die Szene ist kontinuierlich, aber das Bild besteht aus endlichen Pixeln.
+Clipping ist wie \enquote{alles ausserhalb des Bildausschnitts sauber abschneiden}, bevor man unnötig viel Arbeit macht.
+
+\paragraph{Warum 3D-Clipping?}
+3D-Clipping passiert konzeptionell \textbf{in der 3D-Pipeline} (typisch im Clip Space), damit:
+\begin{itemize}
+  \item \textbf{Effizienz:} Unsichtbare Teile werden früh entfernt, Rasterisierung spart Arbeit.
+  \item \textbf{Robustheit:} Geometrie, die die Near-Plane schneidet, kann sonst numerisch problematisch werden
+        (z.\,B. extrem gestreckt oder instabil).
+  \item \textbf{Korrektheit:} Man rasterisiert nur den wirklich sichtbaren Teil eines Dreiecks.
+\end{itemize}
+
+\paragraph{Warum 2D-Clipping?}
+2D-Clipping passiert \textbf{im Bildschirmraum} und ist besonders praktisch für:
+\begin{itemize}
+  \item \textbf{UI/Overlays:} Panels, HUD, Minimap sollen nur in einem bestimmten Bereich erscheinen.
+  \item \textbf{Mehrere Ansichten:} Split-Screen oder mehrere Viewports in einem Fenster.
+  \item \textbf{2D-Geometrie:} Wenn Linien/Polygone direkt in Screen-Koordinaten definiert sind.
+\end{itemize}
+
+\subsection{Verfahrenideen: Scissoring, Buffer, analytisches Clipping}
+
+\paragraph{Scissoring (Scissor-Test)}
+\textbf{Konzept:} Ein rechteckiger \enquote{Ausschnitt} im Bildschirm.
+Alles ausserhalb wird verworfen, egal welche Geometrie kommt.
+\begin{itemize}
+  \item \textbf{Pro:} Sehr schnell, ideal für UI und Teilfenster.
+  \item \textbf{Contra:} Nur rechteckig, kein echtes geometrisches Zerschneiden von Dreiecken.
+\end{itemize}
+
+\paragraph{Buffer-basiert (Depth/Stencil als Maske)}
+\textbf{Konzept:} Man nutzt Tests auf Pixelebene:
+\begin{itemize}
+  \item \textbf{Depth Test:} Ein Pixel wird nur geschrieben, wenn es vorne genug ist (Sichtbarkeit).
+  \item \textbf{Stencil Test:} Ein Pixel wird nur geschrieben, wenn es eine vorher definierte Maske erlaubt
+        (z.\,B. runde Minimap oder komplexe UI-Form).
+\end{itemize}
+\textbf{Wichtig:} Das ist kein geometrisches Clipping, sondern \enquote{Pixel verwerfen} nach (oder während) der Rasterisierung.
+
+\paragraph{Analytisches Clipping (echtes geometrisches Schneiden)}
+\textbf{Konzept:} Man berechnet Schnittpunkte mit Clip-Grenzen und erzeugt daraus neue, kleinere Primitive.
+\begin{itemize}
+  \item \textbf{Pro:} Exakt, unabhängig davon, ob die Clip-Form rechteckig oder frustum-basiert ist.
+  \item \textbf{Contra:} Mehr Logik/Komplexität (wird im Standardfall von der GPU-Pipeline intern gemacht).
+\end{itemize}
+
+\clearpage
+\subsection{Linien-Clipping: Code-/Outcode-Prinzip}
+\textbf{Kernidee:} Jeder Endpunkt einer Linie wird relativ zu einem Clip-Rechteck klassifiziert.
+Dazu bekommt er einen \textbf{Outcode} (Bitmaske): links / rechts / oben / unten.
+
+\begin{itemize}
+  \item \textbf{Trivial Accept:} Beide Outcodes sind 0 $\Rightarrow$ Linie komplett drin.
+  \item \textbf{Trivial Reject:} Bitweises UND der Outcodes ist nicht 0 $\Rightarrow$
+        beide Punkte liegen sicher auf derselben Aussenseite $\Rightarrow$ Linie komplett draussen.
+  \item \textbf{Sonst:} Linie schneidet den Rand $\Rightarrow$ Schnittpunkt mit passender Kante bestimmen,
+        Endpunkt ersetzen und wiederholen.
+\end{itemize}
+
+\textbf{Merksatz:} Outcodes machen aus \enquote{schneiden} zuerst \enquote{schnell entscheiden}, dann erst rechnen.
+
+\subsection{Polygon-Clipping}
+Bei Polygonen (z.\,B. Dreiecken) ist die Standardidee:
+\begin{itemize}
+  \item Man clippt \textbf{gegen eine Grenze nach der anderen} (z.\,B. links, rechts, oben, unten; in 3D zusätzlich Near/Far).
+  \item Für jede Grenze baut man ein neues Polygon, indem man Kanten betrachtet:
+  \begin{itemize}
+    \item innen $\rightarrow$ innen: Endpunkt übernehmen
+    \item innen $\rightarrow$ aussen: Schnittpunkt übernehmen, dann abbrechen
+    \item aussen $\rightarrow$ innen: Schnittpunkt übernehmen, dann Endpunkt übernehmen
+    \item aussen $\rightarrow$ aussen: nichts übernehmen
+  \end{itemize}
+\end{itemize}
+
+\textbf{Wichtig konzeptionell:} Clipping kann \textbf{neue Vertices erzeugen} (an Schnittpunkten), damit die sichtbare Fläche exakt bleibt.
+
+\section{Rasterisierung (Scan Conversion)}
+
+\subsection{Was ist Rasterisierung?}
+\textbf{Definition:} Rasterisierung ist die Umwandlung von kontinuierlicher Geometrie in diskrete Pixel.
+Dabei wird entschieden:
+\begin{itemize}
+  \item \textbf{Welche Pixel gehören zur Linie/Fäche?}
+  \item \textbf{Welche Attribute gelten an diesen Pixeln?} (Farbe, Tiefe, Texturkoordinaten, Normalen, \dots)
+\end{itemize}
+In der GPU-Praxis sind \textbf{Dreiecke} das zentrale Primitive, weil sie planar sind und sich stabil interpolieren lassen.
+
+\subsection{Linienrasterung: DDA-Idee und inkrementelle Verfahren}
+
+\paragraph{DDA-Idee (Digital Differential Analyzer)}
+\textbf{Konzept:} Man läuft in kleinen Schritten von einem Endpunkt zum anderen und setzt dabei Pixel.
+Praktisch: pro Schritt geht man in der dominanten Richtung (meist $x$) um 1 Pixel weiter und berechnet die passende Gegenrichtung (meist $y$) mit.
+
+\textbf{Intuition:} \enquote{Ich gehe Pixel für Pixel vorwärts und halte mich möglichst nah an der idealen Linie.}
+
+\paragraph{Inkrementelle Verfahren (Bresenham-Idee)}
+\textbf{Konzept:} Statt pro Schritt zu rechnen, nutzt man eine \enquote{Fehlervariable}.
+Die entscheidet pro Pixel, ob der nächste Pixel geradeaus oder diagonal ist.
+\begin{itemize}
+  \item \textbf{Pro:} Sehr effizient und stabil (wenig Rechenaufwand).
+  \item \textbf{Konzeptionell:} \enquote{Treffe pro Pixel eine lokale Entscheidung, die die Linie am besten approximiert.}
+\end{itemize}
+
+\clearpage
+\subsection{Dreiecke zeichnen: baryzentrische Koordinaten (konzeptionell)}
+\textbf{Warum baryzentrisch?} Für ein Dreieck möchte man:
+\enquote{Liegt ein Pixel innerhalb? Und wie mische ich Werte von den drei Ecken an dieser Stelle?}
+
+\begin{itemize}
+  \item \textbf{Inside-Test:} Ein Punkt ist drin, wenn er als \enquote{gewichtete Mischung} der drei Ecken darstellbar ist,
+        ohne dass Gewichte \enquote{negativ ausserhalb} laufen.
+  \item \textbf{Interpolation:} Die gleichen Gewichte mischen Attribute:
+        Farbe, Tiefe, Texturkoordinaten, \dots
+\end{itemize}
+
+\textbf{Merksatz:} Baryzentrik ist \enquote{Koordinaten im Dreieck} und perfekt für \enquote{drin/draussen + Werte mischen}.
+
+\subsection{Füllen von Regionen}
+\textbf{Region Filling} bedeutet: nicht nur Kanten zeichnen, sondern Flächen füllen.
+Konzeptionell gibt es zwei bekannte Denkweisen:
+\begin{itemize}
+  \item \textbf{Scanline-Fill:} Zeilenweise füllen: pro Bildzeile Schnittpunkte mit der Kontur finden und Intervalle dazwischen füllen.
+  \item \textbf{Flood-Fill (aus 2D-Tools):} Von einem Startpixel aus wachsen, bis eine Grenze/Farbbedingung stoppt.
+\end{itemize}
+In modernen Pipelines werden Flächen meist in Dreiecke zerlegt und über Dreiecks-Rasterisierung gefüllt.
+
+\subsection{Aliasing \& Anti-Aliasing}
+
+\paragraph{Was ist Aliasing?}
+Aliasing sind Treppeneffekte, Flimmern und \enquote{Zacken} an Kanten.
+Grund: Du tastest ein kontinuierliches Signal (Kante, Texturdetail) mit einer endlichen Pixelauflösung ab.
+Wenn Details zu fein sind, entstehen falsche Muster.
+
+\paragraph{Prefiltering (vor dem Abtasten glätten)}
+\textbf{Idee:} Hochfrequente Details werden vor der Abtastung reduziert.
+Bei Texturen ist das Standard, z.\,B. durch Mipmaps (vereinfacht: kleinere vorgefilterte Texturversionen).
+
+\clearpage
+\paragraph{Supersampling und MSAA (mehr Samples pro Pixel)}
+\textbf{Supersampling (SSAA):} Man rendert intern in höherer Auflösung und skaliert runter.
+\begin{itemize}
+  \item \textbf{Pro:} Sehr gute Qualität (Kanten und Shaderdetails).
+  \item \textbf{Contra:} Teuer, weil mehr Pixelarbeit.
+\end{itemize}
+
+\textbf{MSAA (Multisample Anti-Aliasing):} Mehr Abtastpunkte pro Pixel, aber Shading oft nicht voll mehrfach.
+\begin{itemize}
+  \item \textbf{Pro:} Gute Geometriekanten, meist günstiger als SSAA.
+  \item \textbf{Contra:} Hilft weniger gegen reine Shader-Aliasing-Effekte oder sehr feine Texturdetails.
+\end{itemize}
+
+\paragraph{Anisotropic Filtering (als Kontext)}
+\textbf{Problem:} Schräg in die Tiefe laufende Texturen werden stark verzerrt abgetastet.
+Ein Pixel entspricht dann einer länglichen Fläche in der Textur.
+\begin{itemize}
+  \item \textbf{Anisotropic Filtering} nimmt mehr Samples in der gedehnten Richtung,
+        damit Texturen in der Tiefe weniger matschig und weniger flimmernd wirken.
+  \item \textbf{Konzeptionell:} \enquote{Besser filtern, wenn die Abtastfläche nicht quadratisch ist.}
+\end{itemize}
+
+\section{Typische konzeptionelle Prüfungsfragen (Kernantworten)}
+\begin{itemize}
+  \item \textbf{Warum clippt man?}
+    -- Effizienz und Korrektheit: unsichtbare Teile weg, Near-Plane-Schnitt sauber behandeln.
+  \item \textbf{3D- vs. 2D-Clipping?}
+    -- 3D: Sichtvolumen/Frustum in der 3D-Pipeline; 2D: Ausschnitte im Screen Space (UI, Viewport).
+  \item \textbf{Was bringt der Outcode bei Linien-Clipping?}
+    -- Schnelles \enquote{drin/draussen} durch Bitmasken, oft trivial accept/reject.
+  \item \textbf{Warum Dreiecke als Standard?}
+    -- Planar, stabil, gut interpolierbar; alles lässt sich in Dreiecke zerlegen.
+  \item \textbf{Warum baryzentrische Koordinaten?}
+    -- Gleiche Gewichte für Inside-Test und Interpolation über das Dreieck.
+  \item \textbf{Was ist Aliasing und wie bekämpft man es?}
+    -- Abtastartefakte; bekämpfen durch Prefiltering (z.\,B. Mipmaps) oder mehr Samples (SSAA/MSAA).
+\end{itemize}
